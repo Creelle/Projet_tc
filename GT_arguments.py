@@ -167,5 +167,3 @@ class comb_output:
         self.m_CO2f = m_CO2f;
         self.m_H2Of = m_H2Of;
         self.T_out = T_out;
-
-        self.testshfhffsf = 0;
