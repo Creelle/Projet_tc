@@ -71,7 +71,7 @@ def GT_simple(GT_input):
     outputs.eta[1] = 0.35;
 
     # Your job
-    
+    print("coucou")
 
     return outputs;
 
