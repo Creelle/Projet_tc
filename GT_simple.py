@@ -11,10 +11,10 @@ def GT_simple(GT_input):
     """
      GT Gas turbine modelisation
      GT(P_e,options,display) compute the thermodynamics states for a Gas
-     turbine based on several inputs (given in OPTION) and based on a given 
+     turbine based on several inputs (given in OPTION) and based on a given
      electricity production P_e. It returns the main results. It can as well
      plots graphs if input argument DISPLAY = true (<=> DISPLAY=1)
-    
+
      INPUTS (some inputs can be dependent on others => only one of these 2 can
              be activated) Refer to Fig 3.1 from reference book (in english)
      P_E = electrical power output target [kW]
@@ -29,7 +29,7 @@ def GT_simple(GT_input):
                             polytropique interne) for expansion
     """
     arg_in = GT_input;
-    
+
     ## Check input arguments
     # ======================
     Pe = arg_in.Pe;
@@ -47,19 +47,19 @@ def GT_simple(GT_input):
     eta_PiT = arg_in.eta_PiT;
     if eta_PiT ==-1.:
         eta_PiT = 0.9;#max temperature = 1050°C
-    
-    
+
+
     ## preliminary data (air)
     # ======================
-    
+
     # Your job
-    
+
     # cp air at 15°C (298K): [kJ/mol/K]
     O2 = db.getphasedata('O2','g');
     print(O2.cp(298))
 
 
-   
+
     ## cycle definition
     # =================
 
@@ -69,13 +69,14 @@ def GT_simple(GT_input):
     # ======================
     outputs = GT_arg.GT_outputs();
     outputs.eta[1] = 0.35;
-    
+
     # Your job
-    
+    print("coucou robbe")
+
     return outputs;
 
 
 
 
-#tests    
+#tests
 GT_simple_outputs = GT_simple(GT_arg.GT_input());
