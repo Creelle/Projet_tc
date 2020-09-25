@@ -51,7 +51,7 @@ class GT_outputs:
      ETA is a vector with :
        -eta(1) : eta_cyclen, cycle energy efficiency
        -eta(2) : eta_toten, overall energy efficiency
-       -eta(3) : eta_cyclex, cycle exegy efficiency
+       -eta(3) : eta_cyclex, cycle exergy efficiency
        -eta(4) : eta_totex, overall exergie efficiency
        -eta(5) : eta_rotex, compressor-turbine exergy efficiency
        -eta(6) : eta_combex, Combustion exergy efficiency

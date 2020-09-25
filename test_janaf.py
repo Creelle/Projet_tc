@@ -19,7 +19,8 @@ H2O = db.getphasedata('H2O',phase ='g');
 # print(CH4)
 
 print(O2)
-
+print(O2.hef([298.15,500]))
+print(N2.hef([298.15,500]))# kJ/mol
 #heating value of di-oxygen at 298 K : 29.375 J/mol/K
 print(O2.cp(298))
 
@@ -31,7 +32,7 @@ print(CO2.cp(298))
 
 #heating value of dioxygen at 298 K : 29.375 J/mol/K
 print(H2O.cp(298))
-print(H2O.cv(298))
+
 
 # Chemical properties:
 Mm_O2 = 0.032;#kg/mol
@@ -45,7 +46,6 @@ def air_mixture(T):#kJ/kg/K
     m_N2 = (conc_N2*Mm_N2)/Mm_a;
     cp_a = m_O2 * O2.cp(T) + N2.cp(T) * m_N2;#J/mol/K
     Cp_a = cp_a/Mm_a/1000;#kJ/kg/K
-    deltah = Cp_a*(T-298.15)
     return Cp_a,deltah;
 
 #heating value of dioxygen at 298 K : 1.012 kJ/kg/K

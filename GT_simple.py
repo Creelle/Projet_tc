@@ -10,12 +10,12 @@ O2 = db.getphasedata('O2','g');
 N2 = db.getphasedata('N2','g');
 CO2 = db.getphasedata('CO2',phase ='g');
 H2O = db.getphasedata('H2O',phase ='g');
+Mm_O2 = 0.032;#kg/mol
+Mm_N2 = 0.028;#kg/mol
+conc_O2 = 0.21;# 21% in molar
+conc_N2 = 0.79;# 79% in molar
 
 def air_mixture(T):#kJ/kg/K
-    Mm_O2 = 0.032;#kg/mol
-    Mm_N2 = 0.028;#kg/mol
-    conc_O2 = 0.21;# 21% in molar
-    conc_N2 = 0.79;# 79% in molar
     Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     m_O2 = (conc_O2*Mm_O2)/Mm_a;# mass proportion of O2
     m_N2 = (conc_N2*Mm_N2)/Mm_a;
@@ -24,6 +24,21 @@ def air_mixture(T):#kJ/kg/K
     R = 8.31/Mm_a/1000
     gamma = Cp/(Cp-R)
     return Cp,gamma ;
+
+#fonction qui donne l enthalpie (kJ/kg)
+def air_enthalpy(T):
+    Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
+    m_O2 = (conc_O2*Mm_O2)/Mm_a;# mass proportion of O2
+    m_N2 = (conc_N2*Mm_N2)/Mm_a;
+    h_air = m_O2 * O2.hef(T) + N2.hef(T) * m_N2;#J/mol/K
+    return h_air/Mm_a #kJ/kg
+
+def air_entropy(T):
+    Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
+    m_O2 = (conc_O2*Mm_O2)/Mm_a;# mass proportion of O2
+    m_N2 = (conc_N2*Mm_N2)/Mm_a;
+    entropy_air = m_O2 * O2.S(T) + N2.S(T) * m_N2;#J/mol/K
+    return entropy_air/Mm_a #kJ/kg/K
 
 def GT_simple(GT_input):
     """
@@ -79,9 +94,24 @@ def GT_simple(GT_input):
     ## cycle definition
     # =================
     #1) compressor
+    T1=T_ext
+    p1 = 1.0 #bar
+    h1 = air_enthalpy(T1)
+    s1 = air_entropy(T1)
+
+    p2 = r*p1
     T2 = T_ext*(r)**((m_c-1)/m_c)
-    deltah_c = Cp_a*(T2-T_ext)
-    print(T2,deltah_c)
+    s2 = air_entropy(T2)
+    h2 = air_enthalpy(T2)
+    deltah_c = Cp_a*(T2-T1) # delta_h =  w_m compression
+    deltas_c = Cp_a*np.log(T2/T1)*1000
+
+    # 2) combustion
+    p3 = p2
+    h3 = air_enthalpy(T3)
+    Q=h3-h2
+    # autre variable utile : X= (p2/p1)**()(gamma-1)/gamma)
+    print(deltah_c,air_enthalpy(T2),deltas_c,s2-s1, Q)
     comb.combustionGT(GT_arg.comb_input())
 
     ## define output arguments
