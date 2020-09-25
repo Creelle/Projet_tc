@@ -31,6 +31,7 @@ print(CO2.cp(298))
 
 #heating value of dioxygen at 298 K : 29.375 J/mol/K
 print(H2O.cp(298))
+print(H2O.cv(298))
 
 # Chemical properties:
 Mm_O2 = 0.032;#kg/mol
