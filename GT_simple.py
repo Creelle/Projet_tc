@@ -102,18 +102,30 @@ def GT_simple(GT_input):
     p2 = r*p1
     T2 = T_ext*(r)**((m_c-1)/m_c)
     s2 = air_entropy(T2)
-    h2 = air_enthalpy(T2)
+    #h2 = air_enthalpy(T2)
     deltah_c = Cp_a*(T2-T1) # delta_h =  w_m compression
     deltas_c = Cp_a*np.log(T2/T1)*1000
-
+    h2 = h1+deltah_c
     # 2) combustion
     p3 = p2
     h3 = air_enthalpy(T3)
     Q=h3-h2
-    # autre variable utile : X= (p2/p1)**()(gamma-1)/gamma)
-    print(deltah_c,air_enthalpy(T2),deltas_c,s2-s1, Q)
-    comb.combustionGT(GT_arg.comb_input())
+    s3 = air_entropy(T3)
 
+    # 3)  combustion
+    p4 = p3/r
+    T4 = T3*(1/r)**((m_t-1)/m_t)
+    deltah_t = Cp_a*(T4-T3)
+    #h4 = air_enthalpy(T4)
+    h4 = h3+deltah_t
+    s4 = air_entropy(T4)
+    # autre variable utile : X= (p2/p1)**()(gamma-1)/gamma)
+    print(deltah_c+deltah_t,h4-h3,h2-h1, s3-s4)
+    comb.combustionGT(GT_arg.comb_input())
+    ##====================
+    # calcul des rendements
+    eta_cyclen  = 1-(h4-h1)/(h3-h2)
+    print(eta_cyclen, (deltah_t+deltah_c)/Q)
     ## define output arguments
     # ======================
     outputs = GT_arg.GT_outputs();
