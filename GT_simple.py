@@ -82,6 +82,7 @@ def GT_simple(GT_input):
     if eta_pit ==-1.:
         eta_pit = 0.9;#max temperature = 1050°C
     T0=arg_in.T_0
+    k_mec = arg_in.k_mec
 
 
     ## preliminary data (air) ==> find gamma
@@ -102,6 +103,7 @@ def GT_simple(GT_input):
     p2 = r*p1
     T2 = T_ext*(r)**((m_c-1)/m_c)
     s2 = air_entropy(T2)
+
     #h2 = air_enthalpy(T2)
     deltah_c = Cp_a*(T2-T1) # delta_h =  w_m compression
     deltas_c = Cp_a*np.log(T2/T1)*1000
@@ -119,20 +121,29 @@ def GT_simple(GT_input):
     #h4 = air_enthalpy(T4)
     h4 = h3+deltah_t
     s4 = air_entropy(T4)
+
+    #travail moteur
+    Wm = -(deltah_c+deltah_t) #kJ/kg
     # autre variable utile : X= (p2/p1)**()(gamma-1)/gamma)
     print(deltah_c+deltah_t,h4-h3,h2-h1, s3-s4)
     comb.combustionGT(GT_arg.comb_input())
     ##====================
     # calcul des rendements
     eta_cyclen  = 1-(h4-h1)/(h3-h2)
+    eta_mec = (Wm - k_mec)/Wm
+    eta_toten = eta_cyclen*eta_mec
     print(eta_cyclen, (deltah_t+deltah_c)/Q)
+    #massflow calcul # on neglige m  flow combustion
+    mf_out = Pe/(Wm*eta_mec)#
     ## define output arguments
     # ======================
     outputs = GT_arg.GT_outputs();
-    outputs.eta[1] = 0.35;
-
+    outputs.eta[0] = eta_cyclen;
+    outputs.eta[1] = eta_toten;
+    outputs.dat[0:4]= [[T_ext,T2,T3,T4],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4]]
+    outputs.massflow[0:] = [mf_out,0,mf_out]
     # Your job
-
+    print(outputs.massflow)
     return outputs;
 
 
