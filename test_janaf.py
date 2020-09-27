@@ -15,9 +15,8 @@ O2 = db.getphasedata('O2','g');
 N2 = db.getphasedata('N2','g');
 CO2 = db.getphasedata('CO2',phase ='g');
 H2O = db.getphasedata('H2O',phase ='g');
-# CH4=db.getphasedata('CH4',phase ='g');
-# print(CH4)
-
+CH4=db.getphasedata('CH4',phase ='g');
+C2H4 = db.getphasedata('C2H4',phase ='g');
 print(O2)
 print(O2.hef([298.15,500]))
 print(N2.hef([298.15,500]))# kJ/mol
@@ -29,7 +28,7 @@ print(N2.cp(298))
 
 #heating value of dioxygen at 298 K : 29.375 J/mol/K
 print(CO2.cp(298))
-
+print(CO2.hef(700))
 #heating value of dioxygen at 298 K : 29.375 J/mol/K
 print(H2O.cp(298))
 

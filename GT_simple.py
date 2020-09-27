@@ -27,19 +27,19 @@ def air_mixture(T):#kJ/kg/K
 
 #fonction qui donne l enthalpie (kJ/kg)
 def air_enthalpy(T):
-    Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
+    Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2; #kg/mol
     m_O2 = (conc_O2*Mm_O2)/Mm_a;# mass proportion of O2
     m_N2 = (conc_N2*Mm_N2)/Mm_a;
     h_air = m_O2 * O2.hef(T) + N2.hef(T) * m_N2;#J/mol/K
     return h_air/Mm_a #kJ/kg
-
+print('here',air_enthalpy(800))
 def air_entropy(T):
     Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     m_O2 = (conc_O2*Mm_O2)/Mm_a;# mass proportion of O2
     m_N2 = (conc_N2*Mm_N2)/Mm_a;
     entropy_air = m_O2 * O2.S(T) + N2.S(T) * m_N2;#J/mol/K
     return entropy_air/Mm_a #kJ/kg/K
-
+print(air_entropy(500))
 def GT_simple(GT_input):
     """
      GT Gas turbine modelisation
@@ -95,6 +95,7 @@ def GT_simple(GT_input):
     ## cycle definition
     # =================
     #1) compressor
+    #exergie = dh-T0 * ds
     T1=T_ext
     p1 = 1.0 #bar
     h1 = air_enthalpy(T1)
