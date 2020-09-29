@@ -18,6 +18,7 @@ def cp_Iconstants(M,T_0,T_1):
         for i in range (0,n):
             cp_values[i] = chim.cp(T[i])  #je prends toutes les valeurs de cp correspondant aux températures
         heat_const = np.polyfit(T,cp_values,3) #je trouve les constantes A,B,C,D de de l'interpolation polynomiale grâce à polyfit
+        cp_mean =  sum(cp_values)/len(cp_values)
         I = heat_const[3]*(T_1-T_0) + (1/2)*heat_const[2]*(T_1**2-T_0**2) + (1/3)*heat_const[1]*(T_1**3-T_0**3) + (1/4)*heat_const[0]*(T_1**4-T_0**4)
         #j'intègre cp sur l'intervalle de température
     else:
@@ -27,9 +28,10 @@ def cp_Iconstants(M,T_0,T_1):
         for i in range (0,n):
             cp_values[i] = chim.cp(T[i])
         heat_const = np.polyfit(T,cp_values,3)
+        cp_mean =  sum(cp_values)/len(cp_values)
         I = heat_const[3]*(T_1-T_0) + (1/2)*heat_const[2]*(T_1**2-T_0**2) + (1/3)*heat_const[1]*(T_1**3-T_0**3) + (1/4)*heat_const[0]*(T_1**4-T_0**4)
         #je retourne l'intégrale
-    return I
+    return I,cp_mean
 print("O2 :", cp_Iconstants('O2',273,600))
 
 def combustionGT(comb_input):
