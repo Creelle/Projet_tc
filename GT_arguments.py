@@ -25,7 +25,7 @@ class GT_input:
      DISPLAY = 1 or 0. If 1, then the code should plot graphics. If 0, then the
               do not plot."""
     def __init__(self, Pe = 50e3,#50 MW
-                     k_mec = -1.,
+                     k_mec = 0,
                      T_0 = 15.,#°C
                      T_ext =288.15,
                      r =10.,
@@ -132,7 +132,7 @@ class comb_input:
                      x_O2a = 0.21,# molar fraction
                      x_N2a = 0.79,# molar fraction
                      T_in = 600,#°C
-                     h_in = 650,# enthalpy
+                     h_in = 650,# enthalpy[kJ/kg_air]
                      LHV =50000):# [kJ/kg_CH4]
         self.lambda_comb = lambda_comb;
         self.x_O2a = x_O2a;
