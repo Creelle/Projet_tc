@@ -39,7 +39,6 @@ def cp_Iconstants(M,T_0,T_1):
         I = heat_const[3]*(T_1-T_0) + (1/2)*heat_const[2]*(T_1**2-T_0**2) + (1/3)*heat_const[1]*(T_1**3-T_0**3) + (1/4)*heat_const[0]*(T_1**4-T_0**4)
         #je retourne l'intégrale
     return I,cp_mean
-print("O2 :", cp_Iconstants('O2',273,600))
 
 def combustionGT(comb_input):
     """
@@ -83,22 +82,6 @@ def combustionGT(comb_input):
 
     Mm_air = x_O2a * Mm_O2 + x_N2a * Mm_N2 # [kg/mol_air]
     ma1 =  Mm_air/Mm_CH4 * 2*lambda_comb/x_O2a # kg_air/kg_CH4 = proportion d air entrant vs combustible
-    print('ma1',ma1)
-    # T_out =  1400
-    # m_a1 = 5
-    # iter = 1
-    #
-    # while iter <= 1000 or error > 0.1 :
-    #     Num =
-    #     Den1 =
-    #     Den2 = (lambda_comb*m_a1 + 1)
-    #     T_out_final = 1 + (Num/Den) - h_f0
-    #     iter = iter + 1
-    #     error = T_out_final - T_out
-    #     T_out = T_out_final
-    #     print(T_out)
-    # print(iter,T_out)
-
 
     # A la sortie :
     coeff_stochio = np.array([2*lambda_comb*coeff,1,2,2*(lambda_comb-1)]) # N2- CO2 - H2O - O2
@@ -108,17 +91,28 @@ def combustionGT(comb_input):
     Mm_af = sum(molar_conc*molar_mass) #somme ponderé des masse molaire
     mass_conc = molar_conc*molar_mass/Mm_af #[-] kg_co2/kg_tot
 
-    Cps_out = np.array([cp_N2,cp_CO2,cp_H2O,cp_O2]) # chaleur specifique des gaz sortant J/mol
+    #Cps_out = np.array([cp_N2,cp_CO2,cp_H2O,cp_O2]) # chaleur specifique des gaz sortant J/mol
     H_f0_list = np.array([N2.DeltaH(T_ref),CO2.DeltaH(T_ref),H2O.DeltaH(T_ref),O2.DeltaH(T_ref)])
     # print(H_f0_list)
     hc=(1/Mm_CH4)*cp_Iconstants('CH4',T_ref,T_in)[0] # entalpie sensible du combustibleJ/kg_CH4
 
-    cp_f = np.dot(Cps_out,mass_conc/molar_mass) # valeur du cp des gaz sortant [J/kg/K]
+    #cp_f = np.dot(Cps_out,mass_conc/molar_mass) # valeur du cp des gaz sortant [J/kg/K]
 
     h_f0 = np.dot(H_f0_list,mass_conc/molar_mass) # valeur d enthalpie de reference des gas sortants [J/kg]
 
-    # print(h_f0)
-    T_out = (1 + ((1000*LHV + hc + lambda_comb*ma1*h_in*1000)/((lambda_comb*ma1+1)*cp_f*T_ref)) - h_f0/(cp_f*T_ref))*T_ref
+    iter = 1
+    T_out = 2000
+    error = 1
+
+    while iter < 1000 and error > 0.01 :
+        cps_out = np.array([cp_Iconstants('N2',T_ref,T_out)[1],cp_Iconstants('CO2',T_ref,T_out)[1],cp_Iconstants('H2O',T_ref,T_out)[1],cp_Iconstants('O2',T_ref,T_out)[1]])
+        cp_f = np.dot(cps_out,mass_conc/molar_mass)
+        T_out_final = (1 + ((1000*LHV + hc + lambda_comb*ma1*h_in*1000)/((lambda_comb*ma1+1)*cp_f*T_ref)) - h_f0/(cp_f*T_ref))*T_ref
+        iter = iter + 1
+        error = abs(T_out_final - T_out)
+        T_out = T_out_final
+    print("Nombre d'itérations : ",iter)
+    print("T_out : ",T_out,"K")
     # E_left = (LHV*1000+hc+lambda_comb*ma1*h_in*1000)*(T_in-T_ref)
     # E_right = Cp_f*ma1
     # T_out = E_left/(E_right*30)
