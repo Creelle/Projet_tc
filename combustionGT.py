@@ -123,4 +123,17 @@ def combustionGT(comb_input):
     return outputs;
 
 sol =combustionGT(GT_arg.comb_input(lambda_comb = 4))
-print(sol.T_out)
+#print(sol.T_out)
+
+"""
+#Fais le plot de T_out en fonction de lambda_comb
+
+x = np.linspace(1,10,5)
+y = np.zeros(len(x))
+for i in range (0,len(x)) :
+    y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i])).T_out
+plt.plot(x,y)
+plt.ylabel('Temperature [K]')
+plt.xlabel('Lambda')
+plt.show()
+"""
