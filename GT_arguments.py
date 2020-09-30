@@ -26,7 +26,7 @@ class GT_input:
               do not plot."""
     def __init__(self, Pe = 50e3,#50 MW
                      k_mec = 0,
-                     T_0 = 25.,#°C
+                     T_0 = 15.,#°C
                      T_ext =15.0,#°C
                      r =10.,
                      k_cc =-1.,

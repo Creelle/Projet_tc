@@ -67,7 +67,7 @@ def combustionGT(comb_input):
     T_in  = comb_input.T_in +273.15 #[K]
     h_in  = comb_input.h_in #kJ/kg_air
     LHV   =comb_input.LHV #kJ/kg_ch4]
-    T_ref =  298.15 #[K]
+    T_ref =  288.15 #[K]
 
     # calcul des cp : cec doit encore changer lorsqu on va integrer
     cp_O2 = O2.cp(T_in)
@@ -128,5 +128,5 @@ def combustionGT(comb_input):
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 
-sol =combustionGT(GT_arg.comb_input(lambda_comb = 2))
+sol =combustionGT(GT_arg.comb_input(lambda_comb = 4))
 print(sol.T_out)
