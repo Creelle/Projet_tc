@@ -98,7 +98,7 @@ def combustionGT(comb_input):
 
     hc=(1/Mm_CH4)*cp_Iconstants('CH4',T0-15,T_in)[0] # entalpie sensible du combustibleJ/kg_CH4
     #hc=(1/Mm_CH4)*(CH4.hef(T0)-CH4.hef(T0-15))*1000
-    print(hc,LHV*1000)
+
 
     #cp_f = np.dot(Cps_out,mass_conc/molar_mass) # valeur du cp des gaz sortant [J/kg/K]
 
@@ -111,6 +111,8 @@ def combustionGT(comb_input):
 
     while iter < 1000 and error > 0.01 :
         cps_out = np.array([cp_Iconstants('N2',T0,T_out)[1],cp_Iconstants('CO2',T0,T_out)[1],cp_Iconstants('H2O',T0,T_out)[1],cp_Iconstants('O2',T0,T_out)[1]])
+        #cps_out = np.array([N2.hef(T_out)-N2.hef(T0),CO2.hef(T_out)-CO2.hef(T0),H2O.hef(T_out)-H2O.hef(T0),O2.hef(T_out)-O2.hef(T0)])*1000
+
         cp_f = np.dot(cps_out,mass_conc/molar_mass)
         T_out_final = (1 + ((1000*LHV + hc + lambda_comb*ma1*h_in*1000)/((lambda_comb*ma1+1)*cp_f*T0)) - h_f0/(cp_f*T0))*T0
         iter = iter + 1
@@ -123,6 +125,7 @@ def combustionGT(comb_input):
     outputs = GT_arg.comb_output();
     outputs.T_out = T_out
     outputs.R_f = 8.31/1000/Mm_af # [kJ/kg/K]
+    print(outputs.R_f,8.31/1000/Mm_air)
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 
