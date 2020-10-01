@@ -69,19 +69,19 @@ def combustionGT(comb_input):
     T_ref =  288.15 #[K]
 
     # calcul des cp : cec doit encore changer lorsqu on va integrer
-    cp_O2 = O2.cp(T_in)
+    cp_O2 = O2.cp(T_in) # J/mol
     cp_CO2 = CO2.cp(T_in)
     cp_H2O = H2O.cp(T_in)
     cp_N2 = N2.cp(T_in)
-    cp_CH4 = CH4.cp(T_in)
+    cp_CH4 = CH4.cp(288.15)
 
-
+    print(cp_CH4)
 
     # CH4 + 2 *lambda * (O2 + coeff*N2) <=> CO2+2*H2O+ 2*lambda*coeff*N2 + 2*(lambda-1)*O2
 
 
     Mm_air = x_O2a * Mm_O2 + x_N2a * Mm_N2 # [kg/mol_air]
-    ma1 =  Mm_air/Mm_CH4 * 2*lambda_comb/x_O2a # kg_air/kg_CH4 = proportion d air entrant vs combustible
+    ma1 =  Mm_air/Mm_CH4 * 2/x_O2a # kg_air/kg_CH4 = proportion d air entrant vs combustible
 
     # A la sortie :
     coeff_stochio = np.array([2*lambda_comb*coeff,1,2,2*(lambda_comb-1)]) # N2- CO2 - H2O - O2
@@ -99,6 +99,8 @@ def combustionGT(comb_input):
     #cp_f = np.dot(Cps_out,mass_conc/molar_mass) # valeur du cp des gaz sortant [J/kg/K]
 
     h_f0 = np.dot(H_f0_list,mass_conc/molar_mass) # valeur d enthalpie de reference des gas sortants [J/kg]
+
+    #T_out = (1 + ((1000*LHV + hc + lambda_comb*ma1*h_in*1000)/((lambda_comb*ma1+1)*cp_f*T_ref)) - h_f0/(cp_f*T_ref))*T_ref
 
     iter = 1
     T_out = 2000
@@ -122,7 +124,7 @@ def combustionGT(comb_input):
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 
-sol =combustionGT(GT_arg.comb_input(lambda_comb = 4))
+sol =combustionGT(GT_arg.comb_input(lambda_comb = 1))
 #print(sol.T_out)
 
 """
