@@ -1,16 +1,10 @@
 from matplotlib import pyplot as plt
 import numpy as np
 
-x= np.linspace(0,10,1000)
-plt.rcParams.update({'font.size': 24})
+def janaf_integrate(f,T1,T2,dt):
+    values = np.arange(T1,T2,dt)
+    return sum(f(values)*dt)
+def function(T):
+    return 2*T
 
-
-fig, ax= plt.subplots()
-
-ax.plot(x,x,'-b')
-ax.set_xlabel("Number of integrals done")
-ax.set_ylabel("Intuition")
-plt.grid(True)
-plt.xticks([])
-plt.yticks([])
-plt.show()
+print(janaf_integrate(function,0,2,0.01)))

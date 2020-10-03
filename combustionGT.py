@@ -40,6 +40,16 @@ def cp_Iconstants(M,T_0,T_1):
         #je retourne l'intégrale
     return I,cp_mean
 
+def cp(T):
+    return N2.cp(T)
+def janaf_integrate(f,T1,T2,dt):
+    values = np.arange(T1,T2,dt)
+    return sum(f(values)*dt)
+T1= 20
+T2 = 40
+print(janaf_integrate(cp,T1,T2,0.0001))
+print(cp_Iconstants('N2',T1,T2))
+
 def combustionGT(comb_input):
     """
      GT Gas turbine modelisation
@@ -70,11 +80,11 @@ def combustionGT(comb_input):
 
 
     # calcul des cp : cec doit encore changer lorsqu on va integrer
-    cp_O2 = O2.cp(T_in) # J/mol
-    cp_CO2 = CO2.cp(T_in)
-    cp_H2O = H2O.cp(T_in)
-    cp_N2 = N2.cp(T_in)
-    cp_CH4 = CH4.cp(T_in)
+    # cp_O2 = O2.cp(T_in) # J/mol
+    # cp_CO2 = CO2.cp(T_in)
+    # cp_H2O = H2O.cp(T_in)
+    # cp_N2 = N2.cp(T_in)
+    # cp_CH4 = CH4.cp(T_in)
 
 
 
@@ -111,12 +121,9 @@ def combustionGT(comb_input):
 
     while iter < 1000 and error > 0.01 :
         cps_out = np.array([cp_Iconstants('N2',T0,T_out)[1],cp_Iconstants('CO2',T0,T_out)[1],cp_Iconstants('H2O',T0,T_out)[1],cp_Iconstants('O2',T0,T_out)[1]])
-        #cps_out = np.array([N2.hef(T_out)-N2.hef(T0),CO2.hef(T_out)-CO2.hef(T0),H2O.hef(T_out)-H2O.hef(T0),O2.hef(T_out)-O2.hef(T0)])*1000
-
         cp_f = np.dot(cps_out,mass_conc/molar_mass)
         T_out_final = (1 + ((1000*LHV + hc + lambda_comb*ma1*h_in*1000)/((lambda_comb*ma1+1)*cp_f*T0)) - h_f0/(cp_f*T0))*T0
         iter = iter + 1
-        print(T_out_final)
         error = abs(T_out_final - T_out)
         T_out = T_out_final
     print("Nombre d'itérations : ",iter)
@@ -125,11 +132,10 @@ def combustionGT(comb_input):
     outputs = GT_arg.comb_output();
     outputs.T_out = T_out
     outputs.R_f = 8.31/1000/Mm_af # [kJ/kg/K]
-    print(outputs.R_f,8.31/1000/Mm_air)
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 
-sol =combustionGT(GT_arg.comb_input(lambda_comb = 5))
+# sol =combustionGT(GT_arg.comb_input(lambda_comb = 5))
 #print(sol.T_out)
 
 """

@@ -2,6 +2,7 @@
 from thermochem import janaf
 db = janaf.Janafdb();
 import numpy as np;
+import matplotlib.pyplot as plt;
 
 import GT_arguments as GT_arg;
 import combustionGT as comb;
@@ -32,13 +33,15 @@ def air_enthalpy(T):
     m_N2 = (conc_N2*Mm_N2)/Mm_a;
     h_air = m_O2 * O2.hef(T) + N2.hef(T) * m_N2;#kJ/mol/K
     return h_air/Mm_a #kJ/kg
+
 def air_entropy(T):
     Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     m_O2 = (conc_O2*Mm_O2)/Mm_a;# mass proportion of O2
     m_N2 = (conc_N2*Mm_N2)/Mm_a;
     entropy_air = m_O2 * O2.S(T) + N2.S(T) * m_N2;#kJ/mol/K
     return entropy_air/Mm_a #kJ/kg/K
-print(air_entropy(500))
+
+
 def GT_simple(GT_input):
     """
      GT Gas turbine modelisation
@@ -106,8 +109,10 @@ def GT_simple(GT_input):
 
     #h2 = air_enthalpy(T2)
     deltah_c = Cp_a*(T2-T1) # delta_h =  w_m compression
+    deltah_c = 0.79*comb.cp_Iconstants('N2',T1,T2)[0] + 0.21*comb.cp_Iconstants('O2',T1,T2)[0]
     deltas_c = Cp_a*np.log(T2/T1)*1000
     h2 = h1+deltah_c
+    print('here',h2,air_enthalpy(T2))
     # 2) combustion
     p3 = p2
     h3 = air_enthalpy(T3)
@@ -124,15 +129,16 @@ def GT_simple(GT_input):
 
     #travail moteur
     Wm = -(deltah_c+deltah_t) #kJ/kg
-    # autre variable utile : X= (p2/p1)**()(gamma-1)/gamma)
-    print(deltah_c+deltah_t,h4-h3,h2-h1, s3-s4)
-    comb.combustionGT(GT_arg.comb_input())
+    # autre variable utile : X= (p2/p1)**((gamma-1)/gamma))
+    print('1',deltah_c+deltah_t,h4-h3,h2-h1, s3-s4)
+
     ##====================
     # calcul des rendements
     eta_cyclen  = 1-(h4-h1)/(h3-h2)
-    eta_mec = (Wm - k_mec)/Wm
-    eta_toten = eta_cyclen*eta_mec
-    print(eta_cyclen, (deltah_t+deltah_c)/Q)
+    eta_mec = 1-k_mec#(Wm - k_mec)/Wm
+    eta_gen = 1
+    eta_toten = eta_cyclen*eta_mec*eta_gen #
+    print('2',eta_cyclen, (deltah_t+deltah_c)/Q)
     #massflow calcul # on neglige m  flow combustion
     mf_out = Pe/(Wm*eta_mec)#
     ## define output arguments
@@ -143,7 +149,7 @@ def GT_simple(GT_input):
     outputs.dat[0:4]= [[T_ext,T2,T3,T4],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4]]
     outputs.massflow[0:] = [mf_out,0,mf_out]
     # Your job
-    print(outputs.massflow)
+    print('3',outputs.massflow)
     return outputs;
 
 

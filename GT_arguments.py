@@ -144,7 +144,7 @@ class comb_input:
 class comb_output:
     """
      combustion(lambda,x_O2a,x_N2a) computes the combustion of methane with air given the excess air (lambda).
-     It returns the molar fraction of the different
+     It returns the mass fraction of the different
 
      OUTPUTS
      R_f   : ideal gas constant (R*) for specific gas (R/Mm_f) [kJ/kg/K]
