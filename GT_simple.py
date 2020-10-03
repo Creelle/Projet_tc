@@ -24,7 +24,8 @@ def air_mixture(T):#kJ/kg/K
     Cp = cp_a/Mm_a/1000;#kJ/kg/K
     R = 8.31/Mm_a/1000
     gamma = Cp/(Cp-R)
-    return Cp,gamma ;
+    return Cp,gamma;
+
 
 #fonction qui donne l enthalpie (kJ/kg)
 def air_enthalpy(T):
@@ -40,6 +41,11 @@ def air_entropy(T):
     m_N2 = (conc_N2*Mm_N2)/Mm_a;
     entropy_air = m_O2 * O2.S(T) + N2.S(T) * m_N2;#kJ/mol/K
     return entropy_air/Mm_a #kJ/kg/K
+
+def janaf_integrate(f,T1,T2,dt):
+    values = np.arange(T1,T2,dt)
+    return sum(f(values)*dt)
+
 
 
 def GT_simple(GT_input):
@@ -90,7 +96,7 @@ def GT_simple(GT_input):
     ## preliminary data (air) ==> find gamma
     # ======================
     # cp air at 15°C (298K): [kJ/mol/K]
-    Cp_a,gamma = air_mixture(T0+273.15)
+    Cp_a,gamma= air_mixture(T0+273.15)
     #coeff polytroique (compresseur :m>gamma , turbine : gamma >m)
     m_t = (-eta_pit*(gamma-1)/gamma+1)**(-1)
     m_c = (1-1/eta_pic*(gamma-1)/gamma)**(-1)
@@ -109,8 +115,8 @@ def GT_simple(GT_input):
 
     #h2 = air_enthalpy(T2)
     deltah_c = Cp_a*(T2-T1) # delta_h =  w_m compression
-    deltah_c = 0.79*comb.cp_Iconstants('N2',T1,T2)[0] + 0.21*comb.cp_Iconstants('O2',T1,T2)[0]
     deltas_c = Cp_a*np.log(T2/T1)*1000
+    #delats_c = janaf_integrate(air_mixture2,T1,T2,0.0001) ca ne marche pas
     h2 = h1+deltah_c
     print('here',h2,air_enthalpy(T2))
     # 2) combustion

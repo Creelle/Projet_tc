@@ -21,10 +21,12 @@ print(O2)
 print(N2)
 print(CO2)
 print(H2O)
-print(O2.hef([298.15,500]))
-print(N2.hef([298.15,500]))# kJ/mol
+print(O2.hef([288.15,500]))
+print(N2.hef([288.15,500]))# kJ/mol
+print(CH4.hef([288.15,500]))
 #heating value of di-oxygen at 298 K : 29.375 J/mol/K
 print(O2.cp(298))
+print('gzeg',CH4.S(273.15))
 
 #heating value of di-nitrogen at 298 K : 29.375 J/mol/K
 print(N2.cp(298))

@@ -133,6 +133,7 @@ class comb_input:
                      x_N2a = 0.79,# molar fraction
                      T_in = 600,#°C
                      h_in = 650,# enthalpy[kJ/kg_air]
+                     HHV = 56000, # [kJ/kg_CH4]
                      LHV =50000):# [kJ/kg_CH4]
         self.lambda_comb = lambda_comb;
         self.x_O2a = x_O2a;
@@ -140,6 +141,7 @@ class comb_input:
         self.T_in = T_in;
         self.h_in = h_in;
         self.LHV = LHV;
+        self.HHV = HHV;
 
 class comb_output:
     """
