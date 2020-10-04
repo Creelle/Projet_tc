@@ -46,8 +46,7 @@ def janaf_integrate(f,T1,T2,dt):
     values = np.arange(T1,T2,dt)
     return sum(f(values)*dt)
 
-
-
+print(1)
 def GT_simple(GT_input):
     """
      GT Gas turbine modelisation
@@ -68,6 +67,16 @@ def GT_simple(GT_input):
                             polytropique interne) for compression
        -option.eta_PiT[-] : Intern polytropic efficiency (Rendement
                             polytropique interne) for expansion
+        a faire:
+        merge combustionGT avec simpleGT
+        exergie pour simpleGT
+        optimiser le taux de compression jouant sur le taux de compression et le lambda
+        preheating ==> modelisation d un echangeur
+        (humidity chequ)
+        pychart
+        des graphes T s et pv des etats dans la turbine
+        (faire plusieurs etages de compression et analyse au niveau exergetique et energetique pour avoir
+        si ca change quelque chose)
     """
     arg_in = GT_input;
 
