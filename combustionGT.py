@@ -42,8 +42,29 @@ def cp_Iconstants(M,T_0,T_1):
         #je retourne l'intégrale
     return I,cp_mean
 
+def cp_air(T):#kJ/kg/K
+    Mm_a = 0.21 * 0.032 + 0.79 * 0.028;
+    m_O2 = (0.21*0.032)/Mm_a;# mass proportion of O2
+    m_N2 = (0.79*0.028)/Mm_a;
+    cp_a = m_O2 * O2.cp(T) + N2.cp(T) * m_N2;#J/mol/K
+    Cp = cp_a/Mm_a/1000;#kJ/kg_air/K
+    #R = 8.31/Mm_a/1000
+    #gamma = Cp/(Cp-R)
+    return Cp;
+def cp_air_T(T):#kJ/kg/K
+    Mm_a = 0.21 * 0.032 + 0.79 * 0.028;
+    m_O2 = (0.21*0.032)/Mm_a;# mass proportion of O2
+    m_N2 = (0.79*0.028)/Mm_a;
+    cp_a = m_O2 * O2.cp(T) + N2.cp(T) * m_N2;#J/mol/K
+    Cp = cp_a/Mm_a/1000;#kJ/kg_air/K
+    #R = 8.31/Mm_a/1000
+    #gamma = Cp/(Cp-R)
+    return Cp/T;
+
 def cpCH4(T):
     return CH4.cp(T)
+def cpCH4_T(T):
+    return CH4.cp(T)*(1/T)
 def cpN2(T):
     return N2.cp(T)
 def cpO2(T):
@@ -52,8 +73,6 @@ def cpH2O(T):
     return H2O.cp(T)
 def cpCO2(T):
     return CO2.cp(T)
-def cpCO2surT(T):
-    return CO2.cp(T)/T
 def janaf_integrate(f,T1,T2,dt):
     values = np.arange(T1,T2,dt)
     return sum(f(values)*dt) # int(cp)dt [J/mol]]
@@ -98,7 +117,7 @@ def combustionGT(comb_input):
 
     Mm_air = x_O2a * Mm_O2 + x_N2a * Mm_N2 # [kg/mol_air]
     ma1 =  Mm_air/Mm_CH4 * 2/x_O2a # kg_air/kg_CH4 = proportion d air entrant vs combustible
-    print(ma1)
+
     # A la sortie :
     coeff_stochio = np.array([2*lambda_comb*coeff,1,2,2*(lambda_comb-1)]) # N2- CO2 - H2O - O2
     total_n = sum(coeff_stochio) # nombre de moles total
@@ -107,11 +126,11 @@ def combustionGT(comb_input):
     Mm_af = sum(molar_conc*molar_mass) #somme ponderé des masse molaire
     mass_conc = molar_conc*molar_mass/Mm_af #[-] kg_co2/kg_tot
 
-    h_f0 = np.dot([N2.hef(T0),CO2.hef(T0),H2O.hef(T0),O2.hef(T0)],mass_conc/molar_mass)*1000 # J/kg_air_sortie valeur d enthalpie sensible des gas sortants
+    h_f0 = np.dot([N2.hef(T0),CO2.hef(T0),H2O.hef(T0),O2.hef(T0)],mass_conc/molar_mass)*1000 # valeur d enthalpie sensible des gas sortants
 
     # hc=(1/Mm_CH4)*cp_Iconstants('CH4',T0-15,T_in)[0] # entalpie sensible du combustibleJ/kg_CH4
     # hc2=(1/Mm_CH4)*(CH4.hef(T_in)-CH4.hef(T0-15))*1000 # 2 maniere
-    hc= janaf_integrate(cpCH4,T0-15,T_in,0.001)/Mm_CH4 # 3 maniere J/kg
+    hc= janaf_integrate(cpCH4,T0-15,T_in,0.0001)/Mm_CH4 # 3 maniere
     # print('hello', hc,hc2,hc3)
 
     #  calcul de T_out par iteration
@@ -141,16 +160,32 @@ def combustionGT(comb_input):
     Sf = np.dot([N2.S(T_out),CO2.S(T_out),H2O.S(T_out),O2.S(T_out)],mass_conc/molar_mass) #J/kg/K N2- CO2 - H2O - O2
     Sf0 = np.dot([N2.S(T0),CO2.S(T0),H2O.S(T0),O2.S(T0)],mass_conc/molar_mass)
     e_f= (hf-h_f0 -T0*(Sf-Sf0))/1000#exergie des fumées kJ/kg_CH4
-    eta_combex = e_f*(lambda_comb*ma1+1)/e_c# voir page 31 #bon il y a un probleme obviously
-    print(eta_combex)
+
+    """
+    Version 1 de e_a
+
+    heat_const_O2 = cp_Iconstants('O2',T0,T_in)[2]
+    heat_const_N2 = cp_Iconstants('N2',T0,T_in)[2]
+    cp_bar_O2 = heat_const_O2[3]*np.log(T_in/T0) + heat_const_O2[2]*(T_in-T0) + (1/2)*heat_const_O2[1]*(T_in**2-T0**2) + (1/3)*heat_const_O2[0]*(T_in**3-T0**3)
+    cp_bar_N2 = heat_const_N2[3]*np.log(T_in/T0) + heat_const_N2[2]*(T_in-T0) + (1/2)*heat_const_N2[1]*(T_in**2-T0**2) + (1/3)*heat_const_N2[0]*(T_in**3-T0**3)
+    e_a_2 = ((0.21/0.032*cp_mean(cpO2,T0,T_in,dt) + 0.79/0.028*cp_mean(cpN2,T0,T_in,dt))*(T_in-T0) - (0.21/0.032*cp_bar_O2 + 0.79/0.028*cp_bar_N2)*T0)/1000
+    print("e_a_2 =", e_a_2)
+    """
+    e_a = cp_mean(cp_air,T0,T_in,dt)*(T_in-T0) - janaf_integrate(cp_air_T,T0,T_in,dt)*T0
+    print("e_a =", e_a)
+    e_cr = ((cp_mean(cpCH4,T0,T_in,dt)/0.016)*(T_in-T0) - janaf_integrate(cpCH4_T,T0,T_in,dt)*T0/0.016)/1000 #kJ/kg_CH4
+    e_r = e_a*((lambda_comb*ma1)/(lambda_comb*ma1+1)) + e_cr*(1/(lambda_comb*ma1+1))
+    eta_combex = (e_f-e_r)*(lambda_comb*ma1+1)/e_c# voir page 31 #bon il y a un probleme obviously
+    print("eta_combex = ",eta_combex)
+
     # remplissage des outputs
     outputs = GT_arg.comb_output();
     outputs.T_out = T_out
     outputs.R_f = 8.31/1000/Mm_af # [kJ/kg/K]
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
-    return outputs;
+    return eta_combex;
 
-sol =combustionGT(GT_arg.comb_input(lambda_comb = 2))
+sol =combustionGT(GT_arg.comb_input(lambda_comb = 5))
 #print(sol.T_out)
 
 """
@@ -165,3 +200,14 @@ plt.ylabel('Temperature [K]')
 plt.xlabel('Lambda')
 plt.show()
 """
+
+#Mettre
+#combustionGT --> return eta_combex
+x = np.linspace(1,10,10)
+y = np.zeros(len(x))
+for i in range (0,len(x)) :
+    y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i]))
+plt.plot(x,y)
+plt.ylabel('etacombex [K]')
+plt.xlabel('Lambda')
+plt.show()
