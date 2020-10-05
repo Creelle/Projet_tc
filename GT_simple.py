@@ -153,7 +153,7 @@ def GT_simple(GT_input):
     s4 = air_entropy(T4)
 
     #travail moteur
-    Wm = -(deltah_c+deltah_t) #kJ/kg
+    Wm = -(deltah_c+(1+1/(lambda_comb*ma1))*deltah_t) #kJ/kg
     # autre variable utile : X= (p2/p1)**((gamma-1)/gamma))
     print('1',deltah_c+deltah_t,h4-h3,h2-h1, s3-s4)
 
