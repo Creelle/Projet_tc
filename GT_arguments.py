@@ -162,6 +162,9 @@ class comb_output:
                      m_N2f = 0.4,# molar fraction
                      m_CO2f = 0.2,#°C
                      m_H2Of = 0.3,# enthalpy
+                     Mm_af = -1.,
+                     lambda_comb=1,
+                     ma1 =1,
                      T_out = -1.):# [kJ/kg_CH4]
         self.R_f = R_f;
         self.m_O2f = m_O2f;
@@ -169,3 +172,6 @@ class comb_output:
         self.m_CO2f = m_CO2f;
         self.m_H2Of = m_H2Of;
         self.T_out = T_out;
+        self.Mm_af = Mm_af;
+        self.lambda_comb = lambda_comb
+        self.ma1 =ma1
