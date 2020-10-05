@@ -183,7 +183,7 @@ def combustionGT(comb_input):
     outputs.T_out = T_out
     outputs.R_f = 8.31/1000/Mm_af # [kJ/kg/K]
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
-    return eta_combex;
+    return outputs;
 
 sol =combustionGT(GT_arg.comb_input(lambda_comb = 5))
 #print(sol.T_out)
@@ -203,11 +203,11 @@ plt.show()
 
 #Mettre
 #combustionGT --> return eta_combex
-x = np.linspace(1,10,10)
-y = np.zeros(len(x))
-for i in range (0,len(x)) :
-    y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i]))
-plt.plot(x,y)
-plt.ylabel('etacombex [K]')
-plt.xlabel('Lambda')
-plt.show()
+# x = np.linspace(1,10,10)
+# y = np.zeros(len(x))
+# for i in range (0,len(x)) :
+#     y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i]))
+# plt.plot(x,y)
+# plt.ylabel('etacombex [K]')
+# plt.xlabel('Lambda')
+# plt.show()
