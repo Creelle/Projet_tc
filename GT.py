@@ -154,12 +154,14 @@ def GT_simple(GT_input):
 
     #travail moteur
     Wm = -(deltah_c+(1+1/(lambda_comb*ma1))*deltah_t) #kJ/kg
+    #apport calorifique
+    Q_comb = (1+1/(lambda_comb*ma1))*(h3-h2)
     # autre variable utile : X= (p2/p1)**((gamma-1)/gamma))
     print('1',deltah_c+deltah_t,h4-h3,h2-h1, s3-s4)
 
     ##====================
     # calcul des rendements
-    eta_cyclen  = 1-(h4-h1)/(h3-h2)
+    eta_cyclen  =Wm/Q_comb
     eta_mec = 1-k_mec#(Wm - k_mec)/Wm
     eta_gen = 1
     eta_toten = eta_cyclen*eta_mec*eta_gen #
