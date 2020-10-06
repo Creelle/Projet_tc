@@ -173,9 +173,9 @@ def combustionGT(comb_input):
     """
     e_a = cp_mean(cp_air,T0,T_in,dt)*(T_in-T0) - janaf_integrate(cp_air_T,T0,T_in,dt)*T0
     print("e_a =", e_a)
-    e_cr = ((cp_mean(cpCH4,T0,T_in,dt)/0.016)*(T_in-T0) - janaf_integrate(cpCH4_T,T0,T_in,dt)*T0/0.016)/1000 #kJ/kg_CH4
-    e_r = e_a*((lambda_comb*ma1)/(lambda_comb*ma1+1)) + e_cr*(1/(lambda_comb*ma1+1))
-    eta_combex = (e_f-e_r)*(lambda_comb*ma1+1)/e_c# voir page 31 #bon il y a un probleme obviously
+    e_cr = ((cp_mean(cpCH4,T0,T_in,dt)/0.016)*(T_in-T0) - janaf_integrate(cpCH4_T,T0,T_in,dt)*T0/0.016)/1000 #kJ/kg_CH4 : "relative" exergy of the fuel
+    e_r = e_a*((lambda_comb*ma1)/(lambda_comb*ma1+1)) + e_cr*(1/(lambda_comb*ma1+1)) #exergy of reagents
+    eta_combex = (e_f-e_r)*(lambda_comb*ma1+1)/e_c #exergy efficiency with excess air and conditions (T1,p1) =/ reference conditions (T0,p0)
     print("eta_combex = ",eta_combex)
 
     # remplissage des outputs
