@@ -133,6 +133,7 @@ def GT_simple(GT_input):
 
     # 2) combustion
     p3 = p2
+    print("p3 = ",p3)
     comb_outputs = comb.combustionGT(GT_arg.comb_input(h_in=h2,T_in = T2,lambda_comb = 5))
     T3=comb_outputs.T_out
     lambda_comb = comb_outputs.lambda_comb
