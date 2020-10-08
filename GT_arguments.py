@@ -175,3 +175,36 @@ class comb_output:
         self.Mm_af = Mm_af;
         self.lambda_comb = lambda_comb
         self.ma1 =ma1
+
+
+class exchanger_input:
+    def __init__(self, U = 2,#coefficient de transmission
+                     Mflow_air_in = 45,
+                     Mflow_f_in = 50,
+                     T_air_in = 288.15, # [K]
+                     T_f_in = 1500, # [K]
+                     courant = -1): # contre-courant = -1 ; co-courant = 1
+        self.U = U;
+        self.Mflow_air_in = Mflow_air_in
+        self.Mflow_f_in = Mflow_f_in
+        self.T_air_in = T_air_in
+        self.T_f_in = T_f_in
+        self.courant = courant;
+
+class exchanger_output:
+    def __init__(self, U = 2,#coefficient de transmission
+                     Mflow_air_out = 45,
+                     Mflow_f_out = 50,
+                     T_air_out = 888.15, # [K]
+                     T_f_out = 500, # [K]
+                     eta_transex = 0.5,
+                     Surf = 50, # surface d'échange [m**2]
+                     courant = -1): # contre-courant = -1 ; co-courant = 1
+        self.U = U;
+        self.Mflow_air_out = Mflow_air_out
+        self.Mflow_f_out = Mflow_f_out
+        self.T_air_out = T_air_out
+        self.T_f_out = T_f_out
+        self.eta_transex = eta_transex
+        self.Surf = Surf
+        self.courant = courant;
