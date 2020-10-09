@@ -183,6 +183,7 @@ class exchanger_input:
                      Mflow_f_in = 50,
                      T_air_in = 288.15, # [K]
                      T_f_in = 1500, # [K]
+                     comb_lambda = 2,
                      courant = -1): # contre-courant = -1 ; co-courant = 1
         self.U = U;
         self.Mflow_air_in = Mflow_air_in
@@ -199,6 +200,7 @@ class exchanger_output:
                      T_f_out = 500, # [K]
                      eta_transex = 0.5,
                      Surf = 50, # surface d'échange [m**2]
+                     Q = 10, #[W]
                      courant = -1): # contre-courant = -1 ; co-courant = 1
         self.U = U;
         self.Mflow_air_out = Mflow_air_out
@@ -207,4 +209,5 @@ class exchanger_output:
         self.T_f_out = T_f_out
         self.eta_transex = eta_transex
         self.Surf = Surf
+        self.Q = Q
         self.courant = courant;
