@@ -26,6 +26,11 @@ def air_mixture(T):#kJ/kg/K
     gamma = Cp/(Cp-R)
     return Cp,gamma;
 
+def cp_air(T,conc_mass,Mm_a):
+    cps = np.array([N2.cp(T),CO2.cp(T),H2O.cp(T),O2.cp(T)])
+    cp_air = np.dot(conc_mass,cps);#J/mol/K
+    return cp_air/Mm_a #J/kg
+
 
 #fonction qui donne l enthalpie (kJ/kg), T temperature concentration massique mass : array (N2 , CO2, H20,O2)
 #molar mass
@@ -41,9 +46,13 @@ def air_entropy(T):
     entropy_air = m_O2 * O2.S(T) + N2.S(T) * m_N2;#kJ/mol/K
     return entropy_air/Mm_a #kJ/kg/K
 
-def janaf_integrate(f,T1,T2,dt):
+def janaf_integrate_air(f,conc_mass,Mm_a,T1,T2,dt):
     values = np.arange(T1,T2,dt)
     return sum(f(values)*dt)
+def cp_mean_air(f,conc_mass,Mm_a,T1,T2,dt):
+    values = np.arange(T1,T2,dt)
+    return sum(f(values,conc_mass,Mm_a)/len(values)) #  cp_mean [J/kg/K]
+
 
 def GT_simple(GT_input):
     """
@@ -104,14 +113,15 @@ def GT_simple(GT_input):
     ## preliminary data (air) ==> find gamma
     # ======================
     # cp air at 15°C (298K): [kJ/mol/K]
-    Cp_a,gamma= air_mixture(T0+273.15)
-    #molar mass entry
+    Cp_a,gamma= air_mixture(T0)
     Mm_a = Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
-    conc_mass1=np.array([conc_N2,0,0,conc_O2])
+    conc_mass1=np.array([conc_N2*Mm_N2/Mm_a,0,0,conc_O2*Mm_O2/Mm_a])
+
     #coeff polytroique (compresseur :m>gamma , turbine : gamma >m)
-    gamma = Cp_a/(Cp_a-0.2871)
     m_t = (-eta_pit*(gamma-1)/gamma+1)**(-1)
     m_c = (1-1/eta_pic*(gamma-1)/gamma)**(-1)
+    #on va recalculer m_c utilisant la definition du livre page 118 (3.20)
+    exposant_c=0 # na-1/na
     # cycle definition
     # =================
     #1) compressor
