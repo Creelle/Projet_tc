@@ -109,41 +109,57 @@ def GT_simple(GT_input):
     k_mec = arg_in.k_mec
     kcc = arg_in.k_cc
 
-
+    """
     ## preliminary data (air) ==> find gamma
     # ======================
     # cp air at 15°C (298K): [kJ/mol/K]
+    """
     Cp_a,gamma= air_mixture(T0)
     Mm_a = Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     conc_mass1=np.array([conc_N2*Mm_N2/Mm_a,0,0,conc_O2*Mm_O2/Mm_a])
-
-    #coeff polytroique (compresseur :m>gamma , turbine : gamma >m)
+    Ra = 8.31/Mm_a
+    #coeff polytroique (compresseur :m>gamma , turbine : gamma >m) en premiere estimation
     m_t = (-eta_pit*(gamma-1)/gamma+1)**(-1)
     m_c = (1-1/eta_pic*(gamma-1)/gamma)**(-1)
-    #on va recalculer m_c utilisant la definition du livre page 118 (3.20)
-    exposant_c=0 # na-1/na
-    # cycle definition
-    # =================
-    #1) compressor
-    #exergie = dh-T0 * ds
-    T1=T_ext
+    #on va recalculer m_c et m_t en utilisant la definition du livre page 118 (3.20) (3.25 en faisant des iterations)
+
+
+    """
+    1) compressor
+
+    """
+    T1=T_ext # a changer lors du preaheating
     p1 = 1.0 #bar
     h1 = air_enthalpy(T1,conc_mass1,Mm_a)
     s1 = air_entropy(T1)
 
     p2 = r*p1
-    T2 = T_ext*(r)**((m_c-1)/m_c)
-    s2 = air_entropy(T2)
 
+    # calcul de T2 par iteration
+    T2 = T1*(r)**((m_c-1)/m_c) #premiere estimation
+    iter = 1
+    error = 1
+    dt = 0.1
+
+    while iter < 50 and error >0.01 :#pg119
+        exposant_c=1/eta_pic*(Ra)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.01)  # na-1/na :  formule du livre (3.2)
+        T2_new = T1*r**(exposant_c)
+        iter=iter+1
+        error = abs(T2_new-T2)
+        T2=T2_new
+
+    s2 = air_entropy(T2)
     h2 = air_enthalpy(T2,conc_mass1,Mm_a)
-    deltah_c = h2-h1
+    deltah_c = h2-h1 #kJ/kg
+
     #deltah_c = Cp_a*(T2-T1) # delta_h =  w_m compression
     #deltas_c = Cp_a*np.log(T2/T1)*1000
 
-    #delats_c = janaf_integrate(air_mixture2,T1,T2,0.0001) ca ne marche pas
 
-
-    # 2) combustion
+    """
+     2 ) combustion
+    """
+    
     p3 = p2*kcc
     comb_outputs = comb.combustionGT(GT_arg.comb_input(h_in=h2,T_in = T2,lambda_comb = 2))
     T3=comb_outputs.T_out
