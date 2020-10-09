@@ -188,6 +188,9 @@ def combustionGT(comb_input):
 
     # remplissage des outputs
     outputs = GT_arg.comb_output();
+    outputs.Mm_af = Mm_af
+    outputs.lambda_comb = lambda_comb
+    outputs.ma1 = ma1
     outputs.T_out = T_out
     outputs.R_f = 8.31/1000/Mm_af # [kJ/kg/K]
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]

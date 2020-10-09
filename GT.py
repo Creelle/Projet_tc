@@ -98,6 +98,7 @@ def GT_simple(GT_input):
         eta_pit = 0.9;#max temperature = 1050°C
     T0=arg_in.T_0
     k_mec = arg_in.k_mec
+    kcc = arg_in.k_cc
 
 
     ## preliminary data (air) ==> find gamma
@@ -108,7 +109,7 @@ def GT_simple(GT_input):
     Mm_a = Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     conc_mass1=np.array([conc_N2,0,0,conc_O2])
     #coeff polytroique (compresseur :m>gamma , turbine : gamma >m)
-    gamma = Cp_a/(Cp_a-287.1)
+    gamma = Cp_a/(Cp_a-0.2871)
     m_t = (-eta_pit*(gamma-1)/gamma+1)**(-1)
     m_c = (1-1/eta_pic*(gamma-1)/gamma)**(-1)
     # cycle definition
@@ -133,8 +134,8 @@ def GT_simple(GT_input):
 
 
     # 2) combustion
-    p3 = p2*k_cc
-    comb_outputs = comb.combustionGT(GT_arg.comb_input(h_in=h2,T_in = T2,lambda_comb = 5))
+    p3 = p2*kcc
+    comb_outputs = comb.combustionGT(GT_arg.comb_input(h_in=h2,T_in = T2,lambda_comb = 2))
     T3=comb_outputs.T_out
     lambda_comb = comb_outputs.lambda_comb
     ma1 = comb_outputs.ma1
@@ -142,6 +143,8 @@ def GT_simple(GT_input):
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
     h3 = air_enthalpy(T3,conc_mass2,Mm_af) #kJ/kg
     massflow_coefficient = 1+1/(ma1*lambda_comb)
+    print(ma1)
+    print(massflow_coefficient,'here')
     Q=h3-h2
     s3 = air_entropy(T3)
 
@@ -151,7 +154,7 @@ def GT_simple(GT_input):
 
     h4 = air_enthalpy(T4,conc_mass2,Mm_af)
     deltah_t = h4-h3
-    print(Cp_a*(h4-h3),deltah_t)
+    print('here',Cp_a*(h4-h3),deltah_t)
     s4 = air_entropy(T4)
 
     #travail moteur

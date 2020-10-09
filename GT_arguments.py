@@ -29,7 +29,7 @@ class GT_input:
                      T_0 = 15.,#°C
                      T_ext =15.0,#°C
                      r =10.,
-                     k_cc =-1.,
+                     k_cc =1.0,
                      T3 =1050,#°C
                      eta_PiC =0.9,
                      eta_PiT =0.9,
