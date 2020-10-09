@@ -42,7 +42,7 @@ def cp_Iconstants(M,T_0,T_1):
         #je retourne l'intégrale
     return I,cp_mean,heat_const
 
-def cp_air(T):#kJ/kg/K ---> OK
+def cp_air(T):#J/kg/K ---> OK
     Mm_a = 0.21 * 0.032 + 0.79 * 0.028;
     m_O2 = (0.21*0.032)/Mm_a;# mass proportion of O2
     m_N2 = (0.79*0.028)/Mm_a;
@@ -51,7 +51,7 @@ def cp_air(T):#kJ/kg/K ---> OK
     #R = 8.31/Mm_a/1000
     #gamma = Cp/(Cp-R)
     return cp;
-def cp_air_T(T):#kJ/kg/K
+def cp_air_T(T):#J/kg/K
     Mm_a = 0.21 * 0.032 + 0.79 * 0.028;
     m_O2 = (0.21*0.032)/Mm_a;# mass proportion of O2
     m_N2 = (0.79*0.028)/Mm_a;
