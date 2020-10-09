@@ -179,7 +179,6 @@ def GT_simple(GT_input):
 
     h3 = air_enthalpy(T3,conc_mass2,Mm_af) #kJ/kg
     massflow_coefficient = 1+1/(ma1*lambda_comb)
-    Q=massflow_coefficient*h3-h2 # formule 3.9
     s3 = air_entropy(T3)
 
     """
@@ -195,7 +194,7 @@ def GT_simple(GT_input):
     iter = 1
     error = 1
     dt = 0.1
-    
+
     while iter < 50 and error >0.01 :#pg119
         exposant_t=eta_pit*(Rf)/cp_mean_air(cp_air,conc_mass2,Mm_af,T4,T3,0.01)  # na-1/na :  formule du livre (3.2)
         T4_new = T3*(1/(kcc*r))**(exposant_t)
@@ -207,13 +206,15 @@ def GT_simple(GT_input):
 
     h4 = air_enthalpy(T4,conc_mass2,Mm_af)
     deltah_t = h4-h3
-    print('here',Cp_a*(h4-h3),deltah_t)
     s4 = air_entropy(T4)
 
+    """
+    4) travail moteur et rendements
+    """
     #travail moteur
-    Wm = -(deltah_c+(1+1/(lambda_comb*ma1))*deltah_t) #kJ/kg
+    Wm = -(deltah_c+(1+1/(lambda_comb*ma1))*deltah_t) #kJ/kg_in
     #apport calorifique
-    Q_comb = (1+1/(lambda_comb*ma1))*(h3-h2)
+    Q_comb = massflow_coefficient*h3-h2
     # autre variable utile : X= (p2/p1)**((gamma-1)/gamma))
     print('1',deltah_c+deltah_t,h4-h3,h2-h1, s3-s4)
 
@@ -223,24 +224,21 @@ def GT_simple(GT_input):
     eta_mec = 1-k_mec#(Wm - k_mec)/Wm
     eta_gen = 1
     eta_toten = eta_cyclen*eta_mec*eta_gen #
-    print('2',eta_cyclen, (deltah_t+deltah_c)/Q)
+    print('2',eta_cyclen, (deltah_t+deltah_c)/Q_comb)
     #massflow calcul # on neglige m  flow combustion
     mf_in = Pe/(Wm*eta_mec)#
     mf_out = mf_in*massflow_coefficient
-    ## define output arguments
-    # ======================
+    """
+    last) define output arguments
+    """
     outputs = GT_arg.GT_outputs();
     outputs.eta[0] = eta_cyclen;
     outputs.eta[1] = eta_toten;
-    outputs.dat[0:4]= [[T_ext,T2,T3,T4],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4]]
+    outputs.dat[0:4]= [[T1,T2,T3,T4],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4]]
     outputs.massflow[0:] = [mf_in,mf_out-mf_in,mf_out]
     outputs.combustion.fum[0:]=np.array([comb_outputs.m_O2f,comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of])*mf_out
-    # Your job
-    print('3',outputs.massflow)
+
     return outputs;
 
 
-
-
-#tests
 GT_simple_outputs = GT_simple(GT_arg.GT_input());
