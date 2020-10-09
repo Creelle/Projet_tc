@@ -81,7 +81,7 @@ def cpN2(T):
     return N2.cp(T)
 def cpN2_T(T):
     return N2.cp(T)*(1/T)
-def janaf_integrate(f,T1,T2,dt):
+def janaf_integrate(f,T1,T2,dt): #==> pour calculer enthalpie
     values = np.arange(T1,T2,dt)
     return sum(f(values)*dt) # int(cp)dt [J/mol/K]]
 def cp_mean(f,T1,T2,dt):
@@ -192,7 +192,7 @@ def combustionGT(comb_input):
     outputs.lambda_comb = lambda_comb
     outputs.ma1 = ma1
     outputs.T_out = T_out
-    outputs.R_f = 8.31/1000/Mm_af # [kJ/kg/K]
+    outputs.R_f = 8.31/Mm_af # [J/kg/K]
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 

@@ -84,6 +84,12 @@ def GT_simple(GT_input):
         des graphes T s et pv des etats dans la turbine
         (faire plusieurs etages de compression et analyse au niveau exergetique et energetique pour avoir
         si ca change quelque chose)
+
+        a faire dans l immediat
+        changer la formule de l entropy_air
+        janaf integrate air
+        formule d exergetique
+        rendements exergetique
     """
     arg_in = GT_input;
 
@@ -147,6 +153,7 @@ def GT_simple(GT_input):
         iter=iter+1
         error = abs(T2_new-T2)
         T2=T2_new
+        print(T2)
 
     s2 = air_entropy(T2)
     h2 = air_enthalpy(T2,conc_mass1,Mm_a)
@@ -159,24 +166,44 @@ def GT_simple(GT_input):
     """
      2 ) combustion
     """
-    
+
     p3 = p2*kcc
+
     comb_outputs = comb.combustionGT(GT_arg.comb_input(h_in=h2,T_in = T2,lambda_comb = 2))
     T3=comb_outputs.T_out
     lambda_comb = comb_outputs.lambda_comb
     ma1 = comb_outputs.ma1
     Mm_af = comb_outputs.Mm_af
+    Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
+
     h3 = air_enthalpy(T3,conc_mass2,Mm_af) #kJ/kg
     massflow_coefficient = 1+1/(ma1*lambda_comb)
-    print(ma1)
-    print(massflow_coefficient,'here')
-    Q=h3-h2
+    Q=massflow_coefficient*h3-h2 # formule 3.9
     s3 = air_entropy(T3)
 
-    # 3)  combustion
-    p4 = p3/r
+    """
+    3)  detente
+    """
+    p4 = p3/(r*kcc)
+
+
+    # calcul de T4 par iteration
     T4 = T3*(1/(r*kcc))**((m_t-1)/m_t)
+    print(T3)
+    print(T4)
+    iter = 1
+    error = 1
+    dt = 0.1
+    
+    while iter < 50 and error >0.01 :#pg119
+        exposant_t=eta_pit*(Rf)/cp_mean_air(cp_air,conc_mass2,Mm_af,T4,T3,0.01)  # na-1/na :  formule du livre (3.2)
+        T4_new = T3*(1/(kcc*r))**(exposant_t)
+        iter=iter+1
+        error = abs(T4_new-T4)
+        T4=T4_new
+        print(T4)
+
 
     h4 = air_enthalpy(T4,conc_mass2,Mm_af)
     deltah_t = h4-h3

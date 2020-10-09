@@ -7,4 +7,5 @@ def janaf_integrate(f,T1,T2,dt):
 def function(T):
     return 2*T
 
-print(janaf_integrate(function,0,2,0.01)))
+
+print(np.arange(100,0,10))
