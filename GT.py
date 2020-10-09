@@ -108,6 +108,7 @@ def GT_simple(GT_input):
     Mm_a = Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     conc_mass1=np.array([conc_N2,0,0,conc_O2])
     #coeff polytroique (compresseur :m>gamma , turbine : gamma >m)
+    gamma = Cp_a/(Cp_a-287.1)
     m_t = (-eta_pit*(gamma-1)/gamma+1)**(-1)
     m_c = (1-1/eta_pic*(gamma-1)/gamma)**(-1)
     # cycle definition
@@ -132,7 +133,7 @@ def GT_simple(GT_input):
 
 
     # 2) combustion
-    p3 = p2
+    p3 = p2*k_cc
     comb_outputs = comb.combustionGT(GT_arg.comb_input(h_in=h2,T_in = T2,lambda_comb = 5))
     T3=comb_outputs.T_out
     lambda_comb = comb_outputs.lambda_comb
@@ -146,10 +147,11 @@ def GT_simple(GT_input):
 
     # 3)  combustion
     p4 = p3/r
-    T4 = T3*(1/r)**((m_t-1)/m_t)
-    deltah_t = Cp_a*(T4-T3)
-    #h4 = air_enthalpy(T4)
-    h4 = h3+deltah_t
+    T4 = T3*(1/(r*kcc))**((m_t-1)/m_t)
+
+    h4 = air_enthalpy(T4,conc_mass2,Mm_af)
+    deltah_t = h4-h3
+    print(Cp_a*(h4-h3),deltah_t)
     s4 = air_entropy(T4)
 
     #travail moteur

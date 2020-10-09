@@ -169,7 +169,7 @@ def combustionGT(comb_input):
     e_a = cp_mean(cp_air,T0,T_in,dt)*(T_in-T0) - (janaf_integrate(cp_air_T,T0,T_in,dt)*T0) #attention cp_air [J/kg_air/K] => e_a = J/kg_air
     e_cr = cp_mean(cpCH4,T0,T_in,dt)*(T_in-T0)/Mm_CH4 - (janaf_integrate(cpCH4_T,T0,T_in,dt)*T0/Mm_CH4) #J/kg_CH4
     e_r = e_a*((lambda_comb*ma1)/(lambda_comb*ma1+1)) + e_cr*(1/(lambda_comb*ma1+1))
-    print("e_r = ",e_r)
+    #print("e_r = ",e_r)
 
     #Rf = 8.31/Mm_af
 
@@ -182,9 +182,9 @@ def combustionGT(comb_input):
     #flop2 = envrion Sf-Sf0
 
     e_f = cp_f*(T_out-T0) - flip2*T0
-    print("e_f = ",e_f)
+    #print("e_f = ",e_f)
     eta_combex = (e_f-e_r)*(lambda_comb*ma1+1)/(e_c*1000)
-    print("eta_combex = ",eta_combex)
+    #print("eta_combex = ",eta_combex)
 
     # remplissage des outputs
     outputs = GT_arg.comb_output();
@@ -197,15 +197,15 @@ sol =combustionGT(GT_arg.comb_input(lambda_comb = 2))
 
 #Fais le plot de T_out en fonction de lambda_comb
 
-x = np.linspace(1,20,100)
-y = np.zeros(len(x))
-for i in range (0,len(x)) :
-    y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i])).T_out
-plt.plot(x,y)
-plt.ylabel('Temperature [K]')
-plt.xlabel('Lambda')
-plt.show()
-
+# x = np.linspace(1,20,100)
+# y = np.zeros(len(x))
+# for i in range (0,len(x)) :
+#     y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i])).T_out
+# plt.plot(x,y)
+# plt.ylabel('Temperature [K]')
+# plt.xlabel('Lambda')
+# plt.show()
+#
 """
 x = np.linspace(1,10,20)
 y = np.zeros(len(x))
