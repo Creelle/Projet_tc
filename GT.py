@@ -28,16 +28,18 @@ def air_mixture(T):#kJ/kg/K
 
 def cp_air(T,conc_mass,Mm_a):
     cps = np.array([N2.cp(T),CO2.cp(T),H2O.cp(T),O2.cp(T)])
-    cp_air = np.dot(conc_mass,cps);#J/mol/K
-    return cp_air/Mm_a #J/kg
+    molar_mass = np.array([0.028,0.044,0.018,0.032])
+    cp_air = np.dot(conc_mass/molar_mass,cps);#J/mol/K
+    return cp_air#/Mm_a #J/kg
 
 
 #fonction qui donne l enthalpie (kJ/kg), T temperature concentration massique mass : array (N2 , CO2, H20,O2)
 #molar mass
 def air_enthalpy(T,conc_mass,Mm_a):
     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
-    h_air = sum(conc_mass*enthalpies);#kJ/mol
-    return h_air/Mm_a #kJ/kg
+    molar_mass = np.array([0.028,0.044,0.018,0.032])
+    h_air = sum(conc_mass/molar_mass*enthalpies);#kJ/mol
+    return h_air#/Mm_a #kJ/kg
 
 def air_entropy(T,conc_mass,Mm_a):
     entropies = np.array([N2.S(T),CO2.S(T),H2O.S(T),O2.S(T)])
@@ -157,11 +159,12 @@ def GT_simple(GT_input):
         iter=iter+1
         error = abs(T2_new-T2)
         T2=T2_new
-        print(T2)
 
     s2 = air_entropy(T2,conc_mass1,Mm_a)
     h2 = air_enthalpy(T2,conc_mass1,Mm_a)
     deltah_c = h2-h1 #kJ/kg
+    deltah_c2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T1,T2,0.01)
+    print('enthalpy comparaison',deltah_c,deltah_c2)
 
     deltas_c1 = s2-s1
     deltas_c2 = Cp_a*np.log(T2/T1)*1000 #J/K/kg
@@ -178,7 +181,7 @@ def GT_simple(GT_input):
 
     p3 = p2*kcc
 
-    comb_outputs = comb.combustionGT(GT_arg.comb_input(h_in=h2,T_in = T2,lambda_comb = 2))
+    comb_outputs = comb.combustionGT(GT_arg.comb_input(h_in=h2,T_in = T2,lambda_comb =1.65 ))
     T3=comb_outputs.T_out
     lambda_comb = comb_outputs.lambda_comb
     ma1 = comb_outputs.ma1
@@ -249,4 +252,6 @@ def GT_simple(GT_input):
     return outputs;
 
 
-GT_simple_outputs = GT_simple(GT_arg.GT_input());
+GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,T_ext=288.15,r=18.));
+print(GT_simple_outputs.dat)
+print(GT_simple_outputs.massflow)

@@ -25,11 +25,11 @@ class GT_input:
      DISPLAY = 1 or 0. If 1, then the code should plot graphics. If 0, then the
               do not plot."""
     def __init__(self, Pe = 50e3,#50 MW
-                     k_mec = 0,
+                     k_mec = 0.015,
                      T_0 = 288.15,#°C
                      T_ext =288.15,#°C
                      r =10.,
-                     k_cc =1.0,
+                     k_cc =0.95,
                      T3 =1050,#°C
                      eta_PiC =0.9,
                      eta_PiT =0.9,
@@ -134,7 +134,10 @@ class comb_input:
                      T_in = 600,#°C
                      h_in = 650,# enthalpy[kJ/kg_air]
                      HHV = 56000, # [kJ/kg_CH4]
+                     inversion =False,
+                     T_out = 1000,#pour trouver lambda en fonction de T_out mettre true
                      LHV =50000):# [kJ/kg_CH4]
+
         self.lambda_comb = lambda_comb;
         self.x_O2a = x_O2a;
         self.x_N2a = x_N2a ;
@@ -142,6 +145,8 @@ class comb_input:
         self.h_in = h_in;
         self.LHV = LHV;
         self.HHV = HHV;
+        self.inversion = inversion
+        self.T_out = T_out
 
 class comb_output:
     """

@@ -120,7 +120,8 @@ def combustionGT(comb_input):
     LHV   =comb_input.LHV #kJ/kg_ch4]
     HHV = comb_input.HHV #kJ/kg_CH4
     T0 =  288.15 #[K]
-
+    inversion = comb_input.inversion #boolean set to false
+    T_out = comb_input.T_out
     # CH4 + 2 *lambda * (O2 + coeff*N2) <=> CO2+2*H2O+ 2*lambda*coeff*N2 + 2*(lambda-1)*O2
 
 
@@ -137,9 +138,8 @@ def combustionGT(comb_input):
     mass_conc = molar_conc*molar_mass/Mm_af #[-] kg_co2/kg_tot
 
 
-    #  calcul de T_out par iteration
+    #  calcul de T_out ou de lambda par iteration
     iter = 1
-    T_out = 1000 #valeur initiale
     error = 1
     dt = 0.1
     T_in=288.15
@@ -150,15 +150,17 @@ def combustionGT(comb_input):
     ha = janaf_integrate(cp_air,T0-15,T_in,0.0001) #attention cp_air [J/kg_air/K]
 
 
-    while iter < 50 and error > 0.01 :
-        cps_out = np.array([cp_mean(cpN2,T0,T_out,dt),cp_mean(cpCO2,T0,T_out,dt),cp_mean(cpH2O,T0,T_out,dt),cp_mean(cpO2,T0,T_out,dt)])
-        cp_f = np.dot(cps_out,mass_conc/molar_mass) #J/kg_fumée/K
-        T_out_final = (T0 + ((1000*LHV + hc + lambda_comb*ma1*ha)/((lambda_comb*ma1+1)*cp_f)) - h_f0/(cp_f))
-        iter = iter + 1
-        error = abs(T_out_final - T_out)
-        T_out = T_out_final
-    #print("Nombre d'itérations : ",iter)
-    #print("T_out : ",T_out,"K")
+    if (inversion == False):
+        T_out = 1000 #premiere estimation
+        while iter < 50 and error > 0.01 :
+            cps_out = np.array([cp_mean(cpN2,T0,T_out,dt),cp_mean(cpCO2,T0,T_out,dt),cp_mean(cpH2O,T0,T_out,dt),cp_mean(cpO2,T0,T_out,dt)])
+            cp_f = np.dot(cps_out,mass_conc/molar_mass) #J/kg_fumée/K
+            T_out_final = (T0 + ((1000*LHV + hc + lambda_comb*ma1*ha)/((lambda_comb*ma1+1)*cp_f)) - h_f0/(cp_f))
+            iter = iter + 1
+            error = abs(T_out_final - T_out)
+            T_out = T_out_final
+            #print("Nombre d'itérations : ",iter)
+            #print("T_out : ",T_out,"K")
 
     #calcul de l exergie et eta_combex ==> see formula page 28
     e_c = HHV+ 15 * (cp_mean(cpCH4,273.15,T0,dt)/0.016 + mass_conc[3]/0.032*cp_mean(cpO2,273.15,T0,dt) - mass_conc[1]/0.044*cp_mean(cpCO2,273.15,T0,dt) - mass_conc[2]/0.018*cp_mean(cpH2O,273.15,T0,dt))/1000 - T0*(CH4.S(273.15)/0.016+cp_mean(cpCH4,273.15,T0,dt)/0.016*np.log(T0/273.15))/1000 # kJ/kg_ch4
@@ -196,8 +198,8 @@ def combustionGT(comb_input):
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 
-sol =combustionGT(GT_arg.comb_input(lambda_comb = 2))
-
+sol =combustionGT(GT_arg.comb_input(lambda_comb = 1.65))
+print(sol.T_out)
 #Fais le plot de T_out en fonction de lambda_comb
 
 # x = np.linspace(1,20,100)
