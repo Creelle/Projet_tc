@@ -5,12 +5,8 @@ from thermochem import combustion
 from thermochem import janaf
 from thermochem import burcat
 db = janaf.Janafdb()
-mixdb = burcat.Elementdb()
-mix = mixdb.getmixturedata([("O2 REF ELEMENT", 20.9476), ("N2 REF ELEMENT",78.084), ("CO2", 0.0319), ("AR REF ELEMENT", 0.9365), ])
-fuel=mixdb.getelementdata("CH4   RRHO")
 
-combObject=combustion.SimpleCombustor(fuel,2,mixdb)
-print(combObject.adiabatic_flame_temp(298.15+600))
+T0=288.15
 O2 = db.getphasedata('O2','g');
 N2 = db.getphasedata('N2','g');
 CO2 = db.getphasedata('CO2',phase ='g');
@@ -21,21 +17,12 @@ print(O2)
 print(N2)
 print(CO2)
 print(H2O)
-print(O2.hef([288.15,500]))
-print(N2.hef([288.15,500]))# kJ/mol
-print(CH4.hef([288.15,500]))
-#heating value of di-oxygen at 298 K : 29.375 J/mol/K
-print(O2.cp(298))
-print('gzeg',CH4.S(273.15))
+# print(O2.hef([273.15,288.15,500]))
+# print(N2.hef([273.15,288.15,500]))# kJ/mol
+# print(CH4.hef([273.15,288.15,500]))
+# #heating value of di-oxygen at 298 K : 29.375 J/mol/K
+# print(O2.cp(298))
 
-#heating value of di-nitrogen at 298 K : 29.375 J/mol/K
-print(N2.cp(298))
-
-#heating value of dioxygen at 298 K : 29.375 J/mol/K
-print(CO2.cp(298))
-print('here',O2.DeltaH(298.15))
-#heating value of dioxygen at 298 K : 29.375 J/mol/K
-print(H2O.cp(298))
 
 
 # Chemical properties:
@@ -50,8 +37,15 @@ def air_mixture(T):#kJ/kg/K
     m_N2 = (conc_N2*Mm_N2)/Mm_a;
     cp_a = m_O2 * O2.cp(T) + N2.cp(T) * m_N2;#J/mol/K
     Cp_a = cp_a/Mm_a/1000;#kJ/kg/K
-    return Cp_a,deltah;
+    return Cp_a;
 
 #heating value of dioxygen at 298 K : 1.012 kJ/kg/K
-print(air_mixture(298))
-print(air_mixture(600))
+# print(air_mixture(298))
+# print(air_mixture(600))
+"""
+exergie test
+"""
+print("dfsfsrgrg exergie test")
+print(N2.hef(T0))
+T = 400
+e = (N2.hef(T)-N2.hef(T0))*1000-T0*(N2.S(T)-N2.S(T0))

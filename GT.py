@@ -35,7 +35,7 @@ def cp_air(T,conc_mass,Mm_a):
 
 #fonction qui donne l enthalpie (kJ/kg), T temperature concentration massique mass : array (N2 , CO2, H20,O2)
 #molar mass
-def air_enthalpy(T,conc_mass,Mm_a):
+def air_enthalpy(T,conc_mass,Mm_a): #==> a chequer si c est pas diviser par Mm_a ou divisé par molar_mass
     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
     molar_mass = np.array([0.028,0.044,0.018,0.032])
     h_air = sum(conc_mass/molar_mass*enthalpies);#kJ/mol
@@ -48,6 +48,17 @@ def air_entropy(T,conc_mass,Mm_a):
 def cp_air_T(T,conc_mass,Mm_a):#J/kg/K
 
     return cp_air(T,conc_mass,Mm_a)/T;
+
+def exergie_air(T,conc_mass,Mm_a):
+    T0=288.15
+    #molar_mass = np.array([0.028,0.044,0.018,0.032])
+    enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
+    entropies = np.array([N2.S(T),CO2.S(T),H2O.S(T),O2.S(T)])
+    enthalpies0 = np.array([N2.hef(T0),CO2.hef(T0),H2O.hef(T0),O2.hef(T0)])
+    entropies0 = np.array([N2.S(T0),CO2.S(T0),H2O.S(T0),O2.S(T0)])
+    exergies = (enthalpies-enthalpies0)*1000-T0*(entropies-entropies0) #J/mol
+    e_air = sum(conc_mass*exergies)/1000/Mm_a #kJ/kg
+    return e_air
 
 def janaf_integrate_air(f,conc_mass,Mm_a,T1,T2,dt):
     values = np.arange(T1,T2,dt)
@@ -239,18 +250,28 @@ def GT_simple(GT_input):
     #massflow calcul # on neglige m  flow combustion
     mf_in = Pe/(Wm*eta_mec)#
     mf_out = mf_in*massflow_coefficient
+
+    """
+    5) define the exergy
+    """
+    e1 = exergie_air(T1,conc_mass1,Mm_a)
+    e2 = exergie_air(T2,conc_mass1,Mm_a)
+    e3 = exergie_air(T3,conc_mass2,Mm_af)
+    e4 = exergie_air(T4,conc_mass2,Mm_af)
     """
     last) define output arguments
     """
     outputs = GT_arg.GT_outputs();
     outputs.eta[0] = eta_cyclen;
     outputs.eta[1] = eta_toten;
-    outputs.dat[0:4]= [[T1,T2,T3,T4],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4]]
+    outputs.dat[0:]= [[T1,T2,T3,T4],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4],[e1,e2,e3,e4]]
     outputs.massflow[0:] = [mf_in,mf_out-mf_in,mf_out]
     outputs.combustion.fum[0:]=np.array([comb_outputs.m_O2f,comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of])*mf_out
 
     return outputs;
-
+"""
+attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
+"""
 
 GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,T_ext=288.15,r=18.));
 print(GT_simple_outputs.dat)
