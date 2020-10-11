@@ -36,22 +36,26 @@ def cp_air(T,conc_mass,Mm_a):
 #molar mass
 def air_enthalpy(T,conc_mass,Mm_a):
     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
-    h_air = sum(conc_mass*enthalpies);#kJ/mol/K
+    h_air = sum(conc_mass*enthalpies);#kJ/mol
     return h_air/Mm_a #kJ/kg
 
-def air_entropy(T):
-    Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
-    m_O2 = (conc_O2*Mm_O2)/Mm_a;# mass proportion of O2
-    m_N2 = (conc_N2*Mm_N2)/Mm_a;
-    entropy_air = m_O2 * O2.S(T) + N2.S(T) * m_N2;#kJ/mol/K
-    return entropy_air/Mm_a #kJ/kg/K
+def air_entropy(T,conc_mass,Mm_a):
+    entropies = np.array([N2.S(T),CO2.S(T),H2O.S(T),O2.S(T)])
+    S_air = sum(conc_mass*entropies);#J/mol/K
+    return S_air/Mm_a #kJ/kg
+def cp_air_T(T,conc_mass,Mm_a):#J/kg/K
+
+    return cp_air(T,conc_mass,Mm_a)/T;
 
 def janaf_integrate_air(f,conc_mass,Mm_a,T1,T2,dt):
     values = np.arange(T1,T2,dt)
-    return sum(f(values)*dt)
+    return sum(f(values,conc_mass,Mm_a)*dt)
 def cp_mean_air(f,conc_mass,Mm_a,T1,T2,dt):
     values = np.arange(T1,T2,dt)
     return sum(f(values,conc_mass,Mm_a)/len(values)) #  cp_mean [J/kg/K]
+def janaf_integrate(f,T1,T2,dt): #==> pour calculer enthalpie
+    values = np.arange(T1,T2,dt)
+    return sum(f(values)*dt) # int(cp)dt [J/mol/K]]
 
 
 def GT_simple(GT_input):
@@ -137,7 +141,7 @@ def GT_simple(GT_input):
     T1=T_ext # a changer lors du preaheating
     p1 = 1.0 #bar
     h1 = air_enthalpy(T1,conc_mass1,Mm_a)
-    s1 = air_entropy(T1)
+    s1 = air_entropy(T1,conc_mass1,Mm_a)
 
     p2 = r*p1
 
@@ -155,9 +159,14 @@ def GT_simple(GT_input):
         T2=T2_new
         print(T2)
 
-    s2 = air_entropy(T2)
+    s2 = air_entropy(T2,conc_mass1,Mm_a)
     h2 = air_enthalpy(T2,conc_mass1,Mm_a)
     deltah_c = h2-h1 #kJ/kg
+
+    deltas_c1 = s2-s1
+    deltas_c2 = Cp_a*np.log(T2/T1)*1000 #J/K/kg
+    deltas_c3 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.01)
+    print('entropy comparaison',deltas_c1,deltas_c2,deltas_c3)
 
     #deltah_c = Cp_a*(T2-T1) # delta_h =  w_m compression
     #deltas_c = Cp_a*np.log(T2/T1)*1000
@@ -179,8 +188,8 @@ def GT_simple(GT_input):
 
     h3 = air_enthalpy(T3,conc_mass2,Mm_af) #kJ/kg
     massflow_coefficient = 1+1/(ma1*lambda_comb)
-    s3 = air_entropy(T3)
-
+    s3 = air_entropy(T3,conc_mass2,Mm_af)
+    print('s3',s3, s2+janaf_integrate_air(cp_air_T,conc_mass2,Mm_af,T2,T3,0.01))
     """
     3)  detente
     """
@@ -206,7 +215,7 @@ def GT_simple(GT_input):
 
     h4 = air_enthalpy(T4,conc_mass2,Mm_af)
     deltah_t = h4-h3
-    s4 = air_entropy(T4)
+    s4 = air_entropy(T4,conc_mass2,Mm_af)
 
     """
     4) travail moteur et rendements
@@ -216,7 +225,6 @@ def GT_simple(GT_input):
     #apport calorifique
     Q_comb = massflow_coefficient*h3-h2
     # autre variable utile : X= (p2/p1)**((gamma-1)/gamma))
-    print('1',deltah_c+deltah_t,h4-h3,h2-h1, s3-s4)
 
     ##====================
     # calcul des rendements
