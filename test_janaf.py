@@ -49,3 +49,4 @@ print("dfsfsrgrg exergie test")
 print(N2.hef(T0))
 T = 400
 e = (N2.hef(T)-N2.hef(T0))*1000-T0*(N2.S(T)-N2.S(T0))
+print(N2.S(T0-15))

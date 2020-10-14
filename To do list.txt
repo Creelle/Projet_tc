@@ -22,3 +22,5 @@ a faire:
 		preheating dans GT
 		(faire plusieurs etages de compression et analyse au niveau exergetique et energetique pour avoir
         si ca change quelque chose)
+
+attention en utilisan hef , on fixe la reference a 25°c
