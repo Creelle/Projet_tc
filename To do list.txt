@@ -1,11 +1,13 @@
 a faire:
         merge combustionGT avec simpleGT => fait
-        exergie pour simpleGT ==> fait (a verifier)
+
 		changer la formule de l entropy_air ==> fait
         preheating ==> modelisation d un echangeur ==> OK
 		janaf integrate air ==> ok mais pas pour la combustion
 
 		A faire cette semaine:
+    exchanger changer les divisions
+    robbe :exergie pour simpleGT ==> fait (a verifier)
 		robbe :envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur
     Gwen : combustion GT :  calculer lambda en fonction de T_out
 		robbe :faire les graphes d optimisation ==> voir livre
