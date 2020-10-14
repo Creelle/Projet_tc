@@ -4,20 +4,19 @@ a faire:
 		changer la formule de l entropy_air ==> fait
         preheating ==> modelisation d un echangeur ==> OK
 		janaf integrate air ==> ok mais pas pour la combustion
-		
-		A faire cette semaine: 
-		envoyer mail pour enthalpie et entropie differences
+
+		A faire cette semaine:
+		envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur
         combustion GT :  calculer lambda en fonction de T_out
 		faire les graphes d optimisation ==> voir livre
 		calculer les pertes a chaque etape (4)
 		calculer les rendements exergetiques
-        
+
 		A faire des que possible
 		pychart de l energie et l exergie
-		
+
 		A faire pas maintenant
 		des graphes T s et pv des etats dans la turbine
 		preheating dans GT
 		(faire plusieurs etages de compression et analyse au niveau exergetique et energetique pour avoir
         si ca change quelque chose)
-		 
