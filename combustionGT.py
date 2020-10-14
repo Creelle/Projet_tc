@@ -200,19 +200,23 @@ def combustionGT(comb_input):
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 
-sol =combustionGT(GT_arg.comb_input(lambda_comb = 1.7))#1.65))
+sol =combustionGT(GT_arg.comb_input(lambda_comb = 2))#1.65))
 print(sol.T_out)
 #Fais le plot de T_out en fonction de lambda_comb
 
-# x = np.linspace(1,20,100)
-# y = np.zeros(len(x))
-# for i in range (0,len(x)) :
-#     y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i])).T_out
-# plt.plot(x,y)
-# plt.ylabel('Temperature [K]')
-# plt.xlabel('Lambda')
-# plt.show()
+"""
+
+x = np.linspace(1,20,100)
+y = np.zeros(len(x))
+for i in range (0,len(x)) :
+    y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i])).T_out
+plt.plot(x,y)
+plt.ylabel('Temperature [K]')
+plt.xlabel('Lambda')
+plt.show()
 #
+"""
+
 """
 x = np.linspace(1,10,20)
 y = np.zeros(len(x))
