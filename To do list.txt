@@ -24,4 +24,4 @@ a faire:
         si ca change quelque chose)
 
 attention en utilisan hef , on fixe la reference a 25°c
-pour la variation , il faut utiliser la variation de pression
+pour la variation dentropie , il faut utiliser la variation de pression ==> -R*np.log(p2/p1)
