@@ -7,8 +7,8 @@ a faire:
 
 		A faire cette semaine:
     exchanger changer les divisions
-    robbe :exergie pour simpleGT ==> fait (a verifier)
-		robbe :envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur
+    robbe :exergie pour simpleGT ==> fait (a verifier)=> okay verifier
+		robbe :envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur  => j ai pas envoyé pour le heat exchanger
     Gwen : combustion GT :  calculer lambda en fonction de T_out
 		robbe :faire les graphes d optimisation ==> voir livre
 		robbe :calculer les pertes a chaque etape (4)
@@ -24,3 +24,4 @@ a faire:
         si ca change quelque chose)
 
 attention en utilisan hef , on fixe la reference a 25°c
+pour la variation , il faut utiliser la variation de pression
