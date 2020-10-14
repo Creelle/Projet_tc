@@ -156,6 +156,7 @@ def GT_simple(GT_input):
     h1 = air_enthalpy(T1,conc_mass1,Mm_a)
     s1 = air_entropy(T1,conc_mass1,Mm_a)
 
+
     p2 = r*p1
 
     # calcul de T2 par iteration
@@ -179,7 +180,7 @@ def GT_simple(GT_input):
 
     deltas_c1 = s2-s1
     deltas_c2 = Cp_a*np.log(T2/T1)*1000 #J/K/kg
-    deltas_c3 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.01)
+    deltas_c3 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.01)-287.1*np.log(p2/p1)
     print('entropy comparaison',deltas_c1,deltas_c2,deltas_c3)
 
     #deltah_c = Cp_a*(T2-T1) # delta_h =  w_m compression
