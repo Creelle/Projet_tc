@@ -145,16 +145,18 @@ def combustionGT(comb_input):
     T_in=288.15
 
     h_f01 = np.array([janaf_integrate(cpN2,T0-15,T0,dt),janaf_integrate(cpCO2,T0-15,T0,dt),janaf_integrate(cpH2O,T0-15,T0,dt),janaf_integrate(cpO2,T0-15,T0,dt)])
-    h_f0 = np.dot(h_f01,mass_conc/molar_mass)
+    h_f0 = np.dot(h_f01,mass_conc)/Mm_af
     hc= janaf_integrate(cpCH4,T0-15,T_in,0.0001)/Mm_CH4
     ha = janaf_integrate(cp_air,T0-15,T_in,0.0001) #attention cp_air [J/kg_air/K]
-
-
+    print("ha", lambda_comb*ma1*ha)
+    print("h_in",h_in)
+    print("ma1",ma1)
+    print('Mm_af',Mm_af)
     if (inversion == False):
         T_out = 1000 #premiere estimation
         while iter < 50 and error > 0.01 :
             cps_out = np.array([cp_mean(cpN2,T0,T_out,dt),cp_mean(cpCO2,T0,T_out,dt),cp_mean(cpH2O,T0,T_out,dt),cp_mean(cpO2,T0,T_out,dt)])
-            cp_f = np.dot(cps_out,mass_conc/molar_mass) #J/kg_fumée/K
+            cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg_fumée/K
             T_out_final = (T0 + ((1000*LHV + hc + lambda_comb*ma1*ha)/((lambda_comb*ma1+1)*cp_f)) - h_f0/(cp_f))
             iter = iter + 1
             error = abs(T_out_final - T_out)
@@ -165,8 +167,8 @@ def combustionGT(comb_input):
     #calcul de l exergie et eta_combex ==> see formula page 28
     e_c = HHV+ 15 * (cp_mean(cpCH4,273.15,T0,dt)/0.016 + mass_conc[3]/0.032*cp_mean(cpO2,273.15,T0,dt) - mass_conc[1]/0.044*cp_mean(cpCO2,273.15,T0,dt) - mass_conc[2]/0.018*cp_mean(cpH2O,273.15,T0,dt))/1000 - T0*(CH4.S(273.15)/0.016+cp_mean(cpCH4,273.15,T0,dt)/0.016*np.log(T0/273.15))/1000 # kJ/kg_ch4
 
-    Sf = np.dot([N2.S(T_out),CO2.S(T_out),H2O.S(T_out),O2.S(T_out)],mass_conc/molar_mass) #J/kg/K N2- CO2 - H2O - O2
-    Sf0 = np.dot([N2.S(T0),CO2.S(T0),H2O.S(T0),O2.S(T0)],mass_conc/molar_mass)
+    Sf = np.dot([N2.S(T_out),CO2.S(T_out),H2O.S(T_out),O2.S(T_out)],mass_conc)/Mm_af #J/kg/K N2- CO2 - H2O - O2
+    Sf0 = np.dot([N2.S(T0),CO2.S(T0),H2O.S(T0),O2.S(T0)],mass_conc)/Mm_af
 
     e_a = cp_mean(cp_air,T0,T_in,dt)*(T_in-T0) - (janaf_integrate(cp_air_T,T0,T_in,dt)*T0) #attention cp_air [J/kg_air/K] => e_a = J/kg_air
     e_cr = cp_mean(cpCH4,T0,T_in,dt)*(T_in-T0)/Mm_CH4 - (janaf_integrate(cpCH4_T,T0,T_in,dt)*T0/Mm_CH4) #J/kg_CH4
@@ -176,9 +178,9 @@ def combustionGT(comb_input):
     #Rf = 8.31/Mm_af
 
     cps_out = np.array([cp_mean(cpN2,T0,T_out,dt),cp_mean(cpCO2,T0,T_out,dt),cp_mean(cpH2O,T0,T_out,dt),cp_mean(cpO2,T0,T_out,dt)])
-    cp_f = np.dot(cps_out,mass_conc/molar_mass) #J/kg/K
+    cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg/K
     flop = np.array([janaf_integrate(cpN2_T,T0,T_out,dt),janaf_integrate(cpCO2_T,T0,T_out,dt),janaf_integrate(cpH2O_T,T0,T_out,dt),janaf_integrate(cpO2_T,T0,T_out,dt)])
-    flop2 = np.dot(flop,mass_conc/molar_mass)
+    flop2 = np.dot(flop,mass_conc)/Mm_af
 
     flip2 = flop2 #- Rf*np.log(10)
     #flop2 = envrion Sf-Sf0
@@ -198,7 +200,7 @@ def combustionGT(comb_input):
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 
-sol =combustionGT(GT_arg.comb_input(lambda_comb = 1.65))
+sol =combustionGT(GT_arg.comb_input(lambda_comb = 1.7))#1.65))
 print(sol.T_out)
 #Fais le plot de T_out en fonction de lambda_comb
 

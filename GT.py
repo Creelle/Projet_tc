@@ -29,8 +29,8 @@ def air_mixture(T):#kJ/kg/K
 def cp_air(T,conc_mass,Mm_a):
     cps = np.array([N2.cp(T),CO2.cp(T),H2O.cp(T),O2.cp(T)])
     molar_mass = np.array([0.028,0.044,0.018,0.032])
-    cp_air = np.dot(conc_mass/molar_mass,cps);#J/mol/K
-    return cp_air#/Mm_a #J/kg
+    cp_air = np.dot(conc_mass,cps);#J/mol/K
+    return cp_air/Mm_a #J/kg
 
 
 #fonction qui donne l enthalpie (kJ/kg), T temperature concentration massique mass : array (N2 , CO2, H20,O2)
@@ -38,8 +38,8 @@ def cp_air(T,conc_mass,Mm_a):
 def air_enthalpy(T,conc_mass,Mm_a): #==> a chequer si c est pas diviser par Mm_a ou divisé par molar_mass
     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
     molar_mass = np.array([0.028,0.044,0.018,0.032])
-    h_air = sum(conc_mass/molar_mass*enthalpies);#kJ/mol
-    return h_air#/Mm_a #kJ/kg
+    h_air = sum(conc_mass*enthalpies);#kJ/mol
+    return h_air/Mm_a #kJ/kg
 
 def air_entropy(T,conc_mass,Mm_a):
     entropies = np.array([N2.S(T),CO2.S(T),H2O.S(T),O2.S(T)])
