@@ -49,7 +49,7 @@ def cp_air_T(T,conc_mass,Mm_a):#J/kg/K
 
     return cp_air(T,conc_mass,Mm_a)/T;
 
-def exergie_air(T,conc_mass,Mm_a):
+def exergy_air(T,conc_mass,Mm_a):
     T0=288.15
     #molar_mass = np.array([0.028,0.044,0.018,0.032])
     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
@@ -58,7 +58,7 @@ def exergie_air(T,conc_mass,Mm_a):
     entropies0 = np.array([N2.S(T0),CO2.S(T0),H2O.S(T0),O2.S(T0)])
     exergies = (enthalpies-enthalpies0)*1000-T0*(entropies-entropies0) #J/mol
     e_air = sum(conc_mass*exergies)/1000/Mm_a #kJ/kg
-    return e_air
+    return e_air #kJ/kg
 
 def janaf_integrate_air(f,conc_mass,Mm_a,T1,T2,dt):
     values = np.arange(T1,T2,dt)
@@ -155,6 +155,7 @@ def GT_simple(GT_input):
     p1 = 1.0 #bar
     h1 = air_enthalpy(T1,conc_mass1,Mm_a)
     s1 = air_entropy(T1,conc_mass1,Mm_a)
+    e1 = exergy_air(T1,conc_mass1,Mm_a)
 
 
     p2 = r*p1
@@ -166,7 +167,7 @@ def GT_simple(GT_input):
     dt = 0.1
 
     while iter < 50 and error >0.01 :#pg119
-        exposant_c=1/eta_pic*(Ra)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.01)  # na-1/na :  formule du livre (3.2)
+        exposant_c=1/eta_pic*(Ra)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.01)  # na-1/na :  formule du livre (3.22)
         T2_new = T1*r**(exposant_c)
         iter=iter+1
         error = abs(T2_new-T2)
@@ -174,18 +175,20 @@ def GT_simple(GT_input):
 
     s2 = air_entropy(T2,conc_mass1,Mm_a)
     h2 = air_enthalpy(T2,conc_mass1,Mm_a)
+    e2 = exergy_air(T2,conc_mass1,Mm_a)
+
     deltah_c = h2-h1 #kJ/kg
-    deltah_c2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T1,T2,0.01)
+    deltah_c2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)/1000 #kJ/kg
     print('enthalpy comparaison',deltah_c,deltah_c2)
+    print(T2-T1)
 
     deltas_c1 = s2-s1
-    deltas_c2 = Cp_a*np.log(T2/T1)*1000 #J/K/kg
-    deltas_c3 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.01)-287.1*np.log(p2/p1)
-    print('entropy comparaison',deltas_c1,deltas_c2,deltas_c3)
+    deltas_c2 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.001)
+    print('entropy comparaison',deltas_c1,deltas_c2)
 
-    #deltah_c = Cp_a*(T2-T1) # delta_h =  w_m compression
-    #deltas_c = Cp_a*np.log(T2/T1)*1000
-
+    delta_ex_c = e2-e1
+    delta_ex_c2 = deltah_c - T0 * (deltas_c1)/1000
+    print('exergie comparaison 1-2', delta_ex_c,delta_ex_c2)
 
     """
      2 ) combustion
@@ -201,10 +204,16 @@ def GT_simple(GT_input):
     Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
 
-    h3 = air_enthalpy(T3,conc_mass2,Mm_af) #kJ/kg
-    massflow_coefficient = 1+1/(ma1*lambda_comb)
+    h3 = air_enthalpy(T3,conc_mass2,Mm_af) #kJ/kg_f
+    h32 = cp_mean_air(cp_air,conc_mass2,Mm_af,T0,T3,0.001)*(T3-T0)
+    h33 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T3,0.001)
+    print('h3',h3,h32,h33)
+    massflow_coefficient = 1+1/(ma1*lambda_comb) #kg_fu/kg_air
+    #print('h3-h2',massflow_coefficient*h3-h2, massflow_coefficient*janaf_integrate_air(cp_air,conc_mass2,Mm_af,T2,T3,0.001))
     s3 = air_entropy(T3,conc_mass2,Mm_af)
-    print('s3',s3, s2+janaf_integrate_air(cp_air_T,conc_mass2,Mm_af,T2,T3,0.01))
+    e3 = exergy_air(T3,conc_mass2,Mm_af)
+    delta_exer_comb = massflow_coefficient*e3-e2 #kJ/kg_air
+    print('exergie 2-3',delta_exer_comb)
     """
     3)  detente
     """
@@ -213,60 +222,69 @@ def GT_simple(GT_input):
 
     # calcul de T4 par iteration
     T4 = T3*(1/(r*kcc))**((m_t-1)/m_t)
-    print(T3)
-    print(T4)
     iter = 1
     error = 1
     dt = 0.1
 
     while iter < 50 and error >0.01 :#pg119
-        exposant_t=eta_pit*(Rf)/cp_mean_air(cp_air,conc_mass2,Mm_af,T4,T3,0.01)  # na-1/na :  formule du livre (3.2)
+        exposant_t=eta_pit*(Rf)/cp_mean_air(cp_air,conc_mass2,Mm_af,T4,T3,0.01)  # na-1/na :  formule du livre (3.25)
         T4_new = T3*(1/(kcc*r))**(exposant_t)
         iter=iter+1
         error = abs(T4_new-T4)
         T4=T4_new
-        print(T4)
 
 
-    h4 = air_enthalpy(T4,conc_mass2,Mm_af)
-    deltah_t = h4-h3
-    s4 = air_entropy(T4,conc_mass2,Mm_af)
-
+    h4 = air_enthalpy(T4,conc_mass2,Mm_af)# kJ/kg_f
+    deltah_t = h4-h3 #<0# kJ/kg_f
+    s4 = air_entropy(T4,conc_mass2,Mm_af)# kJ/kg_f
+    e4 = exergy_air(T4,conc_mass2,Mm_af)# kJ/kg_f
+    delta_exer_t = e4-e3# kJ/kg_f
+    deltas_t = s4-s3# kJ/kg_f
+    deltas_t2 = -janaf_integrate_air(cp_air_T,conc_mass2,Mm_af,T4,T3,0.001)# kJ/kg_f
+    print('exergie 3-4',delta_exer_t, deltah_t-T0*deltas_t/1000,deltah_t-T0*deltas_t2/1000)
     """
-    4) travail moteur et rendements
+    4) travail moteur
     """
     #travail moteur
     Wm = -(deltah_c+(1+1/(lambda_comb*ma1))*deltah_t) #kJ/kg_in
     #apport calorifique
-    Q_comb = massflow_coefficient*h3-h2
-    # autre variable utile : X= (p2/p1)**((gamma-1)/gamma))
-
+    Q_comb = massflow_coefficient*h3-h2 #kJ/kg_in
+    #formula chequ of the book
+    # 3.27#Wm2 = cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*(cp_mean_air(cp_air,conc_mass2,Mm_af,T4,T3,0.001)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001))*T3/T1*(1-(1/(kcc*r))**exposant_t)-(r**exposant_c-1))
+    Q_comb2 =  cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*cp_mean_air(cp_air,conc_mass2,Mm_af,T2,T3,0.001)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T3/T1-r**exposant_c)
+    print('test',Q_comb,Q_comb2)
+    """
+    5) rendements cyclen et mass flux
+    """
     ##====================
     # calcul des rendements
     eta_cyclen  =Wm/Q_comb
-    eta_mec = 1-k_mec#(Wm - k_mec)/Wm
-    eta_gen = 1
-    eta_toten = eta_cyclen*eta_mec*eta_gen #
-    print('2',eta_cyclen, (deltah_t+deltah_c)/Q_comb)
+    eta_mec =1-k_mec* (massflow_coefficient*abs(deltah_t)+deltah_c)/(massflow_coefficient*abs(deltah_t)-deltah_c) # Pe/Pm = 1-k_mec*(Pmt+Pmc)/(Pmt-Pmc)
+    print('eta_cyclen',eta_cyclen, 'eta_mec',eta_mec)
     #massflow calcul # on neglige m  flow combustion
-    mf_in = Pe/(Wm*eta_mec)#
+    mf_in = Pe/(Wm*eta_mec)#kg/s
     mf_out = mf_in*massflow_coefficient
-
+    mf_c = mf_out-mf_in
     """
-    5) define the exergy
+    5) calcul des flux de puissances
     """
-    e1 = exergie_air(T1,conc_mass1,Mm_a)
-    e2 = exergie_air(T2,conc_mass1,Mm_a)
-    e3 = exergie_air(T3,conc_mass2,Mm_af)
-    e4 = exergie_air(T4,conc_mass2,Mm_af)
+    """
+    6) calcul de n_mec, n_toten , n_gen
+    """
+    """
+    7) calcul des pertes
+    """
+    """
+    8) calcul des rendements exergetique
+    """
     """
     last) define output arguments
     """
     outputs = GT_arg.GT_outputs();
     outputs.eta[0] = eta_cyclen;
-    outputs.eta[1] = eta_toten;
+    #outputs.eta[1] = eta_toten;
     outputs.dat[0:]= [[T1,T2,T3,T4],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4],[e1,e2,e3,e4]]
-    outputs.massflow[0:] = [mf_in,mf_out-mf_in,mf_out]
+    outputs.massflow[0:] = [mf_in,mf_c,mf_out]
     outputs.combustion.fum[0:]=np.array([comb_outputs.m_O2f,comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of])*mf_out
 
     return outputs;

@@ -185,7 +185,7 @@ def combustionGT(comb_input):
     flip2 = flop2 #- Rf*np.log(10)
     #flop2 = envrion Sf-Sf0
 
-    e_f = cp_f*(T_out-T0) - flip2*T0
+    e_f = cp_f*(T_out-T0) - flip2*T0 # a changer #h33 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T3,0.001) h3 = air_enthalpy(T3,conc_mass2,Mm_af) #kJ/kg_f
     #print("e_f = ",e_f)
     eta_combex = (e_f-e_r)*(lambda_comb*ma1+1)/(e_c*1000)
     #print("eta_combex = ",eta_combex)
