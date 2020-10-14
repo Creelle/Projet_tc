@@ -6,11 +6,11 @@ a faire:
 		janaf integrate air ==> ok mais pas pour la combustion
 
 		A faire cette semaine:
-		envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur
-        combustion GT :  calculer lambda en fonction de T_out
-		faire les graphes d optimisation ==> voir livre
-		calculer les pertes a chaque etape (4)
-		calculer les rendements exergetiques
+		robbe :envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur
+    Gwen : combustion GT :  calculer lambda en fonction de T_out
+		robbe :faire les graphes d optimisation ==> voir livre
+		robbe :calculer les pertes a chaque etape (4)
+		Gwen : calculer les rendements exergetiques
 
 		A faire des que possible
 		pychart de l energie et l exergie
