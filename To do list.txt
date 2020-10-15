@@ -9,10 +9,10 @@ a faire:
     exchanger changer les divisions
     robbe :exergie pour simpleGT ==> fait (a verifier)=> okay verifier
 		robbe :envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur  => j ai pas envoyé pour le heat exchanger
-    Gwen : combustion GT :  calculer lambda en fonction de T_out
+    Gwen : combustion GT :  calculer lambda en fonction de T_out==>ok
 		robbe :faire les graphes d optimisation ==> voir livre
-		robbe :calculer les pertes a chaque etape (4)
-		Gwen : calculer les rendements exergetiques
+		robbe :calculer les pertes a chaque etape (4) ==>ok
+		Gwen : calculer les rendements exergetiques ==> a verifier
 
 		A faire des que possible
 		pychart de l energie et l exergie
