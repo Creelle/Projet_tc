@@ -30,7 +30,7 @@ class GT_input:
                      T_ext =288.15,#°C
                      r =10.,
                      k_cc =0.95,
-                     T3 =1050,#°C
+                     T3 =1400,#°C
                      eta_PiC =0.9,
                      eta_PiT =0.9,
                      Display =-1.):
@@ -49,12 +49,12 @@ class GT_outputs:
     """
      OUPUTS :
      ETA is a vector with :
-       -eta(1) : eta_cyclen, cycle energy efficiency
-       -eta(2) : eta_toten, overall energy efficiency
-       -eta(3) : eta_cyclex, cycle exergy efficiency
-       -eta(4) : eta_totex, overall exergie efficiency
-       -eta(5) : eta_rotex, compressor-turbine exergy efficiency
-       -eta(6) : eta_combex, Combustion exergy efficiency
+       -eta(0) : eta_cyclen, cycle energy efficiency
+       -eta(1) : eta_toten, overall energy efficiency
+       -eta(2) : eta_cyclex, cycle exergy efficiency
+       -eta(3) : eta_totex, overall exergie efficiency
+       -eta(4) : eta_rotex, compressor-turbine exergy efficiency
+       -eta(5) : eta_combex, Combustion exergy efficiency
        FYI : eta(i) \in [0;1] [-]
      DATEN is a vector with :
        -daten(1) : perte_mec [kW]
@@ -133,10 +133,10 @@ class comb_input:
                      x_N2a = 0.79,# molar fraction
                      T_in = 600,#°C
                      h_in = 650,# enthalpy[kJ/kg_air]
-                     HHV = 56000, # [kJ/kg_CH4]
+                     HHV = 55695, # [kJ/kg_CH4]
                      inversion =False,
                      T_out = 1000,#pour trouver lambda en fonction de T_out mettre true
-                     LHV =50000):# [kJ/kg_CH4]
+                     LHV =50150):# [kJ/kg_CH4]
 
         self.lambda_comb = lambda_comb;
         self.x_O2a = x_O2a;
@@ -170,6 +170,7 @@ class comb_output:
                      Mm_af = -1.,
                      lambda_comb=1,
                      ma1 =1,
+                     e_c = 1., #kJ/kg_ch4
                      T_out = -1.):# [kJ/kg_CH4]
         self.R_f = R_f;
         self.m_O2f = m_O2f;
@@ -180,6 +181,7 @@ class comb_output:
         self.Mm_af = Mm_af;
         self.lambda_comb = lambda_comb
         self.ma1 =ma1
+        self.e_c=e_c
 
 
 class exchanger_input:

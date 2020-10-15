@@ -148,10 +148,10 @@ def combustionGT(comb_input):
     h_f0 = np.dot(h_f01,mass_conc)/Mm_af
     hc= janaf_integrate(cpCH4,T0-15,T_in,0.0001)/Mm_CH4
     ha = janaf_integrate(cp_air,T0-15,T_in,0.0001) #attention cp_air [J/kg_air/K]
-    print("ha", lambda_comb*ma1*ha)
-    print("h_in",h_in)
-    print("ma1",ma1)
-    print('Mm_af',Mm_af)
+    # print("ha", lambda_comb*ma1*ha)
+    # print("h_in",h_in)
+    # print("ma1",ma1)
+    # print('Mm_af',Mm_af)
     if (inversion == False):
         T_out = 1000 #premiere estimation
         while iter < 50 and error > 0.01 :
@@ -188,9 +188,9 @@ def combustionGT(comb_input):
 
     #calcul de l exergie et eta_combex ==> see formula page 28
     e_c = HHV+ 15 * (cp_mean(cpCH4,273.15,T0,dt)/0.016 + mass_conc[3]/0.032*cp_mean(cpO2,273.15,T0,dt) - mass_conc[1]/0.044*cp_mean(cpCO2,273.15,T0,dt) - mass_conc[2]/0.018*cp_mean(cpH2O,273.15,T0,dt))/1000 - T0*(CH4.S(273.15)/0.016+cp_mean(cpCH4,273.15,T0,dt)/0.016*np.log(T0/273.15))/1000 # kJ/kg_ch4
-
+    f = e_c/(LHV)
     Sf = np.dot([N2.S(T_out),CO2.S(T_out),H2O.S(T_out),O2.S(T_out)],mass_conc)/Mm_af #J/kg/K N2- CO2 - H2O - O2
-    Sf0 = np.dot([N2.S(T0),CO2.S(T0),H2O.S(T0),O2.S(T0)],mass_conc)/Mm_af
+    Sf0 = np.dot([N2.S(T0),CO2.S(T0),H2O.S(T0),O2.S(T0)],mass_conc)/Mm_af # ==>cpf ln(Tf/T0)-R*ln(pf/&p0)
 
     e_a = cp_mean(cp_air,T0,T_in,dt)*(T_in-T0) - (janaf_integrate(cp_air_T,T0,T_in,dt)*T0) #attention cp_air [J/kg_air/K] => e_a = J/kg_air
     e_cr = cp_mean(cpCH4,T0,T_in,dt)*(T_in-T0)/Mm_CH4 - (janaf_integrate(cpCH4_T,T0,T_in,dt)*T0/Mm_CH4) #J/kg_CH4
@@ -210,6 +210,7 @@ def combustionGT(comb_input):
     e_f = cp_f*(T_out-T0) - flip2*T0 # a changer #h33 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T3,0.001) h3 = air_enthalpy(T3,conc_mass2,Mm_af) #kJ/kg_f
     #print("e_f = ",e_f)
     eta_combex = (e_f-e_r)*(lambda_comb*ma1+1)/(e_c*1000)
+    print('eta_combex',eta_combex)
     #print("eta_combex = ",eta_combex)
 
     # remplissage des outputs
@@ -220,12 +221,14 @@ def combustionGT(comb_input):
     outputs.T_out = T_out
     outputs.R_f = 8.31/Mm_af # [J/kg/K]
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
+    outputs.e_c = e_c
     return outputs;
 
-sol = combustionGT(GT_arg.comb_input(lambda_comb = 2))#1.65))
-print(sol.T_out)
-sol2 = combustionGT(GT_arg.comb_input(inversion = True, T_out = sol.T_out))#1.65))
-print(sol2.lambda_comb)
+# sol = combustionGT(GT_arg.comb_input(lambda_comb = 1.65))
+# print(sol.T_out)
+# sol2 = combustionGT(GT_arg.comb_input(inversion = True, T_out = 1673.15))#1.65))
+# print(sol2.lambda_comb)
+
 #Fais le plot de T_out en fonction de lambda_comb
 
 

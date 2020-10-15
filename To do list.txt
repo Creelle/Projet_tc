@@ -22,6 +22,8 @@ a faire:
 		preheating dans GT
 		(faire plusieurs etages de compression et analyse au niveau exergetique et energetique pour avoir
         si ca change quelque chose)
+    calculer la temperature d entree du CH4
 
-attention en utilisan hef , on fixe la reference a 25°c
+attention en utilisant hef , on fixe la reference a 25°c
 pour la variation dentropie , il faut utiliser la variation de pression ==> -R*np.log(p2/p1)
+==> il y a un probleme avec e_c

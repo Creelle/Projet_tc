@@ -1,4 +1,3 @@
-
 from thermochem import janaf
 db = janaf.Janafdb();
 import numpy as np;
@@ -138,7 +137,7 @@ def GT_simple(GT_input):
     # cp air at 15°C (298K): [kJ/mol/K]
     """
     Cp_a,gamma= air_mixture(T0)
-    Mm_a = Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
+    Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     conc_mass1=np.array([conc_N2*Mm_N2/Mm_a,0,0,conc_O2*Mm_O2/Mm_a])
     Ra = 8.31/Mm_a
     #coeff polytroique (compresseur :m>gamma , turbine : gamma >m) en premiere estimation
@@ -155,8 +154,6 @@ def GT_simple(GT_input):
     p1 = 1.0 #bar
     h1 = air_enthalpy(T1,conc_mass1,Mm_a)+air_enthalpy(T0+10,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a) #car la ref est pris a 25°c et non 25°C
     s1 = air_entropy(T1,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a) #car T0 est ma reference
-    s12 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T0-15,T1,0.001)
-    print("s1",s1,s12)
     e1 = h1-T0*s1/1000 #kJ/kg_in
 
 
@@ -186,12 +183,12 @@ def GT_simple(GT_input):
     print(T2-T1)
 
     deltas_c1 = s2-s1
-    deltas_c2 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.001)
-    print('entropy comparaison',deltas_c1,deltas_c2)
+    #deltas_c2 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.001)-Ra*np.log(r)
+    #print('entropy comparaison',deltas_c1,deltas_c2)
 
     delta_ex_c = e2-e1
-    delta_ex_c2 = deltah_c - T0 * (deltas_c1)/1000
-    print('exergie comparaison 1-2', delta_ex_c,delta_ex_c2)
+    # delta_ex_c2 = deltah_c - T0 * (deltas_c1)/1000
+    # print('exergie comparaison 1-2', delta_ex_c,delta_ex_c2)
 
     """
      2 ) combustion
@@ -199,22 +196,21 @@ def GT_simple(GT_input):
 
     p3 = p2*kcc
 
-    comb_outputs = comb.combustionGT(GT_arg.comb_input(h_in=h2,T_in = T2,lambda_comb =1.65 ))
+    comb_inputs = GT_arg.comb_input(h_in=h2,T_in = T2,inversion=True,T_out=T3 )
+    comb_outputs = comb.combustionGT(comb_inputs)
     T3=comb_outputs.T_out
     lambda_comb = comb_outputs.lambda_comb
     ma1 = comb_outputs.ma1
     Mm_af = comb_outputs.Mm_af
     Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
-
     h3 = air_enthalpy(T3,conc_mass2,Mm_af) +air_enthalpy(T0+10,conc_mass2,Mm_af)- air_enthalpy(T0,conc_mass2,Mm_af)#kJ/kg_f
     # h32 = cp_mean_air(cp_air,conc_mass2,Mm_af,T0,T3,0.001)*(T3-T0)
     # h33 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T3,0.001)
     # print('h3',h3,h32,h33)
     massflow_coefficient = 1+1/(ma1*lambda_comb) #kg_fu/kg_air
-    #print('h3-h2',massflow_coefficient*h3-h2, massflow_coefficient*janaf_integrate_air(cp_air,conc_mass2,Mm_af,T2,T3,0.001))
     s3 = air_entropy(T3,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af)-Rf*np.log(kcc*r) #J/K/kg_f
-    e3 = h3-T0*s3/1000 #kJ/kg_f
+    e3 = h3-T0*s3/1000 #kJ/kg_in
     delta_exer_comb = massflow_coefficient*e3-e2 #kJ/kg_air
     print('exergie 2-3',delta_exer_comb)
     """
@@ -238,15 +234,12 @@ def GT_simple(GT_input):
 
 
     h4 = air_enthalpy(T4,conc_mass2,Mm_af) +air_enthalpy(T0+10,conc_mass2,Mm_af)- air_enthalpy(T0,conc_mass2,Mm_af)# kJ/kg_f # pour fixer la ref a 15°C
-    # h42 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T4,0.001)
-    # print('h4',h4,h42)
     deltah_t = h4-h3 #<0# kJ/kg_f
     s4 = air_entropy(T4,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af) # kJ/kg_f
     e4 = h4-T0*s4/1000# kJ/kg_f
     delta_exer_t = e4-e3# kJ/kg_f
     deltas_t = s4-s3# kJ/kg_f
-    deltas_t2 = -janaf_integrate_air(cp_air_T,conc_mass2,Mm_af,T4,T3,0.001)# kJ/kg_f
-    print('exergie 3-4',delta_exer_t, deltah_t-T0*deltas_t/1000,deltah_t-T0*deltas_t2/1000)
+    print('exergie 3-4',delta_exer_t, deltah_t-T0*deltas_t/1000)
     """
     4) travail moteur
     """
@@ -256,8 +249,8 @@ def GT_simple(GT_input):
     Q_comb = massflow_coefficient*h3-h2 #kJ/kg_in
     #formula chequ of the book
     # 3.27#Wm2 = cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*(cp_mean_air(cp_air,conc_mass2,Mm_af,T4,T3,0.001)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001))*T3/T1*(1-(1/(kcc*r))**exposant_t)-(r**exposant_c-1))
-    Q_comb2 =  cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*cp_mean_air(cp_air,conc_mass2,Mm_af,T2,T3,0.001)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T3/T1-r**exposant_c)
-    print('test',Q_comb,Q_comb2)
+    #3.26 #Q_comb2 =  cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*cp_mean_air(cp_air,conc_mass2,Mm_af,T2,T3,0.001)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T3/T1-r**exposant_c)
+
     """
     5) rendements cyclen et mass flux
     """
@@ -265,7 +258,8 @@ def GT_simple(GT_input):
     # calcul des rendements
     eta_cyclen  =Wm/Q_comb
     eta_mec =1-k_mec* (massflow_coefficient*abs(deltah_t)+deltah_c)/(massflow_coefficient*abs(deltah_t)-deltah_c) # Pe/Pm = 1-k_mec*(Pmt+Pmc)/(Pmt-Pmc)
-    print('eta_cyclen',eta_cyclen, 'eta_mec',eta_mec)
+    eta_toten = eta_cyclen*eta_mec
+
     #massflow calcul # on neglige m  flow combustion
     mf_in = Pe/(Wm*eta_mec)#kg/s
     mf_out = mf_in*massflow_coefficient
@@ -273,30 +267,62 @@ def GT_simple(GT_input):
     """
     5) calcul des flux de puissances
     """
+    P_in = h1*mf_in #[kW]
+    P_c = deltah_c*mf_in #[kW]
+    P_comb = Q_comb*mf_in #[kW]
+    P_t = -deltah_t*mf_in*massflow_coefficient
+    P_out = h4*massflow_coefficient*mf_in #[kW]
+    P_fmec = P_t-P_c-Pe
+    Pm = P_t-P_c
+    #faire un pychart de ça
     """
-    6) calcul de n_mec, n_toten , n_gen
+    7) calcul des pertes compresseur, comb, turbine, exhaust
     """
-    """
-    7) calcul des pertes
-    """
+    P_ech = P_comb-(P_t-P_c)
+    #compressor losses
+    L_c = mf_in*T0*deltas_c1/1000 #[kW]
+    # combustion losses
+    ec = comb_outputs.e_c
+    L_comb = mf_in*e2-mf_out*e3+mf_c*ec #[kW]
+    #turbine losses
+    L_t = mf_out*T0*deltas_t/1000 #[kW]
+    #exhaust losses
+    L_exhaust = mf_out*e4 #-mf_in*e1
     """
     8) calcul des rendements exergetique
     """
+    eta_cyclex = Pm/(mf_out*e3-mf_in*e2)
+    eta_totex = Pe/(mf_c*ec) #pas la meme chose que dans le livre
+    eta_rotex = Pm/(mf_out*(e3-e4)-mf_in*(e2-e1))
+    eta_combex = (mf_out*e3-mf_in*e2)/(mf_out*h3-mf_out*h2)
+    #eta_combex = (mf_out*e3-mf_in*e2)/(m_c*ec)==> probleme car >1
+    eta_cex = delta_ex_c/deltah_c
+    eta_dex = deltah_t/delta_exer_t
     """
     last) define output arguments
     """
     outputs = GT_arg.GT_outputs();
     outputs.eta[0] = eta_cyclen;
-    #outputs.eta[1] = eta_toten;
+    outputs.eta[1] = eta_toten;
+    outputs.eta[2] = eta_cyclex;
+    outputs.eta[3] = eta_totex;
+    outputs.eta[4] = eta_rotex;
+    outputs.eta[5] = eta_combex;
+    outputs.daten[0] = P_ech; #[kW]
+    outputs.daten[1] = P_fmec;#[kW]
     outputs.dat[0:]= [[T1,T2,T3,T4],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4],[e1,e2,e3,e4]]
     outputs.massflow[0:] = [mf_in,mf_c,mf_out]
     outputs.combustion.fum[0:]=np.array([comb_outputs.m_O2f,comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of])*mf_out
+    outputs.combustion.Lambda = lambda_comb
+    outputs.combustion.LHV = comb_inputs.LHV
+    outputs.combustion.e_c = comb_outputs.e_c
+    outputs.combustion.Cp_g = cp_air(400,conc_mass2,Mm_af)/1000
 
     return outputs;
 """
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 """
 
-GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,T_ext=288.15,r=18.));
+GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,T_ext=288.15,r=18.,T3 = 1673.15));
 print(GT_simple_outputs.dat)
 print(GT_simple_outputs.massflow)
