@@ -163,6 +163,28 @@ def combustionGT(comb_input):
             T_out = T_out_final
             #print("Nombre d'itérations : ",iter)
             #print("T_out : ",T_out,"K")
+    if (inversion == True):
+        lambda_comb = 2 #première estimation
+        while iter <50 and error > 0.01 :
+            coeff_stochio = np.array([2*lambda_comb*coeff,1,2,2*(lambda_comb-1)]) # N2- CO2 - H2O - O2
+            total_n = sum(coeff_stochio) # nombre de moles total
+            molar_conc = coeff_stochio/total_n # concentration des elements mol_co2/mol_t
+            molar_mass = np.array([0.028,0.044,0.018,0.032]) #kg/mol N2- CO2 - H2O - O2
+            Mm_af = sum(molar_conc*molar_mass) #somme ponderé des masse molaire
+            mass_conc = molar_conc*molar_mass/Mm_af #[-] kg_co2/kg_tot
+
+            cps_out = np.array([cp_mean(cpN2,T0,T_out,dt),cp_mean(cpCO2,T0,T_out,dt),cp_mean(cpH2O,T0,T_out,dt),cp_mean(cpO2,T0,T_out,dt)])
+            cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg_fumée/K
+
+            h_f01 = np.array([janaf_integrate(cpN2,T0-15,T0,dt),janaf_integrate(cpCO2,T0-15,T0,dt),janaf_integrate(cpH2O,T0-15,T0,dt),janaf_integrate(cpO2,T0-15,T0,dt)])
+            h_f0 = np.dot(h_f01,mass_conc)/Mm_af
+
+            lambda_comb_final = (cp_f*(T_out-T0) + h_f0 - LHV*1000 - hc)/(ma1*(ha - h_f0 + cp_f*(T0-T_out)))
+            iter = iter + 1
+            error = abs(lambda_comb_final-lambda_comb)
+            lambda_comb = lambda_comb_final
+
+
 
     #calcul de l exergie et eta_combex ==> see formula page 28
     e_c = HHV+ 15 * (cp_mean(cpCH4,273.15,T0,dt)/0.016 + mass_conc[3]/0.032*cp_mean(cpO2,273.15,T0,dt) - mass_conc[1]/0.044*cp_mean(cpCO2,273.15,T0,dt) - mass_conc[2]/0.018*cp_mean(cpH2O,273.15,T0,dt))/1000 - T0*(CH4.S(273.15)/0.016+cp_mean(cpCH4,273.15,T0,dt)/0.016*np.log(T0/273.15))/1000 # kJ/kg_ch4
@@ -200,13 +222,15 @@ def combustionGT(comb_input):
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 
-#sol =combustionGT(GT_arg.comb_input(lambda_comb = 2))#1.65))
-#print(sol.T_out)
+sol = combustionGT(GT_arg.comb_input(lambda_comb = 2))#1.65))
+print(sol.T_out)
+sol2 = combustionGT(GT_arg.comb_input(inversion = True, T_out = sol.T_out))#1.65))
+print(sol2.lambda_comb)
 #Fais le plot de T_out en fonction de lambda_comb
 
-"""
 
-x = np.linspace(1,20,100)
+"""
+x = np.linspace(1,10,100)
 y = np.zeros(len(x))
 for i in range (0,len(x)) :
     y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i])).T_out
@@ -216,6 +240,7 @@ plt.xlabel('Lambda')
 plt.show()
 #
 """
+
 
 """
 x = np.linspace(1,10,20)
