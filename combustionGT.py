@@ -115,8 +115,8 @@ def combustionGT(comb_input):
     x_O2a = comb_input.x_O2a
     x_N2a = comb_input.x_N2a
     coeff = x_N2a/x_O2a
-    T_in  = comb_input.T_in +273.15 #[K]
-    T_in_comb = comb_input.T_in_comb +273.15 #[K]
+    T_in  = comb_input.T_in  #[K]
+    T_in_comb = comb_input.T_in_comb  #[K]
     h_in  = comb_input.h_in #kJ/kg_air
     LHV   =comb_input.LHV #kJ/kg_ch4]
     HHV = comb_input.HHV #kJ/kg_CH4
@@ -222,9 +222,9 @@ def combustionGT(comb_input):
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     return outputs;
 
-sol = combustionGT(GT_arg.comb_input(lambda_comb = 2,T_in = 500))#1.65))
+sol = combustionGT(GT_arg.comb_input(lambda_comb = 2,T_in = 15+273.15))#1.65))
 print(sol.T_out)
-sol2 = combustionGT(GT_arg.comb_input(inversion = True,T_in = 15, T_out = sol.T_out))#1.65))
+sol2 = combustionGT(GT_arg.comb_input(inversion = True,T_in = 15+273.15, T_out = sol.T_out))#1.65))
 print(sol2.lambda_comb)
 #Fais le plot de T_out en fonction de lambda_comb
 
