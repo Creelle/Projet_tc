@@ -132,6 +132,7 @@ class comb_input:
                      x_O2a = 0.21,# molar fraction
                      x_N2a = 0.79,# molar fraction
                      T_in = 600,#°C
+                     T_in_comb = 15,# °C
                      h_in = 650,# enthalpy[kJ/kg_air]
                      HHV = 55695, # [kJ/kg_CH4]
                      inversion =False,
@@ -142,6 +143,7 @@ class comb_input:
         self.x_O2a = x_O2a;
         self.x_N2a = x_N2a ;
         self.T_in = T_in;
+        self.T_in_comb = T_in_comb;
         self.h_in = h_in;
         self.LHV = LHV;
         self.HHV = HHV;
