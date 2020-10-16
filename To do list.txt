@@ -1,23 +1,24 @@
-a faire:
-        merge combustionGT avec simpleGT => fait
+    fait :
+    merge combustionGT avec simpleGT => fait
 
 		changer la formule de l entropy_air ==> fait
         preheating ==> modelisation d un echangeur ==> OK
 		janaf integrate air ==> ok mais pas pour la combustion
+    robbe :exergie pour simpleGT ==> fait (a verifier)=> okay verifier
+    robbe :envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur  => j ai pas envoyé pour le heat exchanger
+    Gwen : combustion GT :  calculer lambda en fonction de T_out==>ok
+    robbe :calculer les pertes a chaque etape (4) ==>ok
 
 		A faire cette semaine:
-    exchanger changer les divisions
-    robbe :exergie pour simpleGT ==> fait (a verifier)=> okay verifier
-		robbe :envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur  => j ai pas envoyé pour le heat exchanger
-    Gwen : combustion GT :  calculer lambda en fonction de T_out==>ok
-		robbe :faire les graphes d optimisation ==> voir livre
-		robbe :calculer les pertes a chaque etape (4) ==>ok
+    gwen envoyé mais pour l exchanger
+    robbe :faire les graphes d optimisation ==> voir livre
 		Gwen : calculer les rendements exergetiques ==> a verifier
 
 		A faire des que possible
-		pychart de l energie et l exergie
+		robbe : pychart de l energie et l exergie
 
 		A faire pas maintenant
+    exchanger changer les divisions
 		des graphes T s et pv des etats dans la turbine
 		preheating dans GT
 		(faire plusieurs etages de compression et analyse au niveau exergetique et energetique pour avoir

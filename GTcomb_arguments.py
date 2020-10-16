@@ -58,6 +58,7 @@ class comb_output:
                      lambda_comb=1,
                      ma1 =1,
                      e_c = 1., #kJ/kg_ch4
+                     eta_combex = 1.,
                      T_out = -1.):# [kJ/kg_CH4]
         self.R_f = R_f;
         self.m_O2f = m_O2f;
@@ -69,6 +70,7 @@ class comb_output:
         self.lambda_comb = lambda_comb
         self.ma1 =ma1
         self.e_c=e_c
+        self.eta_combex = eta_combex
 
 
 class exchanger_input:

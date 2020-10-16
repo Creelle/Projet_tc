@@ -293,11 +293,13 @@ def GT_simple(GT_input):
     8) calcul des rendements exergetique
     """
     eta_cyclex = Pm/(mf_out*e3-mf_in*e2)
-    eta_totex = Pe/(mf_c*ec) #pas la meme chose que dans le livre
+    #eta_totex = Pe/(mf_c*ec) #pas la meme chose que dans le livre
+    eta_totex = Pe/(mf_out*h3-mf_out*h2)
     eta_rotex = Pm/(mf_out*(e3-e4)-mf_in*(e2-e1))
     eta_combex = (mf_out*e3-mf_in*e2)/(mf_out*h3-mf_out*h2)
-    # eta_combex2 = (mf_out*e3-mf_in*e2)/(m_c*ec)#==> probleme car >1
-    # print(eta_combex,eta_combex2,'eta_combex')
+    eta_combex3 = comb_outputs.eta_combex
+    # print('eta_totex',eta_totex,eta_combex*eta_cyclex*eta_rotex)
+    # print(eta_combex,eta_combex3,'eta_combex')
     eta_cex = delta_ex_c/deltah_c
     eta_dex = deltah_t/delta_exer_t
     """
