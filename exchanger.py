@@ -3,7 +3,7 @@ db = janaf.Janafdb();
 import numpy as np;
 import matplotlib.pyplot as plt;
 
-import GT_arguments as GT_arg;
+import GTcomb_arguments as GT_arg;
 import combustionGT as comb;
 
 db = janaf.Janafdb();
