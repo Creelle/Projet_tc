@@ -1,3 +1,11 @@
+## Project LMECA2150-Thermal cycle
+# Material related to the combustion of the Gas turbine
+#
+# Author: Paolo Thiran & Gauthier Limpens
+# Version: 2020
+#
+# !!! This script CANNOT be modified by the students.
+
 import numpy;
 
 class GT_input:
@@ -10,27 +18,26 @@ class GT_input:
      INPUTS (some inputs can be dependent on others => only one of these 2 can
              be activated) Refer to Fig 3.1 from reference book (in english)
      P_E = electrical power output target [kW]
-     OPTIONS is a structure containing :
-       -options.k_mec [-] : Shaft losses
-       -options.T_0   [°C] : Reference temperature
-       -options.T_ext [°C] : External temperature
-       -options.r     [-] : Compression ratio
-       -options.k_cc  [-] : Coefficient of pressure losses due to combustion
-                            chamber
-       -options.T_3   [°C] : Temperature after combustion (before turbine)
-       -option.eta_PiC[-] : Intern polytropic efficiency (Rendement
-                            polytropique interne) for compression
-       -option.eta_PiT[-] : Intern polytropic efficiency (Rendement
-                            polytropique interne) for expansion
+     k_mec [-] : Shaft losses
+     T_0   [°C] : Reference temperature
+     T_ext [°C] : External temperature
+     r     [-] : Compression ratio
+     k_cc  [-] : Coefficient of pressure losses due to combustion
+                 chamber
+     T_3   [°C] : Temperature after combustion (before turbine)
+     eta_PiC[-] : Intern polytropic efficiency (Rendement
+                  polytropique interne) for compression
+     eta_PiT[-] : Intern polytropic efficiency (Rendement
+                  polytropique interne) for expansion
      DISPLAY = 1 or 0. If 1, then the code should plot graphics. If 0, then the
               do not plot."""
     def __init__(self, Pe = 50e3,#50 MW
-                     k_mec = 0.015,
-                     T_0 = 288.15,#°C
-                     T_ext =288.15,#°C
+                     k_mec = -1.,
+                     T_0 = -1.,#°C
+                     T_ext =10.,
                      r =10.,
-                     k_cc =0.95,
-                     T3 =1400,#°C
+                     k_cc =-1.,
+                     T3 =1050,
                      eta_PiC =0.9,
                      eta_PiT =0.9,
                      Display =-1.):
@@ -49,12 +56,12 @@ class GT_outputs:
     """
      OUPUTS :
      ETA is a vector with :
-       -eta(0) : eta_cyclen, cycle energy efficiency
-       -eta(1) : eta_toten, overall energy efficiency
-       -eta(2) : eta_cyclex, cycle exergy efficiency
-       -eta(3) : eta_totex, overall exergie efficiency
-       -eta(4) : eta_rotex, compressor-turbine exergy efficiency
-       -eta(5) : eta_combex, Combustion exergy efficiency
+       -eta(1) : eta_cyclen, cycle energy efficiency
+       -eta(2) : eta_toten, overall energy efficiency
+       -eta(3) : eta_cyclex, cycle exegy efficiency
+       -eta(4) : eta_totex, overall exergie efficiency
+       -eta(5) : eta_rotex, compressor-turbine exergy efficiency
+       -eta(6) : eta_combex, Combustion exergy efficiency
        FYI : eta(i) \in [0;1] [-]
      DATEN is a vector with :
        -daten(1) : perte_mec [kW]
@@ -88,14 +95,15 @@ class GT_outputs:
 
      FIG is a vector of all the figure you plot. Before each figure, define a
      figure environment such as:
-      "FIG(1) = figure;
-      plot(x,y1);
+      "fig1 = plt.figure(1);
+      plt.plot(t, y1);
       [...]
-       FIG(2) = figure;
-      plot(x,y2);
-      [...]"
+       fig1 = plt.figure(1);
+      plt.plot(t, y1);
+      [...]
+      fig=[fig1,fig2]"
       Your vector FIG will contain all the figure plot during the run of this
-      code (whatever the size of FIG).
+      code.
     """
     class Combustion:
         def __init__(self):
@@ -112,112 +120,4 @@ class GT_outputs:
         self.dat = numpy.zeros((5, 4));
         self.massflow = numpy.zeros(3);
         self.combustion = comb;
-
-
-class comb_input:
-    """
-     combustion(lambda,x_O2a,x_N2a) computes the combustion of methane with air given the excess air (lambda).
-     It returns the molar fraction of the different
-
-     INPUTS
-     lambda_comb : excess air
-     x_O2a : molar fraction of oxygen concentration in air
-     x_N2a : molar fraction of nitrogen concentration in air
-     T_in  : gas temperature at the inlet
-     h_in  : enthalpy of the gas at the inlet
-     LHV  : Fuel 'Low Heating Value'. CH4 here [kJ/kg_CH4]
-
-    """
-    def __init__(self, lambda_comb = 2,#excess air
-                     x_O2a = 0.21,# molar fraction
-                     x_N2a = 0.79,# molar fraction
-                     T_in = 600,#°C
-                     T_in_comb = 15,# °C
-                     h_in = 650,# enthalpy[kJ/kg_air]
-                     HHV = 55695, # [kJ/kg_CH4]
-                     inversion =False,
-                     T_out = 1000,#pour trouver lambda en fonction de T_out mettre true
-                     LHV =50150):# [kJ/kg_CH4]
-
-        self.lambda_comb = lambda_comb;
-        self.x_O2a = x_O2a;
-        self.x_N2a = x_N2a ;
-        self.T_in = T_in;
-        self.T_in_comb = T_in_comb;
-        self.h_in = h_in;
-        self.LHV = LHV;
-        self.HHV = HHV;
-        self.inversion = inversion
-        self.T_out = T_out
-
-class comb_output:
-    """
-     combustion(lambda,x_O2a,x_N2a) computes the combustion of methane with air given the excess air (lambda).
-     It returns the mass fraction of the different
-
-     OUTPUTS
-     R_f   : ideal gas constant (R*) for specific gas (R/Mm_f) [kJ/kg/K]
-     m_O2f : mass fraction of oxygen in exhaust gases [-]
-     m_N2f : mass fraction of nitrogen in exhaust gases [-]
-     m_CO2f : mass fraction of carbon dioxyde in exhaust gases [-]
-     m_H2Of : mass fraction of water steam in exhaust gases [-]
-     T_out  : outlet gas temperature [K]
-
-    """
-    def __init__(self, R_f = -1.,#50 MW
-                     m_O2f = 0.1,# molar fraction
-                     m_N2f = 0.4,# molar fraction
-                     m_CO2f = 0.2,#°C
-                     m_H2Of = 0.3,# enthalpy
-                     Mm_af = -1.,
-                     lambda_comb=1,
-                     ma1 =1,
-                     e_c = 1., #kJ/kg_ch4
-                     T_out = -1.):# [kJ/kg_CH4]
-        self.R_f = R_f;
-        self.m_O2f = m_O2f;
-        self.m_N2f = m_N2f ;
-        self.m_CO2f = m_CO2f;
-        self.m_H2Of = m_H2Of;
-        self.T_out = T_out;
-        self.Mm_af = Mm_af;
-        self.lambda_comb = lambda_comb
-        self.ma1 =ma1
-        self.e_c=e_c
-
-
-class exchanger_input:
-    def __init__(self, U = 0.3,#coefficient de transmission
-                     Mflow_air_in = 45,
-                     Mflow_f_in = 50,
-                     T_air_in = 288.15, # [K]
-                     T_f_in = 1200, # [K]
-                     comb_lambda = 2,
-                     courant = -1): # contre-courant = -1 ; co-courant = 1
-        self.U = U;
-        self.Mflow_air_in = Mflow_air_in
-        self.Mflow_f_in = Mflow_f_in
-        self.T_air_in = T_air_in
-        self.T_f_in = T_f_in
-        self.comb_lambda = comb_lambda
-        self.courant = courant;
-
-class exchanger_output:
-    def __init__(self, U = 0.3,#coefficient de transmission
-                     Mflow_air_out = 45,
-                     Mflow_f_out = 50,
-                     T_air_out = 888.15, # [K]
-                     T_f_out = 500, # [K]
-                     eta_transex = 0.5,
-                     Surf = 50, # surface d'échange [m**2]
-                     Q = 10, #[W]
-                     courant = -1): # contre-courant = -1 ; co-courant = 1
-        self.U = U;
-        self.Mflow_air_out = Mflow_air_out
-        self.Mflow_f_out = Mflow_f_out
-        self.T_air_out = T_air_out
-        self.T_f_out = T_f_out
-        self.eta_transex = eta_transex
-        self.Surf = Surf
-        self.Q = Q
-        self.courant = courant;
+        self.fig = list();

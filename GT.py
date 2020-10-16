@@ -4,6 +4,7 @@ import numpy as np;
 import matplotlib.pyplot as plt;
 
 import GT_arguments as GT_arg;
+import GTcomb_arguments as GTcomb_arg
 import combustionGT as comb;
 
 O2 = db.getphasedata('O2','g');
@@ -196,7 +197,7 @@ def GT_simple(GT_input):
 
     p3 = p2*kcc
 
-    comb_inputs = GT_arg.comb_input(h_in=h2,T_in = T2,inversion=True,T_out=T3 )
+    comb_inputs = GTcomb_arg.comb_input(h_in=h2,T_in = T2,inversion=True,T_out=T3 )
     comb_outputs = comb.combustionGT(comb_inputs)
     T3=comb_outputs.T_out
     lambda_comb = comb_outputs.lambda_comb
@@ -324,6 +325,6 @@ def GT_simple(GT_input):
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 """
 
-GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,T_ext=288.15,r=18.,T3 = 1673.15));
+GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=18.,k_cc=0.95,T3 = 1673.15));
 print(GT_simple_outputs.dat)
 print(GT_simple_outputs.massflow)

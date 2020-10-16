@@ -2,7 +2,7 @@ from thermochem import janaf
 import matplotlib.pyplot as plt
 import numpy as np;
 
-import GT_arguments as GT_arg;
+import GTcomb_arguments as GT_arg;
 
 db = janaf.Janafdb();
 Mm_CH4 = 0.016; Mm_O2 = 0.032; Mm_N2 = 0.028; Mm_H2O = 0.018; Mm_CO2 = 0.044
