@@ -275,7 +275,19 @@ def GT_simple(GT_input):
     P_out = h4*massflow_coefficient*mf_in #[kW]
     P_fmec = P_t-P_c-Pe
     Pm = P_t-P_c
-    #faire un pychart de ça
+    print('power comparison', P_comb+P_in, P_out+P_fmec+Pe)
+    #faire un pychart de ça : en entrée P_comb+P_in , en sortie P_out, P_fmec , Pe
+    fig,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+    data = [Pe,P_fmec,P_out]
+    labels = ['Puissance effective','Pertes mecaniques','Pertes à la sortie']
+
+    ax.pie(data,labels = labels,autopct='%1.2f%%',startangle = 90)
+
+    #ax.legend(wedges, labels ,title="Puissances",loc="center left",bbox_to_anchor=(1, 0, 0.5, 1))
+
+    ax.set_title("Puissance energetique primaire "+ str(round(P_comb/10**3)) + "[MW]")
+
+    plt.show()
     """
     7) calcul des pertes compresseur, comb, turbine, exhaust
     """
