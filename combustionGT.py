@@ -225,6 +225,7 @@ def combustionGT(comb_input):
     outputs.R_f = 8.31/Mm_af # [J/kg/K]
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     outputs.eta_combex =eta_combex
+    outputs.e_c = e_c
     return outputs;
 
 # sol = combustionGT(GT_arg.comb_input(lambda_comb = 2,T_in = 288.15))#1.65))

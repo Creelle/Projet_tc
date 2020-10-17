@@ -279,13 +279,13 @@ def GT_simple(GT_input):
     #faire un pychart de ça : en entrée P_comb+P_in , en sortie P_out, P_fmec , Pe
     fig,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
     data = [Pe,P_fmec,P_out]
-    labels = ['Puissance effective','Pertes mecaniques','Pertes à la sortie']
+    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la sortie {v} [MW]'.format(v=round(P_out/1000))]
 
     ax.pie(data,labels = labels,autopct='%1.2f%%',startangle = 90)
 
     #ax.legend(wedges, labels ,title="Puissances",loc="center left",bbox_to_anchor=(1, 0, 0.5, 1))
 
-    ax.set_title("Puissance energetique primaire "+ str(round(P_comb/10**3)) + "[MW]")
+    ax.set_title("Flux energetique primaire "+ str(round(P_comb/10**3)) + "[MW]")
 
     plt.show()
     """
@@ -301,6 +301,22 @@ def GT_simple(GT_input):
     L_t = mf_out*T0*deltas_t/1000 #[kW]
     #exhaust losses
     L_exhaust = mf_out*e4 #-mf_in*e1
+
+    print('exergie chequ up',ec*mf_c,Pe+P_fmec+L_t+L_c+L_exhaust+L_comb)
+    #faire un pychart de ça : en entrée ec*mf_c et en sortie Pe, P_fmec, L_t, L_c , L_exhaust,L_comb
+    fig2,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+    data = [Pe,P_fmec,L_t,L_c,L_exhaust,L_comb]
+    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la turbine {v} [MW]'.format(v=round(L_t/1000)),
+              'Pertes au compresseur {v} [MW]'.format(v=round(L_c/1000)), 'Pertes à la sortie {v} [MW]'.format(v=round(L_exhaust/1000)), 'Pertes à la combustion {v} [MW]'.format(v=round(L_comb/1000))]
+
+
+    ax.pie(data,labels = labels,autopct="%1.2f%%",startangle = 90)
+
+    #ax.legend(wedges, labels ,title="Puissances",loc="center left",bbox_to_anchor=(1, 0, 0.5, 1))
+
+    ax.set_title("Flux exergetique primaire "+ str(round(ec*mf_c/10**3)) + "[MW]")
+
+
     """
     8) calcul des rendements exergetique
     """
@@ -308,10 +324,11 @@ def GT_simple(GT_input):
     #eta_totex = Pe/(mf_c*ec) #pas la meme chose que dans le livre
     eta_totex = Pe/(mf_out*h3-mf_out*h2)
     eta_rotex = Pm/(mf_out*(e3-e4)-mf_in*(e2-e1))
-    eta_combex = (mf_out*e3-mf_in*e2)/(mf_out*h3-mf_out*h2)
-    eta_combex3 = comb_outputs.eta_combex
+    #eta_combex2 = (mf_out*e3-mf_in*e2)/(mf_out*h3-mf_out*h2)
+    eta_combex = (mf_out*e3-mf_in*e2)/(mf_c*ec)
+    #eta_combex3 = comb_outputs.eta_combex
     # print('eta_totex',eta_totex,eta_combex*eta_cyclex*eta_rotex)
-    # print(eta_combex,eta_combex3,'eta_combex')
+    #print(eta_combex,eta_combex2,eta_combex3,'eta_combex')
     eta_cex = delta_ex_c/deltah_c
     eta_dex = deltah_t/delta_exer_t
     """
@@ -334,6 +351,7 @@ def GT_simple(GT_input):
     outputs.combustion.e_c = comb_outputs.e_c
     outputs.combustion.Cp_g = cp_air(400,conc_mass2,Mm_af)/1000
 
+    plt.show()
     return outputs;
 """
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
