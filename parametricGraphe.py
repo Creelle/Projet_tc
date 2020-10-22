@@ -41,13 +41,15 @@ def parametricGraphic(M,number):
             if j==3:
                 for i in range (0,len(x)) :
                     y4[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = 1873.15)).eta[0]
+
+        fig=plt.figure()
         plt.plot(x,y1,x,y2,x,y3,x,y4)
         plt.legend(('T = 1000 °C', 'T = 1200 °C', 'T = 1400 °C','T = 1600 °C'),
                    loc='upper right')
         plt.ylabel('Eta cyclen')
         plt.xlabel('r')
-        plt.savefig('figures/Eta_cyclen_vs_r.pdf')
-        plt.show()
+        plt.savefig('figures/Eta_cyclen_vs_r.png')
+
     if M == 'Wcycle_vs_r' or M == 'all':
         T=np.array([1073.15,1273.15,1473.15,1673.15,1873.15])
         x = np.linspace(2,100,number)
