@@ -1,30 +1,31 @@
-    fait :
-    merge combustionGT avec simpleGT => fait
 
-		changer la formule de l entropy_air ==> fait
-        preheating ==> modelisation d un echangeur ==> OK
-		janaf integrate air ==> ok mais pas pour la combustion
-    robbe :exergie pour simpleGT ==> fait (a verifier)=> okay verifier
-    robbe :envoyer mail pour enthalpie et entropie differences + quel cp prendre dans l'échangeur de chaleur + Quel U prendre dans l'échangeur de chaleur  => j ai pas envoyé pour le heat exchanger
-    Gwen : combustion GT :  calculer lambda en fonction de T_out==>ok
-    robbe :calculer les pertes a chaque etape (4) ==>ok
-
-		A faire cette semaine:
-    gwen envoyé mais pour l exchanger
-    robbe :faire les graphes d optimisation ==> voir livre
-		Gwen : calculer les rendements exergetiques ==> a verifier
+		A fairesemaine S5 :
+    gwen envoyé mais pour l exchanger ==> pas encore fait
+    gwen :faire les graphes d optimisation ==> OK
+		Robbe : calculer les rendements exergetiques ==> ok
 
 		A faire des que possible
-		robbe : pychart de l energie et l exergie
+		robbe : pychart de l energie et l exergie  ==> fait
 
-		A faire pas maintenant
-    exchanger changer les divisions
-		des graphes T s et pv des etats dans la turbine
+    A faire S6,
+    GWEN : changer toutes les temperatures de GTarg et Gt _arg_comb en ° par contre directement mettre en K dans les autres fichiers
+    Robbe : janaf integrate air ==> ok mais pas pour la combustion
+    GWEN :  envoyer petit mail pour l echangeur comment trouver U
+    Robbe : mettre le flag pour mettre le figures ou pas
+    GWEn: faire un fichier apart pour les graphes parametriques
+    Robbe : des graphes T s et pv des etats dans la gas turbine
+
+	  A faire des que c est fini :
+      calculer la temperature d entree du CH4 : pour le moment dans hc on considere que la temperature c est 288.15 K alors que c est surement plus chaud
+
+    A faire pas maintenant
 		preheating dans GT
 		(faire plusieurs etages de compression et analyse au niveau exergetique et energetique pour avoir
         si ca change quelque chose)
-    calculer la temperature d entree du CH4
+    preheating ==> modelisation d un echangeur ==> OK , trouver U et une surface
+    changer le type de fuel que nous utilisons
+
 
 attention en utilisant hef , on fixe la reference a 25°c
 pour la variation dentropie , il faut utiliser la variation de pression ==> -R*np.log(p2/p1)
-==> il y a un probleme avec e_c
+==> il y a un probleme avec e_c ==> plus maintenant car m_c different de mf_c
