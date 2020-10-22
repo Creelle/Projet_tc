@@ -11,6 +11,7 @@ class comb_input:
      T_in  : gas temperature at the inlet
      h_in  : enthalpy of the gas at the inlet
      LHV  : Fuel 'Low Heating Value'. CH4 here [kJ/kg_CH4]
+     k_cc pressure loss in the combustion chamber
 
     """
     def __init__(self, lambda_comb = 2,#excess air
@@ -22,6 +23,8 @@ class comb_input:
                      HHV = 55695, # [kJ/kg_CH4]
                      inversion =False,
                      T_out = 1000,#pour trouver lambda en fonction de T_out mettre true
+                     k_cc = 1.0,
+                     r = 1,
                      LHV =50150):# [kJ/kg_CH4]
 
         self.lambda_comb = lambda_comb;
@@ -33,6 +36,8 @@ class comb_input:
         self.LHV = LHV;
         self.HHV = HHV;
         self.inversion = inversion
+        self.k_cc = k_cc
+        self.r = r
         self.T_out = T_out
 
 class comb_output:

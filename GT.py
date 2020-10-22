@@ -30,7 +30,7 @@ def cp_air(T,conc_mass,Mm_a):
     cps = np.array([N2.cp(T),CO2.cp(T),H2O.cp(T),O2.cp(T)])
     molar_mass = np.array([0.028,0.044,0.018,0.032])
     cp_air = np.dot(conc_mass,cps);#J/mol/K
-    return cp_air/Mm_a #J/kg
+    return cp_air/Mm_a #J/kg/K
 
 
 #fonction qui donne l enthalpie (kJ/kg), T temperature concentration massique mass : array (N2 , CO2, H20,O2)
@@ -46,19 +46,7 @@ def air_entropy(T,conc_mass,Mm_a):
     S_air = sum(conc_mass*entropies);#J/mol/K
     return S_air/Mm_a #kJ/kg
 def cp_air_T(T,conc_mass,Mm_a):#J/kg/K
-
     return cp_air(T,conc_mass,Mm_a)/T;
-
-# def exergy_air(T,conc_mass,Mm_a):
-#     T0=288.15
-#     #molar_mass = np.array([0.028,0.044,0.018,0.032])
-#     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
-#     entropies = np.array([N2.S(T),CO2.S(T),H2O.S(T),O2.S(T)])
-#     enthalpies0 = np.array([N2.hef(T0),CO2.hef(T0),H2O.hef(T0),O2.hef(T0)])
-#     entropies0 = np.array([N2.S(T0),CO2.S(T0),H2O.S(T0),O2.S(T0)])
-#     exergies = (enthalpies-enthalpies0)*1000-T0*(entropies-entropies0) #J/mol
-#     e_air = sum(conc_mass*exergies)/1000/Mm_a #kJ/kg
-#     return e_air #kJ/kg
 
 def janaf_integrate_air(f,conc_mass,Mm_a,T1,T2,dt):
     values = np.arange(T1,T2,dt)
@@ -131,6 +119,8 @@ def GT_simple(GT_input):
     T0=arg_in.T_0
     k_mec = arg_in.k_mec
     kcc = arg_in.k_cc
+    if kcc == -1.:
+        kcc = 1
 
     """
     ## preliminary data (air) ==> find gamma
@@ -153,7 +143,7 @@ def GT_simple(GT_input):
     """
     T1=T_ext # a changer lors du preaheating
     p1 = 1.0 #bar
-    h1 = air_enthalpy(T1,conc_mass1,Mm_a)+air_enthalpy(T0+10,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a) #car la ref est pris a 25°c et non 25°C
+    h1 = air_enthalpy(T1,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a) #car la ref est pris a 25°c et non 25°C
     s1 = air_entropy(T1,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a) #car T0 est ma reference
     e1 = h1-T0*s1/1000 #kJ/kg_in
 
@@ -175,12 +165,12 @@ def GT_simple(GT_input):
 
     s2 = air_entropy(T2,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a)-Ra*np.log(r)
     #s22 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T0,T2,0.001)
-    h2 = air_enthalpy(T2,conc_mass1,Mm_a)+ air_enthalpy(T0+10,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a)
+    h2 = air_enthalpy(T2,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a)
     e2 = h2-T0*s2/1000
 
     deltah_c = h2-h1 #kJ/kg
     deltah_c2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)/1000 #kJ/kg
-    print('enthalpy comparison',deltah_c,deltah_c2)
+    #print('enthalpy comparison',deltah_c,deltah_c2)
     deltas_c1 = s2-s1
     #deltas_c2 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.001)-Ra*np.log(r)
     #print('entropy comparaison',deltas_c1,deltas_c2)
@@ -194,7 +184,7 @@ def GT_simple(GT_input):
     """
     p3 = p2*kcc
 
-    comb_inputs = GTcomb_arg.comb_input(h_in=h2,T_in = T2,inversion=True,T_out=T3 )
+    comb_inputs = GTcomb_arg.comb_input(h_in=h2,T_in = T2,inversion=True,T_out=T3, k_cc = kcc, r=r )
     comb_outputs = comb.combustionGT(comb_inputs)
     T3=comb_outputs.T_out
     lambda_comb = comb_outputs.lambda_comb
@@ -203,6 +193,7 @@ def GT_simple(GT_input):
     Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
     h3 = air_enthalpy(T3,conc_mass2,Mm_af) +air_enthalpy(T0+10,conc_mass2,Mm_af)- air_enthalpy(T0,conc_mass2,Mm_af)#kJ/kg_f
+
     # h32 = cp_mean_air(cp_air,conc_mass2,Mm_af,T0,T3,0.001)*(T3-T0)
     # h33 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T3,0.001)
     # print('h3',h3,h32,h33)
@@ -277,12 +268,8 @@ def GT_simple(GT_input):
     labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la sortie {v} [MW]'.format(v=round(P_out/1000))]
 
     ax.pie(data,labels = labels,autopct='%1.2f%%',startangle = 90)
-
-    #ax.legend(wedges, labels ,title="Puissances",loc="center left",bbox_to_anchor=(1, 0, 0.5, 1))
-
     ax.set_title("Flux energetique primaire "+ str(round(P_comb/10**3)) + "[MW]")
 
-    plt.show()
     """
     7) calcul des pertes compresseur, comb, turbine, exhaust
     """
@@ -306,11 +293,7 @@ def GT_simple(GT_input):
 
 
     ax.pie(data,labels = labels,autopct="%1.2f%%",startangle = 90)
-
-    #ax.legend(wedges, labels ,title="Puissances",loc="center left",bbox_to_anchor=(1, 0, 0.5, 1))
-
     ax.set_title("Flux exergetique primaire "+ str(round(ec*mf_c/10**3)) + "[MW]")
-
 
     """
     8) calcul des rendements exergetique
@@ -321,6 +304,7 @@ def GT_simple(GT_input):
     eta_rotex = Pm/(mf_out*(e3-e4)-mf_in*(e2-e1))
     #eta_combex2 = (mf_out*e3-mf_in*e2)/(mf_out*h3-mf_out*h2)
     eta_combex = (mf_out*e3-mf_in*e2)/(mf_c*ec)
+    #print('eta_combex2',eta_combex,'eta_combex1',comb_outputs.eta_combex)
     #eta_combex3 = comb_outputs.eta_combex
     # print('eta_totex',eta_totex,eta_combex*eta_cyclex*eta_rotex)
     #print(eta_combex,eta_combex2,eta_combex3,'eta_combex')
