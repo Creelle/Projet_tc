@@ -179,10 +179,7 @@ def GT_simple(GT_input):
     e2 = h2-T0*s2/1000
 
     deltah_c = h2-h1 #kJ/kg
-    deltah_c2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)/1000 #kJ/kg
-    print('enthalpy comparaison',deltah_c,deltah_c2)
-    print(T2-T1)
-
+    #deltah_c2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)/1000 #kJ/kg
     deltas_c1 = s2-s1
     #deltas_c2 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.001)-Ra*np.log(r)
     #print('entropy comparaison',deltas_c1,deltas_c2)
@@ -194,7 +191,6 @@ def GT_simple(GT_input):
     """
      2 ) combustion
     """
-
     p3 = p2*kcc
 
     comb_inputs = GTcomb_arg.comb_input(h_in=h2,T_in = T2,inversion=True,T_out=T3 )
@@ -213,12 +209,11 @@ def GT_simple(GT_input):
     s3 = air_entropy(T3,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af)-Rf*np.log(kcc*r) #J/K/kg_f
     e3 = h3-T0*s3/1000 #kJ/kg_in
     delta_exer_comb = massflow_coefficient*e3-e2 #kJ/kg_air
-    print('exergie 2-3',delta_exer_comb)
+
     """
     3)  detente
     """
     p4 = p3/(r*kcc)
-
 
     # calcul de T4 par iteration
     T4 = T3*(1/(r*kcc))**((m_t-1)/m_t)
@@ -233,14 +228,13 @@ def GT_simple(GT_input):
         error = abs(T4_new-T4)
         T4=T4_new
 
-
     h4 = air_enthalpy(T4,conc_mass2,Mm_af) +air_enthalpy(T0+10,conc_mass2,Mm_af)- air_enthalpy(T0,conc_mass2,Mm_af)# kJ/kg_f # pour fixer la ref a 15°C
     deltah_t = h4-h3 #<0# kJ/kg_f
     s4 = air_entropy(T4,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af) # kJ/kg_f
     e4 = h4-T0*s4/1000# kJ/kg_f
     delta_exer_t = e4-e3# kJ/kg_f
     deltas_t = s4-s3# kJ/kg_f
-    print('exergie 3-4',delta_exer_t, deltah_t-T0*deltas_t/1000)
+
     """
     4) travail moteur
     """
@@ -263,8 +257,8 @@ def GT_simple(GT_input):
 
     #massflow calcul # on neglige m  flow combustion
     mf_in = Pe/(Wm*eta_mec)#kg/s
-    mf_out = mf_in*massflow_coefficient
-    mf_c = mf_out-mf_in
+    mf_out = mf_in*massflow_coefficient #kg/s
+    mf_c = mf_out-mf_in #kg/s
     """
     5) calcul des flux de puissances
     """
@@ -359,4 +353,3 @@ attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 
 GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=18.,k_cc=0.95,T3 = 1673.15));
 print(GT_simple_outputs.dat)
-print(GT_simple_outputs.massflow)

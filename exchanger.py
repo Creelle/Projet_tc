@@ -3,7 +3,7 @@ db = janaf.Janafdb();
 import numpy as np;
 import matplotlib.pyplot as plt;
 
-import GTcomb_arguments as GT_arg;
+import GTcomb_arguments as GT_comb_arg;
 import combustionGT as comb;
 
 db = janaf.Janafdb();
@@ -118,8 +118,8 @@ def heatexchanger(exchanger_input,T_air_out):
 
 
 
-    Mm_air = x_O2a * Mm_O2 + x_N2a * Mm_N2 # [kg/mol_air]
-    ma1 =  Mm_air/Mm_CH4 * 2/x_O2a # kg_air/kg_CH4 = proportion d air entrant vs combustible
+    Mm_a = x_O2a * Mm_O2 + x_N2a * Mm_N2 # [kg/mol_air]
+    ma1 =  Mm_a/Mm_CH4 * 2/x_O2a # kg_air/kg_CH4 = proportion d air entrant vs combustible
 
     # A la sortie :
     coeff_stochio = np.array([2*lambda_comb*coeff,1,2,2*(lambda_comb-1)]) # N2- CO2 - H2O - O2
@@ -134,7 +134,7 @@ def heatexchanger(exchanger_input,T_air_out):
     iter = 1
     error = 20
 
-    outputs = GT_arg.exchanger_output();
+    outputs = GT_comb_arg.exchanger_output();
     outputs.T_air_out = T_air_out
 
     Q = Mflow_air_in * janaf_integrate(cp_air,T_air_in,T_air_out,dt)
@@ -144,7 +144,7 @@ def heatexchanger(exchanger_input,T_air_out):
     #je fais une première estimation de T_f_out pour la formule itérative ci-dessous
     #cette première estimation se fait à cp constant pour l'intégration
     cps_out = np.array([cpN2(288.15),cpCO2(288.15),cpH2O(288.15),cpO2(288.15)])
-    cp_f = np.dot(cps_out,mass_conc/molar_mass) #J/kg_fumée
+    cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg_fumée
     T_f_out = (-Q/(Mflow_f_in*cp_f)) + T_f_in
     T_f_out_secours = T_f_out
 
@@ -163,11 +163,11 @@ def heatexchanger(exchanger_input,T_air_out):
         int_O2 = (1/2)*heat_const_O2[2][2]*(T_f_in**2-T_f_out**2) + (1/3)*heat_const_O2[2][1]*(T_f_in**3-T_f_out**3) + (1/4)*heat_const_O2[2][0]*(T_f_in**4-T_f_out**4)
 
         cps_out = np.array([int_N2,int_CO2,int_H2O,int_O2])
-        cp_f = np.dot(cps_out,mass_conc/molar_mass) #J/kg_fumée
+        cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg_fumée
 
 
         A_variables = np.array([heat_const_N2[2][3],heat_const_CO2[2][3],heat_const_H2O[2][3],heat_const_O2[2][3]])
-        A_var = np.dot(A_variables,mass_conc/molar_mass)
+        A_var = np.dot(A_variables,mass_conc)/Mm_af
 
 
         T_f_out_final = ((cp_f*Mflow_f_in - Q)/(A_var*Mflow_f_in))+T_f_in
@@ -181,7 +181,7 @@ def heatexchanger(exchanger_input,T_air_out):
     outputs.T_f_out = T_f_out
 
     cps_out = np.array([cpN2(288.15),cpCO2(288.15),cpH2O(288.15),cpO2(288.15)])
-    cp_f = np.dot(cps_out,mass_conc/molar_mass) #J/kg_fumée
+    cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg_fumée
 
     if Mflow_air_in*cp_air(288.15)>Mflow_f_in*cp_f : #je dois prendre quelle température pour cp_f et cp_air?
         Deltag_T = T_f_in - T_air_out
@@ -201,13 +201,13 @@ def heatexchanger(exchanger_input,T_air_out):
     """
 
     cps_T = np.array([janaf_integrate(cpN2_T,T_f_out,T_f_in,dt),janaf_integrate(cpCO2_T,T_f_out,T_f_in,dt),janaf_integrate(cpH2O_T,T_f_out,T_f_in,dt),janaf_integrate(cpO2_T,T_f_out,T_f_in,dt)])
-    cp_f_T = np.dot(cps_T,mass_conc/molar_mass)
+    cp_f_T = np.dot(cps_T,mass_conc)/Mm_af
 
     cpTout = np.array([janaf_integrate(cpN2,273.15,T_f_out,dt),janaf_integrate(cpCO2,273.15,T_f_out,dt),janaf_integrate(cpH2O,273.15,T_f_out,dt),janaf_integrate(cpO2,273.15,T_f_out,dt)])
-    cpfTout = np.dot(cpTout,mass_conc/molar_mass)
+    cpfTout = np.dot(cpTout,mass_conc)/Mm_af
 
     cpTin = np.array([janaf_integrate(cpN2,273.15,T_f_in,dt),janaf_integrate(cpCO2,273.15,T_f_in,dt),janaf_integrate(cpH2O,273.15,T_f_in,dt),janaf_integrate(cpO2,273.15,T_f_in,dt)])
-    cpfTin = np.dot(cpTin,mass_conc/molar_mass)
+    cpfTin = np.dot(cpTin,mass_conc)/Mm_a
 
     Tfm = (-cpfTout+cpfTin)/cp_f_T #[K] mean temperature des fumées
     #print(Tfm)
@@ -227,4 +227,4 @@ def heatexchanger(exchanger_input,T_air_out):
 
 
     return outputs
-sol = heatexchanger(GT_arg.exchanger_input(U = 2),850)
+sol = heatexchanger(GT_comb_arg.exchanger_input(U = 2),850)
