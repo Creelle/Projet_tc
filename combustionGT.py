@@ -116,7 +116,7 @@ def combustionGT(comb_input):
     x_N2a = comb_input.x_N2a
     coeff = x_N2a/x_O2a
     T_in  = comb_input.T_in  #[K]
-    T_in_comb = comb_input.T_in_comb  #[K]
+    T_in_comb = comb_input.T_in_comb + 273.15  #[K]
     h_in  = comb_input.h_in #kJ/kg_air
     LHV   =comb_input.LHV #kJ/kg_ch4]
     HHV = comb_input.HHV #kJ/kg_CH4
@@ -147,6 +147,7 @@ def combustionGT(comb_input):
     h_f01 = np.array([janaf_integrate(cpN2,T0-15,T0,dt),janaf_integrate(cpCO2,T0-15,T0,dt),janaf_integrate(cpH2O,T0-15,T0,dt),janaf_integrate(cpO2,T0-15,T0,dt)])
     h_f0 = np.dot(h_f01,mass_conc)/Mm_af
     hc= janaf_integrate(cpCH4,T0-15,T_in_comb,0.0001)/Mm_CH4
+    print(hc)
     ha = janaf_integrate(cp_air,T0-15,T_in,0.0001) #attention cp_air [J/kg_air/K]
     #ha = h_in*1000
 
