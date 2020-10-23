@@ -22,7 +22,7 @@ class comb_input:
                      h_in = 650,# enthalpy[kJ/kg_air]
                      HHV = 55695, # [kJ/kg_CH4]
                      inversion =False,
-                     T_out = 1000,#pour trouver lambda en fonction de T_out mettre true
+                     T_out = 1000, #°Cpour trouver lambda en fonction de T_out mettre true
                      k_cc = 1.0,
                      r = 1,
                      LHV =50150):# [kJ/kg_CH4]
@@ -64,7 +64,7 @@ class comb_output:
                      ma1 =1,
                      e_c = 1., #kJ/kg_ch4
                      eta_combex = 1.,
-                     T_out = -1.):# [kJ/kg_CH4]
+                     T_out = -1.):# °C
         self.R_f = R_f;
         self.m_O2f = m_O2f;
         self.m_N2f = m_N2f ;

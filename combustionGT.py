@@ -1,8 +1,12 @@
 from thermochem import janaf
 import matplotlib.pyplot as plt
 import numpy as np;
-
 import GTcomb_arguments as GT_arg;
+
+"""
+Convention :  toutes les temperatures en arguments sont données en C et les temperatures de sortie aussi
+mais a l 'interieur de la fonction, on travaille en K'
+"""
 
 db = janaf.Janafdb();
 Mm_CH4 = 0.016; Mm_O2 = 0.032; Mm_N2 = 0.028; Mm_H2O = 0.018; Mm_CO2 = 0.044
@@ -100,14 +104,14 @@ def combustionGT(comb_input):
     x_O2a = comb_input.x_O2a
     x_N2a = comb_input.x_N2a
     coeff = x_N2a/x_O2a
-    T_in  = comb_input.T_in  #[K]
+    T_in  = comb_input.T_in +273.15 #[K]
     T_in_comb = comb_input.T_in_comb + 273.15  #[K]
     h_in  = comb_input.h_in #kJ/kg_air
     LHV   =comb_input.LHV #kJ/kg_ch4]
     HHV = comb_input.HHV #kJ/kg_CH4
     T0 =  288.15 #[K]
     inversion = comb_input.inversion #boolean set to false
-    T_out = comb_input.T_out
+    T_out = comb_input.T_out +273.15 #[K]
     kcc = comb_input.k_cc
     r= comb_input.r
     # CH4 + 2 *lambda * (O2 + coeff*N2) <=> CO2+2*H2O+ 2*lambda*coeff*N2 + 2*(lambda-1)*O2
@@ -133,9 +137,9 @@ def combustionGT(comb_input):
     h_f0 =  janaf_integrate_air(cp_air,mass_conc,Mm_af,T0-15,T0,dt)
     hc= janaf_integrate(cpCH4,T0-15,T_in_comb,0.001)/Mm_CH4
     ha = janaf_integrate_air(cp_air,mass_conc0,Mm_a,T0-15,T_in,0.0001) #attention cp_air [J/kg_air/K]
-    
+
     if (inversion == False):
-        T_out = 1000 #premiere estimation
+        T_out = 1273.15 #[K] #premiere estimation
         while iter < 50 and error > 0.01 :
             cp_f = cp_mean_air(cp_air,mass_conc,Mm_af,T0,T_out,dt)
             T_out_final = (T0 + ((1000*LHV + hc + lambda_comb*ma1*ha)/((lambda_comb*ma1+1)*cp_f)) - h_f0/(cp_f))
@@ -182,40 +186,15 @@ def combustionGT(comb_input):
     outputs.Mm_af = Mm_af
     outputs.lambda_comb = lambda_comb
     outputs.ma1 = ma1
-    outputs.T_out = T_out
+    outputs.T_out = T_out - 273.15 #°C
     outputs.R_f = Rf
     outputs.m_N2f,outputs.m_CO2f,outputs.m_H2Of,outputs.m_O2f = mass_conc  #[-]
     outputs.eta_combex =eta_combex
     outputs.e_c = e_c
     return outputs;
 
-sol = combustionGT(GT_arg.comb_input(lambda_comb = 2,T_in = 288.15))#1.65))
+sol = combustionGT(GT_arg.comb_input(lambda_comb = 2,T_in = 15))#1.65))
 print(sol.T_out,sol.eta_combex)
 #sol2 = combustionGT(GT_arg.comb_input(inversion = True,T_in = 15+273.15, T_out = 1200))#1.65))
 # print(sol2.lambda_comb)
 #Fais le plot de T_out en fonction de lambda_comb
-
-
-"""
-x = np.linspace(1,10,100)
-y = np.zeros(len(x))
-for i in range (0,len(x)) :
-    y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i])).T_out
-plt.plot(x,y)
-plt.ylabel('Temperature [K]')
-plt.xlabel('Lambda')
-plt.show()
-#
-"""
-
-
-"""
-x = np.linspace(1,10,20)
-y = np.zeros(len(x))
-for i in range (0,len(x)) :
-    y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i]))
-plt.plot(x,y)
-plt.ylabel('eta_combex')
-plt.xlabel('Lambda')
-plt.show()
-"""

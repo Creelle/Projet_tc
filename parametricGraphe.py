@@ -91,4 +91,27 @@ def parametricGraphic(M,number):
     plt.xlabel('r')
     plt.show()
     """
+    """
+    x = np.linspace(1,10,100)
+    y = np.zeros(len(x))
+    for i in range (0,len(x)) :
+        y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i])).T_out
+    plt.plot(x,y)
+    plt.ylabel('Temperature [K]')
+    plt.xlabel('Lambda')
+    plt.show()
+    #
+    """
+
+
+    """
+    x = np.linspace(1,10,20)
+    y = np.zeros(len(x))
+    for i in range (0,len(x)) :
+        y[i] = combustionGT(GT_arg.comb_input(lambda_comb = x[i]))
+    plt.plot(x,y)
+    plt.ylabel('eta_combex')
+    plt.xlabel('Lambda')
+    plt.show()
+    """
 parametricGraphic('Eta_cyclen_vs_r',2)
