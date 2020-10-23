@@ -42,7 +42,6 @@ def cp_Iconstants(M,T_0,T_1):
 
 def cp_air(T,conc_mass,Mm_a):
     cps = np.array([N2.cp(T),CO2.cp(T),H2O.cp(T),O2.cp(T)])
-    molar_mass = np.array([0.028,0.044,0.018,0.032])
     cp_air = np.dot(conc_mass,cps);#J/mol/K
     return cp_air/Mm_a #J/kg/K
 def cp_air_T(T,conc_mass,Mm_a):#J/kg/K
@@ -134,7 +133,7 @@ def combustionGT(comb_input):
     h_f0 =  janaf_integrate_air(cp_air,mass_conc,Mm_af,T0-15,T0,dt)
     hc= janaf_integrate(cpCH4,T0-15,T_in_comb,0.001)/Mm_CH4
     ha = janaf_integrate_air(cp_air,mass_conc0,Mm_a,T0-15,T_in,0.0001) #attention cp_air [J/kg_air/K]
-
+    
     if (inversion == False):
         T_out = 1000 #premiere estimation
         while iter < 50 and error > 0.01 :

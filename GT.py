@@ -152,7 +152,7 @@ def GT_simple(GT_input):
     e2 = h2-T0*s2/1000
 
     deltah_c = h2-h1 #kJ/kg
-    deltah_c2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)/1000 #kJ/kg
+    deltah_c2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T1,T2,0.01)/1000 #kJ/kg
     #print('enthalpy comparison',deltah_c,deltah_c2)
     deltas_c1 = s2-s1
     #deltas_c2 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,T2,0.001)-Ra*np.log(r)
