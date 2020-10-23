@@ -31,16 +31,16 @@ def parametricGraphic(M,number):
         for j in range (0,4):
             if j==0:
                 for i in range (0,len(x)) :
-                    y1[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = 1273.15)).eta[0]
+                    y1[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = 1000)).eta[0]
             if j==1:
                 for i in range (0,len(x)) :
-                    y2[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = 1473.15)).eta[0]
+                    y2[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = 1200)).eta[0]
             if j==2:
                 for i in range (0,len(x)) :
-                    y3[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = 1673.15)).eta[0]
+                    y3[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = 1400)).eta[0]
             if j==3:
                 for i in range (0,len(x)) :
-                    y4[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = 1873.15)).eta[0]
+                    y4[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = 1600)).eta[0]
 
         fig=plt.figure()
         plt.plot(x,y1,x,y2,x,y3,x,y4)
@@ -51,7 +51,7 @@ def parametricGraphic(M,number):
         plt.savefig('figures/Eta_cyclen_vs_r.png')
 
     if M == 'Wcycle_vs_r' or M == 'all':
-        T=np.array([1073.15,1273.15,1473.15,1673.15,1873.15])
+        T=np.array([1000,1200,1400,1600,1800])#[°C]
         x = np.linspace(2,100,number)
         y1 = np.zeros(len(x))
         y2 = np.zeros(len(x))
@@ -61,19 +61,19 @@ def parametricGraphic(M,number):
         for j in range (0,5):
             if j==0:
                 for i in range (0,len(x)) :
-                    y1[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
+                    y1[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
             if j==1:
                 for i in range (0,len(x)) :
-                    y2[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
+                    y2[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
             if j==2:
                 for i in range (0,len(x)) :
-                    y3[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
+                    y3[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
             if j==3:
                 for i in range (0,len(x)) :
-                    y4[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
+                    y4[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
             if j==4:
                 for i in range (0,len(x)) :
-                    y5[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
+                    y5[i] = gt.GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
         plt.plot(x,y1,x,y2,x,y3,x,y4,x,y5)
         plt.legend(('T = 800 °C','T = 1000 °C', 'T = 1200 °C', 'T = 1400 °C','T = 1600 °C'),
                    loc='upper right')

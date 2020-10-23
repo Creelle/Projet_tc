@@ -88,7 +88,7 @@ def GT_simple(GT_input):
         Pe = 50e3;#50MWe
     T_ext = arg_in.T_ext;
     if T_ext ==-1.:
-        T_ext = 288.15;#15°C
+        T_ext = 15;#15°C
     r = arg_in.r;
     if r ==-1.:
         r = 10;#compression ratio = 10;
@@ -100,11 +100,16 @@ def GT_simple(GT_input):
     if eta_pit ==-1.:
         eta_pit = 0.9;#max temperature = 1050°C
     T0=arg_in.T_0
+    if T0 ==-1.:
+        T0 = 15 #[°C]
     k_mec = arg_in.k_mec
     kcc = arg_in.k_cc
     if kcc == -1.:
         kcc = 1
 
+    T3 =T3 +273.15 #[K]
+    T_ext = T_ext +273.15 #[K]
+    T0 = T0+273.15 #[K]
     """
     ## preliminary data (air) ==> find gamma
     # ======================
@@ -167,9 +172,9 @@ def GT_simple(GT_input):
     """
     p3 = p2*kcc
 
-    comb_inputs = GTcomb_arg.comb_input(h_in=h2,T_in = T2,inversion=True,T_out=T3, k_cc = kcc, r=r )
+    comb_inputs = GTcomb_arg.comb_input(h_in=h2,T_in = T2-273.15,inversion=True,T_out=T3-273.15, k_cc = kcc, r=r )
     comb_outputs = comb.combustionGT(comb_inputs)
-    T3=comb_outputs.T_out
+    T3=comb_outputs.T_out+273.15 #[K]
     lambda_comb = comb_outputs.lambda_comb
     ma1 = comb_outputs.ma1
     Mm_af = comb_outputs.Mm_af
@@ -291,7 +296,7 @@ def GT_simple(GT_input):
     outputs.eta[5] = eta_combex;
     outputs.daten[0] = P_ech; #[kW]
     outputs.daten[1] = P_fmec;#[kW]
-    outputs.dat[0:]= [[T1,T2,T3,T4],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4],[e1,e2,e3,e4]]
+    outputs.dat[0:]= [[T1-273.15,T2-273.15,T3-273.15,T4-273.15],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1,s2,s3,s4],[e1,e2,e3,e4]]
     outputs.massflow[0:] = [mf_in,mf_c,mf_out]
     outputs.combustion.fum[0:]=np.array([comb_outputs.m_O2f,comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of])*mf_out
     outputs.combustion.Lambda = lambda_comb
@@ -339,8 +344,8 @@ def GT_simple(GT_input):
             Sd[i]= s1 + janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
 
         fig3,ax1 = plt.subplots()
-        ax1.plot(Sa,Ta,Sc,Tc,Sb,Tb,Sd,Td)
-        ax1.scatter([s1,s2,s3,s4],[T1,T2,T3,T4],s=10,label='extremities')
+        ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,Tb-273.15,Sd,Td-273.15)
+        ax1.scatter([s1,s2,s3,s4],[T1-273.15,T2-273.15,T3-273.15,T4-273.15],s=10,label='extremities')
         ax1.set_xlabel('Entropy [J/kg/K]')
         ax1.set_ylabel('Tempearature [K]')
         ax1.grid(True)
@@ -373,5 +378,5 @@ def GT_simple(GT_input):
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 """
 
-GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=288.15,T_0 = 288.15,r=18.,k_cc=0.95,T3 = 1673.15,Display =0));
+GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=10,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
 print(GT_simple_outputs.dat)
