@@ -105,8 +105,8 @@ def heatexchanger(exchanger_input,T_air_out):
     U = exchanger_input.U
     Mflow_air_in = exchanger_input.Mflow_air_in
     Mflow_f_in = exchanger_input.Mflow_f_in
-    T_air_in = exchanger_input.T_air_in
-    T_f_in = exchanger_input.T_f_in
+    T_air_in = exchanger_input.T_air_in +273.15 #[K]
+    T_f_in = exchanger_input.T_f_in +273.15 #[K]
     lambda_comb = exchanger_input.comb_lambda
 
     x_O2a = 0.21
@@ -135,7 +135,8 @@ def heatexchanger(exchanger_input,T_air_out):
     error = 20
 
     outputs = GT_comb_arg.exchanger_output();
-    outputs.T_air_out = T_air_out
+    outputs.T_air_out = T_air_out #[°C]
+    T_air_out = T_air_out +273.15 # K
 
     Q = Mflow_air_in * janaf_integrate(cp_air,T_air_in,T_air_out,dt)
     print("Q : ",Q)
@@ -177,8 +178,8 @@ def heatexchanger(exchanger_input,T_air_out):
             print("Le heat exchanger ne converge peut-être pas")
             T_f_out = T_f_out_secours
     print("Nombres d'itération : ",iter)
-    print("T_f_out : ",T_f_out)
-    outputs.T_f_out = T_f_out
+    print("T_f_out : ",T_f_out,'K')
+    outputs.T_f_out = T_f_out -273.15 #°C
 
     cps_out = np.array([cpN2(288.15),cpCO2(288.15),cpH2O(288.15),cpO2(288.15)])
     cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg_fumée
