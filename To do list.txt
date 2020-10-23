@@ -8,7 +8,7 @@
 		robbe : pychart de l energie et l exergie  ==> fait
 
     A faire S6,
-    Robbe: changer toutes les temperatures de GTarg et Gt _arg_comb en ° par contre directement mettre en K dans les autres fichiers
+    Robbe: changer toutes les temperatures de GTarg et Gt _arg_comb en ° par contre directement mettre en K dans les autres fichiers==>fait
     Robbe : janaf integrate air ==> ok mais pas pour la combustion => fait
     GWEN :  envoyer petit mail pour l echangeur comment trouver U => fait
     Robbe : mettre le flag pour mettre le figures ou pas ==> fait

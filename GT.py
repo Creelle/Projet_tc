@@ -330,24 +330,29 @@ def GT_simple(GT_input):
 
         # T S graph of the cycle
         Ta = np.linspace(T1,T2,50)
-        Tb = np.linspace(T2,T3,50)
+        #Tb = np.linspace(T2,T3,50)
         Tc = np.linspace(T4,T3,50)
         Td = np.linspace(T1,T4,50)
         Sa= np.zeros(len(Ta))
-        Sb = np.zeros(len(Tb))
+        #Sb = np.zeros(len(Tb))
         Sc = np.zeros(len(Tc))
-        Sd = np.zeros(len(Td))
+        #Sd = np.zeros(len(Td))
         for i in range(len(Ta)):
             Sa[i] = s1+(1-eta_pic)*janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
-            Sb[i]= s2 + janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T2,Tb[i],dt)
             Sc[i] = s4-(1-eta_pit)/eta_pit*janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T4,Tc[i],dt)
-            Sd[i]= s1 + janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
+            #Sb[i] = s2+janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T2,Tb[i],dt)
+            #Sd[i]= s1 + janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
+
+        Sb=np.linspace(Sa[-1],Sc[-1],50)
+        a,b,c= np.polyfit([s2,s3],[T2,T3],2)#  ==> c est faux
+        Sd=np.linspace(Sa[0],Sc[0],50)
+        a2,b2,c2= np.polyfit([s1,s4],[T1,T4],2) #==> c est faux
 
         fig3,ax1 = plt.subplots()
-        ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,Tb-273.15,Sd,Td-273.15)
+        ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb**2+b*Sb+c-273.15,Sd,a2*Sd**2+b2*Sd+c2-273.15)
         ax1.scatter([s1,s2,s3,s4],[T1-273.15,T2-273.15,T3-273.15,T4-273.15],s=10,label='extremities')
         ax1.set_xlabel('Entropy [J/kg/K]')
-        ax1.set_ylabel('Tempearature [K]')
+        ax1.set_ylabel('Tempearature [°C]')
         ax1.grid(True)
         ax1.legend()
         ax1.set_title('T S graph of the gaz turbine cycle')
@@ -378,5 +383,5 @@ def GT_simple(GT_input):
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 """
 
-GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=10,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
+GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=10,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
 print(GT_simple_outputs.dat)
