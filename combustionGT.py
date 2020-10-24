@@ -193,8 +193,8 @@ def combustionGT(comb_input):
     outputs.e_c = e_c
     return outputs;
 
-sol = combustionGT(GT_arg.comb_input(lambda_comb = 2,T_in = 15))#1.65))
-print(sol.T_out,sol.eta_combex)
-#sol2 = combustionGT(GT_arg.comb_input(inversion = True,T_in = 15+273.15, T_out = 1200))#1.65))
+# sol = combustionGT(GT_arg.comb_input(lambda_comb = 2,T_in = 15))#1.65))
+# print(sol.T_out,sol.eta_combex)
+# sol2 = combustionGT(GT_arg.comb_input(inversion = True,T_in = 15, T_out = sol.T_out))#1.65))
 # print(sol2.lambda_comb)
 #Fais le plot de T_out en fonction de lambda_comb
