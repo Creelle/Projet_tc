@@ -93,7 +93,7 @@ def cp_mean(f,T1,T2,dt):
 def heatexchanger(exchanger_input,T_air_out):
     """
     On connait le mass flow d'air in et le mass flow de fumée in ainsi que tous les cp correspondants
-    --> on les connait car on veut un certains amount of power à la sortie directement lié au massflow dans la GT.
+    --> on les connait car on veut une certaine quantité of power à la sortie directement lié au massflow dans la GT.
     On connait la température in de l'air et la température in des fumées (calculée par combustionGT).
     J'indique dans la défintion de la fonction, la température out de l'air que je souhaite à la sortie de l'échangeur
     Return la température des fumées à la sortie de l'échangeur ainsi que la surface d'échange nécessaire (donné grâce à Hausbrand)
@@ -114,10 +114,6 @@ def heatexchanger(exchanger_input,T_air_out):
     coeff = x_N2a/x_O2a
     T0 =  288.15 #[K]
 
-    # CH4 + 2 *lambda * (O2 + coeff*N2) <=> CO2+2*H2O+ 2*lambda*coeff*N2 + 2*(lambda-1)*O2
-
-
-
     Mm_a = x_O2a * Mm_O2 + x_N2a * Mm_N2 # [kg/mol_air]
     ma1 =  Mm_a/Mm_CH4 * 2/x_O2a # kg_air/kg_CH4 = proportion d air entrant vs combustible
 
@@ -134,13 +130,9 @@ def heatexchanger(exchanger_input,T_air_out):
     iter = 1
     error = 20
 
-    outputs = GT_comb_arg.exchanger_output();
-    outputs.T_air_out = T_air_out #[°C]
     T_air_out = T_air_out +273.15 # K
-
     Q = Mflow_air_in * janaf_integrate(cp_air,T_air_in,T_air_out,dt)
-    print("Q : ",Q)
-    outputs.Q = Q
+    print("Q : ",Q,'[J]')
 
     #je fais une première estimation de T_f_out pour la formule itérative ci-dessous
     #cette première estimation se fait à cp constant pour l'intégration
@@ -178,18 +170,18 @@ def heatexchanger(exchanger_input,T_air_out):
             print("Le heat exchanger ne converge peut-être pas")
             T_f_out = T_f_out_secours
     print("Nombres d'itération : ",iter)
-    print("T_f_out : ",T_f_out,'K')
-    outputs.T_f_out = T_f_out -273.15 #°C
+    print("T_f_out : ",T_f_out-273.15,'C')
+
 
     cps_out = np.array([cpN2(288.15),cpCO2(288.15),cpH2O(288.15),cpO2(288.15)])
     cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg_fumée
 
-    if Mflow_air_in*cp_air(288.15)>Mflow_f_in*cp_f : #je dois prendre quelle température pour cp_f et cp_air?
+    if Mflow_air_in*cp_air(T_air_in)>Mflow_f_in*cp_f : #je dois prendre quelle température pour cp_f et cp_air?
         Deltag_T = T_f_in - T_air_out
         Deltap_T = T_f_out - T_air_in
         DeltaM_T = (Deltag_T - Deltap_T)/np.log(Deltag_T/Deltap_T)
         S = Q/(U*DeltaM_T)
-    if Mflow_air_in*cp_air(288.15)<Mflow_f_in*cp_f :
+    if Mflow_air_in*cp_air(T_air_in)<Mflow_f_in*cp_f :
         Deltag_T = T_f_out - T_air_in
         Deltap_T = T_f_in - T_air_out
         DeltaM_T = (Deltag_T - Deltap_T)/np.log(Deltag_T/Deltap_T)
@@ -225,7 +217,11 @@ def heatexchanger(exchanger_input,T_air_out):
     eta_transex = ((Tam - 288.15)*Tfm)/(Tam*(Tfm-288.15))
     print("eta_transex :",eta_transex)
 
-
-
+    outputs = GT_comb_arg.exchanger_output();
+    outputs.T_air_out = T_air_out-273.15 #[°C]
+    outputs.T_f_out = T_f_out -273.15 #°C
+    outputs.Q = Q/1000#[kJ]
+    outputs.eta_transex = eta_transex
+    outputs.Surf = S
     return outputs
-sol = heatexchanger(GT_comb_arg.exchanger_input(U = 2),850)
+#sol = heatexchanger(GT_comb_arg.exchanger_input(U = 2),850)

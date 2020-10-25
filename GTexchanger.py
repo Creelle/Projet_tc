@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt;
 import GT_arguments as GT_arg;
 import GTcomb_arguments as GTcomb_arg
 import combustionGT as comb;
+import exchanger
 
 O2 = db.getphasedata('O2','g');
 N2 = db.getphasedata('N2','g');
@@ -173,11 +174,20 @@ def GT_simple(GT_input):
     # print('exergie comparaison 1-2', delta_ex_c,delta_ex_c2)
 
     """
+    1.b) prechauffage :
+    supposé isotherme ==> on choisit la temperature de sortie de l'air de l'echangeur et calculerons sa geometrie en consequence
+    """
+    T2r = T2 +100 # réchauufé de 100 kelvins
+    h2r = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T0,T2r,dt)/1000
+    s2r = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T0,T2r,0.001)-Ra*np.log(r)#J/kg/K
+    e2r =  h2-T0*s2/1000#kJ/kg_air
+
+    """
      2 ) combustion
     """
     p3 = p2*kcc
 
-    comb_inputs = GTcomb_arg.comb_input(h_in=h2,T_in = T2-273.15,inversion=True,T_out=T3-273.15, k_cc = kcc, r=r )
+    comb_inputs = GTcomb_arg.comb_input(h_in=h2,T_in = T2r-273.15,inversion=True,T_out=T3-273.15, k_cc = kcc, r=r )
     comb_outputs = comb.combustionGT(comb_inputs)
     T3=comb_outputs.T_out+273.15 #[K]
     lambda_comb = comb_outputs.lambda_comb
@@ -221,6 +231,8 @@ def GT_simple(GT_input):
     delta_exer_t = e4-e3# kJ/kg_f
     deltas_t = s4-s3# kJ/kg_f
 
+
+
     """
     4) travail moteur
     """
@@ -245,6 +257,17 @@ def GT_simple(GT_input):
     mf_in = Pe/(Wm*eta_mec)#kg/s
     mf_out = mf_in*massflow_coefficient #kg/s
     mf_c = mf_out-mf_in #kg/s
+    """
+    3.b) echangeur de chaleur
+    """
+    exchanger_inputs = GTcomb_arg.exchanger_input(Mflow_air_in = mf_in,Mflow_f_in = mf_out,T_air_in=T2-273.15,
+                                                        T_f_in = T4-273.15, comb_lambda=lambda_comb,U = 0.3)#attention au coeff de transmission
+    exchanger_outputs = exchanger.heatexchanger(exchanger_inputs,T2r-273.15)
+
+    T5 = exchanger_outputs.T_f_out+273.15
+    h5 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T5,0.001)/1000
+    s5 = janaf_integrate_air(cp_air_T,conc_mass2,Mm_af,T0,T5,0.001) #J/K/kg
+    print(h5-h4,exchanger_outputs.Q,'here probleme')
     """
     5) calcul des flux de puissances
     """
@@ -309,87 +332,7 @@ def GT_simple(GT_input):
     outputs.combustion.LHV = comb_inputs.LHV
     outputs.combustion.e_c = comb_outputs.e_c
     outputs.combustion.Cp_g = cp_air(400,conc_mass2,Mm_af)/1000
-
-    """
-    10) pie charts and cycle graphs
-    """
-    if (GT_input.Display == 1):
-        # pie chart of the energie flux in the cycle
-        fig,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
-        data = [Pe,P_fmec,P_out]
-        labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la sortie {v} [MW]'.format(v=round(P_out/1000))]
-
-        ax.pie(data,labels = labels,autopct='%1.2f%%',startangle = 90)
-        ax.set_title("Flux energetique primaire "+ str(round(P_comb/10**3)) + "[MW]")
-        plt.savefig('figures/energie_pie.png') # a enlever  a la soumission
-
-        # pie chart of the exergie flux in the cycle
-        fig2,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
-        data = [Pe,P_fmec,L_t,L_c,L_exhaust,L_comb]
-        labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la turbine {v} [MW]'.format(v=round(L_t/1000)),
-                  'Pertes au compresseur {v} [MW]'.format(v=round(L_c/1000)), 'Pertes à la sortie {v} [MW]'.format(v=round(L_exhaust/1000)), 'Pertes à la combustion {v} [MW]'.format(v=round(L_comb/1000))]
-
-
-        ax.pie(data,labels = labels,autopct="%1.2f%%",startangle = 90)
-        ax.set_title("Flux exergetique primaire "+ str(round(ec*mf_c/10**3)) + "[MW]")
-        plt.savefig('figures/exergie_pie.png')
-
-        # T S graph of the cycle
-        Ta = np.linspace(T1,T2,50)
-        #Tb = np.linspace(T2,T3,50)
-        Tc = np.linspace(T4,T3,50)
-        Td = np.linspace(T1,T4,50)
-        Sa= np.zeros(len(Ta))
-        #Sb = np.zeros(len(Tb))
-        Sc = np.zeros(len(Tc))
-        #Sd = np.zeros(len(Td))
-        for i in range(len(Ta)):
-            Sa[i] = s1+(1-eta_pic)*janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
-            Sc[i] = s4-(1-eta_pit)/eta_pit*janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T4,Tc[i],dt)
-            #Sb[i] = s2+janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T2,Tb[i],dt)
-            #Sd[i]= s1 + janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
-
-        Sb=np.linspace(Sa[-1],Sc[-1],50)
-        a,b,c= np.polyfit([s2,s3],[T2,T3],2)#  ==> c est faux
-        Sd=np.linspace(Sa[0],Sc[0],50)
-        a2,b2,c2= np.polyfit([s1,s4],[T1,T4],2) #==> c est faux
-
-        fig3,ax1 = plt.subplots()
-        ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb**2+b*Sb+c-273.15,Sd,a2*Sd**2+b2*Sd+c2-273.15)
-        ax1.scatter([s1,s2,s3,s4],[T1-273.15,T2-273.15,T3-273.15,T4-273.15],s=10,label='extremities')
-        ax1.set_xlabel('Entropy [J/kg/K]')
-        ax1.set_ylabel('Tempearature [°C]')
-        ax1.grid(True)
-        ax1.legend()
-        ax1.set_title('T S graph of the gaz turbine cycle')
-        plt.savefig('figures/TSgraph.png')
-
-        # p v graph of the cycle
-        pa = np.linspace(p1,p2,50)
-        pb = np.linspace(p4,p3,50)
-        va = R/pa*(pa/p1)**(exposant_c)*T1
-        vb = R/pb*(pb/p4)**(exposant_t)*T4
-        m,b = np.polyfit([va[-1],vb[-1]], [pa[-1],pb[-1]], 1)
-        vc = np.linspace(va[-1],vb[-1],10)
-        pc = m*vc+b
-        vd = np.linspace(va[0],vb[0],10)
-
-        fig4,ax2=plt.subplots()
-        ax2.plot(va,pa,vb,pb,vc,pc,vd,p4*np.ones(len(vd)))
-        ax2.scatter([R*T1/p1,R*T2/p2,R*T3/p3,R*T4/p4],[p1,p2,p3,p4],s=10,label='extremities')
-        ax2.set_xlabel('specific volume $[m^3/kg]$')
-        ax2.set_ylabel('pressure [bar]')
-        ax2.grid(True)
-        ax2.legend()
-        plt.savefig('figures/PVgraph.png')
-
-        fig = [fig,fig2,fig3,fig4]
-        outputs.fig = fig
-
-    return outputs;
-"""
-attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
-"""
+    return outputs
 
 GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
 print(GT_simple_outputs.dat)

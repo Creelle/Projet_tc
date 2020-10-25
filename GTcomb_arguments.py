@@ -82,8 +82,8 @@ class exchanger_input:
     def __init__(self, U = 0.3,#coefficient de transmission
                      Mflow_air_in = 45,
                      Mflow_f_in = 50,
-                     T_air_in = 15, # °C
-                     T_f_in = 1000, # °C
+                     T_air_in = 400, # °C
+                     T_f_in = 600, # °C
                      comb_lambda = 2,
                      courant = -1): # contre-courant = -1 ; co-courant = 1
         self.U = U;
@@ -96,20 +96,14 @@ class exchanger_input:
 
 class exchanger_output:
     def __init__(self, U = 0.3,#coefficient de transmission
-                     Mflow_air_out = 45,
-                     Mflow_f_out = 50,
-                     T_air_out = 615, # [°C]
-                     T_f_out = 227.15, # [°C]
+
+                     T_air_out = 550, # [°C]
+                     T_f_out = 450, # [°C]
                      eta_transex = 0.5,
                      Surf = 50, # surface d'échange [m**2]
-                     Q = 10, #[W]
-                     courant = -1): # contre-courant = -1 ; co-courant = 1
-        self.U = U;
-        self.Mflow_air_out = Mflow_air_out
-        self.Mflow_f_out = Mflow_f_out
+                     Q = 1000): #[kJ]
         self.T_air_out = T_air_out
         self.T_f_out = T_f_out
         self.eta_transex = eta_transex
         self.Surf = Surf
         self.Q = Q
-        self.courant = courant;
