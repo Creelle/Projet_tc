@@ -1,64 +1,11 @@
 from thermochem import janaf
-db = janaf.Janafdb();
 import numpy as np;
 import matplotlib.pyplot as plt;
 
 import GT_arguments as GT_arg;
 import GTcomb_arguments as GTcomb_arg
 import combustionGT as comb;
-
-O2 = db.getphasedata('O2','g');
-N2 = db.getphasedata('N2','g');
-CO2 = db.getphasedata('CO2',phase ='g');
-H2O = db.getphasedata('H2O',phase ='g');
-Mm_O2 = 0.032;#kg/mol
-Mm_N2 = 0.028;#kg/mol
-conc_O2 = 0.21;# 21% in molar
-conc_N2 = 0.79;# 79% in molar
-
-def air_mixture(T):#kJ/kg/K
-    Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
-    m_O2 = (conc_O2*Mm_O2)/Mm_a;# mass proportion of O2
-    m_N2 = (conc_N2*Mm_N2)/Mm_a;
-    cp_a = m_O2 * O2.cp(T) + N2.cp(T) * m_N2;#J/mol/K
-    Cp = cp_a/Mm_a/1000;#kJ/kg/K
-    R = 8.31/Mm_a/1000
-    gamma = Cp/(Cp-R)
-    return Cp,gamma,R;
-
-def cp_air(T,conc_mass,Mm_a):
-    cps = np.array([N2.cp(T),CO2.cp(T),H2O.cp(T),O2.cp(T)])
-    cp_air = np.dot(conc_mass,cps);#J/mol/K
-    return cp_air/Mm_a #J/kg/K
-
-
-#fonction qui donne l enthalpie (kJ/kg), T temperature concentration massique mass : array (N2 , CO2, H20,O2)
-#molar mass
-# def air_enthalpy(T,conc_mass,Mm_a): #==> a chequer si c est pas diviser par Mm_a ou divisé par molar_mass
-#     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
-#     molar_mass = np.array([0.028,0.044,0.018,0.032])
-#     h_air = sum(conc_mass*enthalpies);#kJ/mol
-#     return h_air/Mm_a #kJ/kg
-# def air_enthalpy(T,conc_mass,Mm_a): #==> a chequer si c est pas diviser par Mm_a ou divisé par molar_mass
-#     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
-#     h_air = sum(conc_mass*enthalpies);#kJ/mol
-#     return h_air/Mm_a #kJ/kg
-# def air_entropy(T,conc_mass,Mm_a):
-#     entropies = np.array([N2.S(T),CO2.S(T),H2O.S(T),O2.S(T)])
-#     S_air = sum(conc_mass*entropies);#J/mol/K
-#     return S_air/Mm_a #kJ/kg
-def cp_air_T(T,conc_mass,Mm_a):#J/kg/K
-    return cp_air(T,conc_mass,Mm_a)/T;
-
-def janaf_integrate_air(f,conc_mass,Mm_a,T1,T2,dt):
-    values = np.arange(T1,T2,dt)
-    return sum(f(values,conc_mass,Mm_a)*dt)
-def cp_mean_air(f,conc_mass,Mm_a,T1,T2,dt):
-    values = np.arange(T1,T2,dt)
-    return sum(f(values,conc_mass,Mm_a)/len(values)) #  cp_mean [J/kg/K]
-def janaf_integrate(f,T1,T2,dt): #==> pour calculer enthalpie
-    values = np.arange(T1,T2,dt)
-    return sum(f(values)*dt) # int(cp)dt [J/mol/K]]
+import useful
 
 def GT_simple(GT_input):
     """
@@ -117,7 +64,12 @@ def GT_simple(GT_input):
     # ======================
     # cp air at 15°C (298K): [kJ/mol/K]
     """
-    Cp_a,gamma,R= air_mixture(T0)
+    Mm_O2 = 0.032;#kg/mol
+    Mm_N2 = 0.028;#kg/mol
+    conc_O2 = 0.21;# 21% in molar
+    conc_N2 = 0.79;# 79% in molar
+
+    Cp_a,gamma,R= useful.air_mixture(T0)
     Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     conc_mass1=np.array([conc_N2*Mm_N2/Mm_a,0,0,conc_O2*Mm_O2/Mm_a])
     Ra = 8.31/Mm_a
@@ -135,10 +87,10 @@ def GT_simple(GT_input):
     T1=T_ext # a changer lors du preaheating
     p1 = 1.0 #bar
     #h1 = air_enthalpy(T1,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a) #car la ref est pris a 15°c et non 25°C
-    h1 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T0,T1,dt)/1000 #kJ/kg/K
+    h1 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T1,dt)/1000 #kJ/kg/K
 
     #s1 = air_entropy(T1,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a) #car T0 est ma reference
-    s1 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T0,T1,dt)#J/kg/K
+    s1 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T0,T1,dt)#J/kg/K
 
     e1 = h1-T0*s1/1000 #kJ/kg_in
 
@@ -152,20 +104,20 @@ def GT_simple(GT_input):
     dt = 0.1
 
     while iter < 50 and error >0.01 :#pg119
-        exposant_c=1/eta_pic*(Ra)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)  # na-1/na :  formule du livre (3.22)
+        exposant_c=1/eta_pic*(Ra)/useful.cp_mean_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.001)  # na-1/na :  formule du livre (3.22)
         T2_new = T1*r**(exposant_c)
         iter=iter+1
         error = abs(T2_new-T2)
         T2=T2_new
 
     #s2 = air_entropy(T2,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a)-Ra*np.log(r)
-    s2 = janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T0,T2,0.001)-Ra*np.log(r)
+    s2 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T0,T2,0.001)-Ra*np.log(r)
     #h2 = air_enthalpy(T2,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a)
-    h2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T0,T2,dt)/1000
+    h2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T2,dt)/1000
     e2 = h2-T0*s2/1000
 
     deltah_c = h2-h1 #kJ/kg
-    deltah_c2 = janaf_integrate_air(cp_air,conc_mass1,Mm_a,T1,T2,0.01)/1000 #kJ/kg
+    deltah_c2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.01)/1000 #kJ/kg
     #print('enthalpy comparison',deltah_c,deltah_c2)
     deltas_c1 = s2-s1
     delta_ex_c = e2-e1
@@ -186,11 +138,11 @@ def GT_simple(GT_input):
     Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
     #h3 = air_enthalpy(T3,conc_mass2,Mm_af) - air_enthalpy(T0,conc_mass2,Mm_af)#kJ/kg_f
-    h3 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T3,0.001)/1000#kJ/kg/K
+    h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T3,0.001)/1000#kJ/kg/K
 
     massflow_coefficient = 1+1/(ma1*lambda_comb) #kg_fu/kg_air
     #s3 = air_entropy(T3,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af)-Rf*np.log(kcc*r) #J/K/kg_f
-    s3 = janaf_integrate_air(cp_air_T,conc_mass2,Mm_af,T0,T3,0.001)-Rf*np.log(kcc*r) #J/K/kg
+    s3 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T3,0.001)-Rf*np.log(kcc*r) #J/K/kg
     e3 = h3-T0*s3/1000 #kJ/kg_in
     delta_exer_comb = massflow_coefficient*e3-e2 #kJ/kg_air
 
@@ -206,17 +158,17 @@ def GT_simple(GT_input):
     dt = 0.1
 
     while iter < 50 and error >0.01 :#pg119
-        exposant_t=eta_pit*(Rf)/cp_mean_air(cp_air,conc_mass2,Mm_af,T4,T3,0.01)  # na-1/na :  formule du livre (3.25)
+        exposant_t=eta_pit*(Rf)/useful.cp_mean_air(useful.cp_air,conc_mass2,Mm_af,T4,T3,0.01)  # na-1/na :  formule du livre (3.25)
         T4_new = T3*(1/(kcc*r))**(exposant_t)
         iter=iter+1
         error = abs(T4_new-T4)
         T4=T4_new
 
     #h4 = air_enthalpy(T4,conc_mass2,Mm_af)- air_enthalpy(T0,conc_mass2,Mm_af)# kJ/kg_f # pour fixer la ref a 15°C
-    h4 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T4,0.001)/1000 #kJ/kg_f
+    h4 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T4,0.001)/1000 #kJ/kg_f
     deltah_t = h4-h3 #<0# kJ/kg_f
     #s4 = air_entropy(T4,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af) # J/kg_f/K
-    s4 = janaf_integrate_air(cp_air_T,conc_mass2,Mm_af,T0,T4,0.001) #J/K/kg
+    s4 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T4,0.001) #J/K/kg
     e4 = h4-T0*s4/1000# kJ/kg_f
     delta_exer_t = e4-e3# kJ/kg_f
     deltas_t = s4-s3# kJ/kg_f
@@ -229,8 +181,8 @@ def GT_simple(GT_input):
     #apport calorifique
     Q_comb = massflow_coefficient*h3-h2 #kJ/kg_in
     #formula chequ of the book
-    # 3.27#Wm2 = cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*(cp_mean_air(cp_air,conc_mass2,Mm_af,T4,T3,0.001)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001))*T3/T1*(1-(1/(kcc*r))**exposant_t)-(r**exposant_c-1))
-    #3.26 #Q_comb2 =  cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*cp_mean_air(cp_air,conc_mass2,Mm_af,T2,T3,0.001)/cp_mean_air(cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T3/T1-r**exposant_c)
+    # 3.27#Wm2 = useful.cp_mean_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*(useful.cp_mean_air(useful.cp_air,conc_mass2,Mm_af,T4,T3,0.001)/useful.cp_mean_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.001))*T3/T1*(1-(1/(kcc*r))**exposant_t)-(r**exposant_c-1))
+    #3.26 #Q_comb2 =  useful.cp_mean_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*useful.cp_mean_air(useful.cp_air,conc_mass2,Mm_af,T2,T3,0.001)/useful.cp_mean_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T3/T1-r**exposant_c)
 
     """
     5) rendements cyclen et mass flux
@@ -308,7 +260,7 @@ def GT_simple(GT_input):
     outputs.combustion.Lambda = lambda_comb
     outputs.combustion.LHV = comb_inputs.LHV
     outputs.combustion.e_c = comb_outputs.e_c
-    outputs.combustion.Cp_g = cp_air(400,conc_mass2,Mm_af)/1000
+    outputs.combustion.Cp_g = useful.cp_air(400,conc_mass2,Mm_af)/1000
 
     """
     10) pie charts and cycle graphs
@@ -344,10 +296,10 @@ def GT_simple(GT_input):
         Sc = np.zeros(len(Tc))
         #Sd = np.zeros(len(Td))
         for i in range(len(Ta)):
-            Sa[i] = s1+(1-eta_pic)*janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
-            Sc[i] = s4-(1-eta_pit)/eta_pit*janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T4,Tc[i],dt)
-            #Sb[i] = s2+janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T2,Tb[i],dt)
-            #Sd[i]= s1 + janaf_integrate_air(cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
+            Sa[i] = s1+(1-eta_pic)*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
+            Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T4,Tc[i],dt)
+            #Sb[i] = s2+useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T2,Tb[i],dt)
+            #Sd[i]= s1 + useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
 
         Sb=np.linspace(Sa[-1],Sc[-1],50)
         a,b,c= np.polyfit([s2,s3],[T2,T3],2)#  ==> c est faux
@@ -387,6 +339,7 @@ def GT_simple(GT_input):
         outputs.fig = fig
 
     return outputs;
+
 """
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 """
@@ -394,5 +347,4 @@ attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
 print(GT_simple_outputs.dat)
 print(GT_simple_outputs.massflow)
-print(GT_simple_outputs.eta)
 #plt.show(GT_simple_outputs.fig)
