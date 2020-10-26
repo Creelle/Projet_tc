@@ -136,7 +136,7 @@ def heatexchanger(exchanger_input,T_air_out):
 
     #je fais une première estimation de T_f_out pour la formule itérative ci-dessous
     #cette première estimation se fait à cp constant pour l'intégration
-    cps_out = np.array([cpN2(288.15),cpCO2(288.15),cpH2O(288.15),cpO2(288.15)])
+    cps_out = np.array([cpN2(288.15),cpCO2(288.15),cpH2O(288.15),cpO2(288.15)])#premiere estimation
     cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg_fumée
     T_f_out = (-Q/(Mflow_f_in*cp_f)) + T_f_in
     T_f_out_secours = T_f_out
@@ -166,6 +166,7 @@ def heatexchanger(exchanger_input,T_air_out):
         T_f_out_final = ((cp_f*Mflow_f_in - Q)/(A_var*Mflow_f_in))+T_f_in
         error = abs(T_f_out_final-T_f_out)
         T_f_out = T_f_out_final
+        print("error",error)
         if iter==50 :
             print("Le heat exchanger ne converge peut-être pas")
             T_f_out = T_f_out_secours
@@ -173,7 +174,7 @@ def heatexchanger(exchanger_input,T_air_out):
     print("T_f_out : ",T_f_out-273.15,'C')
 
 
-    cps_out = np.array([cpN2(288.15),cpCO2(288.15),cpH2O(288.15),cpO2(288.15)])
+    cps_out = np.array([cpN2(T_f_out),cpCO2(T_f_out),cpH2O(T_f_out),cpO2(T_f_out)]) #premiere approx
     cp_f = np.dot(cps_out,mass_conc)/Mm_af #J/kg_fumée
 
     if Mflow_air_in*cp_air(T_air_in)>Mflow_f_in*cp_f : #je dois prendre quelle température pour cp_f et cp_air?
@@ -224,4 +225,4 @@ def heatexchanger(exchanger_input,T_air_out):
     outputs.eta_transex = eta_transex
     outputs.Surf = S
     return outputs
-#sol = heatexchanger(GT_comb_arg.exchanger_input(U = 2),850)
+sol = heatexchanger(GT_comb_arg.exchanger_input(U =3),480)

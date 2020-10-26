@@ -1,8 +1,7 @@
 
 		A fairesemaine S5 :
     gwen envoyé mais pour l exchanger ==> pas encore fait
-    gwen :faire les graphes d optimisation ==> OK
-		Robbe : calculer les rendements exergetiques ==> ok
+    Robbe : calculer les rendements exergetiques ==> ok
 
 		A faire des que possible
 		robbe : pychart de l energie et l exergie  ==> fait
@@ -15,15 +14,23 @@
     GWEn: faire un fichier apart pour les graphes parametriques ==> faire tous ceux dans le livre + command box
     Robbe : des graphes T s et pv des etats dans la gas turbine ==> graphe T S faire une interpollation en exponentielle
 
+		a faire S7 :
+		gwen :faire les graphes d optimisation ==> OK mais pas encore tous
+		gwen :  command box
+		Robbe :  changer dans exchanger les janaf intgrate air
+		Robbe : mettre janafintegrate dans un fichier a part
+		Robbe :  essayer de faire les graphes avec l echangeur
+		Robbe :preheating dans GT ==> presque : modifié les rendements
+
 	  A faire des que c est fini :
-      calculer la temperature d entree du CH4 : pour le moment dans hc on considere que la temperature c est 288.15 K alors que c est surement plus chaud
+      (calculer la temperature d entree du CH4 : pour le moment dans hc on considere que la temperature c est 288.15 K alors que c est surement plus chaud)
 
     A faire pas maintenant
-		preheating dans GT
+	  changer le type de fuel que nous utilisons
 		(faire plusieurs etages de compression et analyse au niveau exergetique et energetique pour avoir
         si ca change quelque chose)
     preheating ==> modelisation d un echangeur ==> OK , trouver U et une surface
-    changer le type de fuel que nous utilisons
+
 
 
 attention en utilisant hef , on fixe la reference a 25°c

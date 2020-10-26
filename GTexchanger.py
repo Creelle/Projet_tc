@@ -187,7 +187,7 @@ def GT_simple(GT_input):
     """
     p3 = p2*kcc
 
-    comb_inputs = GTcomb_arg.comb_input(h_in=h2,T_in = T2r-273.15,inversion=True,T_out=T3-273.15, k_cc = kcc, r=r )
+    comb_inputs = GTcomb_arg.comb_input(h_in=h2r,T_in = T2r-273.15,inversion=True,T_out=T3-273.15, k_cc = kcc, r=r )
     comb_outputs = comb.combustionGT(comb_inputs)
     T3=comb_outputs.T_out+273.15 #[K]
     lambda_comb = comb_outputs.lambda_comb
@@ -261,13 +261,13 @@ def GT_simple(GT_input):
     3.b) echangeur de chaleur
     """
     exchanger_inputs = GTcomb_arg.exchanger_input(Mflow_air_in = mf_in,Mflow_f_in = mf_out,T_air_in=T2-273.15,
-                                                        T_f_in = T4-273.15, comb_lambda=lambda_comb,U = 0.3)#attention au coeff de transmission
+                                                        T_f_in = T4-273.15, comb_lambda=lambda_comb,U = 3)#attention au coeff de transmission
     exchanger_outputs = exchanger.heatexchanger(exchanger_inputs,T2r-273.15)
 
     T5 = exchanger_outputs.T_f_out+273.15
     h5 = janaf_integrate_air(cp_air,conc_mass2,Mm_af,T0,T5,0.001)/1000
     s5 = janaf_integrate_air(cp_air_T,conc_mass2,Mm_af,T0,T5,0.001) #J/K/kg
-    print(h5-h4,exchanger_outputs.Q,'here probleme')
+    print((h5-h4)*mf_out,exchanger_outputs.Q,'here probleme')
     """
     5) calcul des flux de puissances
     """
