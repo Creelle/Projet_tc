@@ -166,7 +166,6 @@ def heatexchanger(exchanger_input,T_air_out):
         T_f_out_final = ((cp_f*Mflow_f_in - Q)/(A_var*Mflow_f_in))+T_f_in
         error = abs(T_f_out_final-T_f_out)
         T_f_out = T_f_out_final
-        print("error",error)
         if iter==50 :
             print("Le heat exchanger ne converge peut-être pas")
             T_f_out = T_f_out_secours
@@ -225,4 +224,4 @@ def heatexchanger(exchanger_input,T_air_out):
     outputs.eta_transex = eta_transex
     outputs.Surf = S
     return outputs
-sol = heatexchanger(GT_comb_arg.exchanger_input(U =3),480)
+#sol = heatexchanger(GT_comb_arg.exchanger_input(U =3),480)

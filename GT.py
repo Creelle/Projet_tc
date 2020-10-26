@@ -394,4 +394,5 @@ attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
 print(GT_simple_outputs.dat)
 print(GT_simple_outputs.massflow)
+print(GT_simple_outputs.eta)
 #plt.show(GT_simple_outputs.fig)
