@@ -1,22 +1,88 @@
-import PySimpleGUIWeb as sg
+import PySimpleGUI as sg
+from thermochem import janaf
+db = janaf.Janafdb();
+import numpy as np;
+import matplotlib.pyplot as plt;
+
+import GT_arguments as GT_arg;
+import GTcomb_arguments as GTcomb_arg
+import combustionGT as comb;
+import GT as gt
+import parametricGraphe as pg
 
 # Define the window's contents
-layout = [[sg.Text("What's your name?")],
-          [sg.Input(key='-INPUT-')],
-          [sg.Text(size=(40,1), key='-OUTPUT-')],
-          [sg.Button('Ok'), sg.Button('Quit')]]
+layout = [[sg.Text("How many points do you want in the curves?"),sg.Input(key='-INPUT-'),sg.Text(size=(40,1), key='-OUTPUT-')],
+          [sg.Text("What graphe do you want to plot?")],
+          [sg.Button('Energetic efficiency on the compression ratio')],
+          [sg.Button('Work of the cycle on the compression ratio')],
+          [sg.Button('All')],
+          [sg.Button('Quit')]]
 
 # Create the window
-window = sg.Window('Window Title', layout)
-
+window = sg.Window('Paramatric Graphes', layout)
+window2_active = False
+#pg.parametricGraphic('Eta_cyclen_vs_r',2)
 # Display and interact with the Window using an Event Loop
 while True:
     event, values = window.read()
     # See if user wants to quit or window was closed
     if event == sg.WINDOW_CLOSED or event == 'Quit':
         break
-    # Output a message to the window
-    window['-OUTPUT-'].update('Hello ' + values['-INPUT-'] + "! Thanks for trying PySimpleGUI")
+    if event == 'Energetic efficiency on the compression ratio':
+        try:
+            val = int(values['-INPUT-'])
+            input = val*7.5
+            string = str(input)
+            if not window2_active :
+                window.Hide()
+                window2_active = True
+                layout2 = [[sg.Text("The programme will run apprimately for " + string +" seconds")],
+                          [sg.Button('Plot'),sg.Button('Exit')]]
 
+                window2 = sg.Window('Paramatric Graphes', layout2)
+                while True:
+                    event2, values2 = window2.read()
+                    if event2 == sg.WINDOW_CLOSED or event2 == 'Exit':
+                        window2_active = False
+                        window2.Close()
+                        window.UnHide()
+                        break
+                    if event2 == 'Plot':
+                        pg.parametricGraphic('Eta_cyclen_vs_r',val)
+
+        except ValueError:
+            try:
+                val = float(values['-INPUT-'])
+                window['-OUTPUT-'].update("The number of points must be an integer")
+            except ValueError:
+                window['-OUTPUT-'].update("Please indicate an integer")
+    if event == 'Work of the cycle on the compression ratio':
+        try:
+            val = int(values['-INPUT-'])
+            input = val*7.5
+            string = str(input)
+            if not window2_active :
+                window.Hide()
+                window2_active = True
+                layout2 = [[sg.Text("The programme will run apprimately for " + string +" seconds")],
+                          [sg.Button('Plot'),sg.Button('Exit')]]
+
+                window2 = sg.Window('Paramatric Graphes', layout2)
+                while True:
+                    event2, values2 = window2.read()
+                    if event2 == sg.WINDOW_CLOSED or event2 == 'Exit':
+                        window2_active = False
+                        window2.Close()
+                        window.UnHide()
+                        break
+                    if event2 == 'Plot':
+                        pg.parametricGraphic('Wcycle_vs_r',val)
+
+        except ValueError:
+            try:
+                val = float(values['-INPUT-'])
+                window['-OUTPUT-'].update("The number of points must be an integer")
+            except ValueError:
+                window['-OUTPUT-'].update("Please indicate an integer")
 # Finish up by removing from the screen
 window.close()
