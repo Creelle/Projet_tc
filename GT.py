@@ -207,7 +207,7 @@ def GT_simple(GT_input):
     P_out = h4*massflow_coefficient*mf_in #[kW]
     P_fmec = P_t-P_c-Pe
     Pm = P_t-P_c
-    print('power comparison', P_comb+P_in, P_out+P_fmec+Pe)
+    #print('power comparison', P_comb+P_in, P_out+P_fmec+Pe)
     #faire un pychart de ça : en entrée P_comb+P_in , en sortie P_out, P_fmec , Pe
 
     """
@@ -224,7 +224,7 @@ def GT_simple(GT_input):
     #exhaust losses
     L_exhaust = mf_out*e4 #-mf_in*e1
 
-    print('exergie chequ up',ec*mf_c,Pe+P_fmec+L_t+L_c+L_exhaust+L_comb)
+    #print('exergie chequ up',ec*mf_c,Pe+P_fmec+L_t+L_c+L_exhaust+L_comb)
     #faire un pychart de ça : en entrée ec*mf_c et en sortie Pe, P_fmec, L_t, L_c , L_exhaust,L_comb
 
     """
@@ -338,13 +338,13 @@ def GT_simple(GT_input):
         fig = [fig,fig2,fig3,fig4]
         outputs.fig = fig
 
-    return outputs;
+    return outputs,Wm,eta_mec;
 
 """
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 """
 
-GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
-print(GT_simple_outputs.dat)
-print(GT_simple_outputs.massflow)
+#GT_simple_outputs = GT_simple(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
+#print(GT_simple_outputs.dat)
+#print(GT_simple_outputs.massflow)
 #plt.show(GT_simple_outputs.fig)
