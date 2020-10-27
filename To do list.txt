@@ -16,7 +16,7 @@
 
 		a faire S7 :
 		gwen :faire les graphes d optimisation ==> OK mais pas encore tous
-		gwen :  command box
+		gwen :  command box + mettre titre + mettre meilleur estimation du temps
 		Robbe :  changer dans exchanger les janaf intgrate air
 		Robbe : mettre janafintegrate dans un fichier a part
 		Robbe :  essayer de faire les graphes avec l echangeur ==>
