@@ -32,6 +32,9 @@
         si ca change quelque chose)
     preheating ==> modelisation d un echangeur ==> OK , trouver U et une surface
 
+		a faire pour la soumission:
+		chequer le code test
+
 
 
 attention en utilisant hef , on fixe la reference a 25°c
