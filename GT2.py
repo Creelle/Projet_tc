@@ -198,28 +198,6 @@ def GT(GT_input):
 
     #massflow calcul # on neglige m  flow combustion
 
-    """
-    5) calcul des flux de puissances
-    """
-
-    #print('power comparison', P_comb+P_in, P_out+P_fmec+Pe)
-    #faire un pychart de ça : en entrée P_comb+P_in , en sortie P_out, P_fmec , Pe
-
-    """
-    7) calcul des pertes compresseur, comb, turbine, exhaust
-    """
-    #print('exergie chequ up',ec*mf_c,Pe+P_fmec+L_t+L_c+L_exhaust+L_comb)
-    #faire un pychart de ça : en entrée ec*mf_c et en sortie Pe, P_fmec, L_t, L_c , L_exhaust,L_comb
-
-    """
-    8) calcul des rendements exergetique
-    """
-
-    """
-    9) define output arguments
-    """
-
-
     return eta_cyclen,Wm,eta_mec,eta_toten;
 
 """
