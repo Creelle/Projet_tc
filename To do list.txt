@@ -18,24 +18,26 @@
 			gwen :faire les graphes d optimisation ==> OK mais pas encore tous
 			Robbe :  changer dans exchanger les janaf intgrate air
 			Robbe : mettre janafintegrate dans un fichier a part
-				Robbe :preheating dans GT ==> presque : modifié les rendements ==>
+			Robbe :preheating dans GT ==> presque : modifié les rendements ==>
+			Robbe :  envoyé un mail pour savoir si on peut utiliser CH4.S ==> fait
+
+
 		a faire S7 :
 
-		gwen :  command box + mettre titre + mettre meilleur estimation du temps
-		faire un readme pour les fichiers  + ameliorer les commentaires
+		gwen :  command box + mettre titre + mettre meilleur estimation du temps + verifier le ALL
+		Tous les deux : faire un readme pour les fichiers  + ameliorer les commentaires
+		Robbe : envoyer un mail au tuteur pour demander si on prends la ref a 15°C exemple h = 0 lorsque T = 15°C
 
-
-
-		Robbe :  envoyé un mail pour savoir si on peut utiliser CH4.S
+		 changer le type de fuel que nous utilisons
 
 	  A faire des que c est fini :
       (calculer la temperature d entree du CH4 : pour le moment dans hc on considere que la temperature c est 288.15 K alors que c est surement plus chaud)
 
     A faire pas maintenant
-	  changer le type de fuel que nous utilisons
+
 		(faire plusieurs etages de compression et analyse au niveau exergetique et energetique pour avoir
         si ca change quelque chose)
-    preheating ==> modelisation d un echangeur ==> OK , trouver U et une surface
+
 
 		a faire pour la soumission:
 		chequer le code test
