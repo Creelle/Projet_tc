@@ -305,13 +305,13 @@ def GT(GT_input):
         #Sd[i]= s1 + useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
 
     Sb=np.linspace(Sa[-1],Sc[-1],50)
-    a,b,c= np.polyfit([Sa[-1],s3],[Ta[-1],T3],2)#  ==> c est faux
+    a,b= np.polyfit([Sa[-1],Sc[-1]],[Ta[-1],T3],1)#  ==> c est faux
     Sd=np.linspace(Sa[0],Sc[0],50)
-    a2,b2,c2= np.polyfit([s1,s4],[T1,T4],2) #==> c est faux
+    a2,b2= np.polyfit([s1,s4],[T1,T4],1) #==> c est faux
 
     fig3,ax1 = plt.subplots()
-    ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb**2+b*Sb+c-273.15,Sd,a2*Sd**2+b2*Sd+c2-273.15)
-    ax1.scatter([s1,Sa[-1],s3,s4],[T1-273.15,Ta[-1]-273.15,T3-273.15,T4-273.15],s=10,label='extremities')
+    ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb+b-273.15,Sd,a2*Sd+b2-273.15)
+    ax1.scatter([s1,Sa[-1],Sc[-1],s4],[T1-273.15,Ta[-1]-273.15,T3-273.15,T4-273.15],s=10,label='extremities')
     ax1.set_xlabel('Entropy [J/kg/K]')
     ax1.set_ylabel('Tempearature [°C]')
     ax1.grid(True)
@@ -352,10 +352,10 @@ def GT(GT_input):
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 """
 
-#GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
-#print(GT_simple_outputs.dat)
+GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
+print(GT_simple_outputs.dat)
 # print(GT_simple_outputs.massflow)
-# plt.show(GT_simple_outputs.fig)
+plt.show(GT_simple_outputs.fig)
 #GT_simple_outputs = GT(GT_arg.GT_input(Pe = 50e3,Display = 1))
 # print(GT_simple_outputs.eta)
 #GT_simple_outputs = GT(GT_arg.GT_input(Pe = 50e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));

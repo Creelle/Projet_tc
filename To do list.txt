@@ -24,9 +24,9 @@
 
 		a faire S7 :
 
-		gwen :  command box + mettre titre + mettre meilleur estimation du temps + verifier le ALL
+		gwen :  command box + mettre titre + mettre meilleur estimation du temps
 		Tous les deux : faire un readme pour les fichiers  + ameliorer les commentaires
-		Robbe : envoyer un mail au tuteur pour demander si on prends la ref a 15°C exemple h = 0 lorsque T = 15°C
+		Robbe : envoyer un mail au tuteur pour demander si on prends la ref a 15°C exemple h = 0 lorsque T = 15°C ==> fait en attente
 
 		 changer le type de fuel que nous utilisons
 
