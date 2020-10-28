@@ -131,4 +131,4 @@ def heatexchanger(exchanger_input,T_air_out):
     outputs.eta_transex = eta_transex
     outputs.Surf = S
     return outputs
-sol = heatexchanger(GT_comb_arg.exchanger_input(U =3),480)
+#sol = heatexchanger(GT_comb_arg.exchanger_input(U =3),480)

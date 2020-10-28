@@ -8,6 +8,10 @@ import GTcomb_arguments as GTcomb_arg
 import combustionGT as comb;
 import useful
 
+"""
+convention :  la temperature de reference T0 est 288.15 K. l'enthalpie sensible h =  H-H(T0) et l 'entropie  s = S-S(T0) à pression constante
+"""
+
 def GT(GT_input):
     """
      GT Gas turbine modelisation
@@ -280,9 +284,9 @@ def GT(GT_input):
 
     # pie chart of the exergie flux in the cycle
     fig2,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
-    data = [Pe,P_fmec,L_t,L_c,L_exhaust,L_comb]
-    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la turbine {v} [MW]'.format(v=round(L_t/1000)),
-                              'Pertes au compresseur {v} [MW]'.format(v=round(L_c/1000)), 'Pertes à la sortie {v} [MW]'.format(v=round(L_exhaust/1000)), 'Pertes à la combustion {v} [MW]'.format(v=round(L_comb/1000))]
+    data = [Pe,P_fmec,L_t+L_c,L_exhaust,L_comb]
+    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),' \n Pertes à la turbine et \n au compresseur {v} [MW]'.format(v=round((L_t+L_c)/1000)),
+              'Pertes à la sortie {v} [MW]'.format(v=round(L_exhaust/1000)), 'Pertes à la combustion {v} [MW]'.format(v=round(L_comb/1000))]
 
 
     ax.pie(data,labels = labels,autopct="%1.2f%%",startangle = 90)
@@ -352,7 +356,7 @@ def GT(GT_input):
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 """
 
-# GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
+#GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
 # print(GT_simple_outputs.dat)
 # print(GT_simple_outputs.massflow)
 #plt.show(GT_simple_outputs.fig)

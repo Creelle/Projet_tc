@@ -3,7 +3,7 @@ import GTcomb_arguments as GT_arg;
 import useful
 """
 Convention :  toutes les temperatures en arguments sont données en C et les temperatures de sortie aussi
-mais a l 'interieur de la fonction, on travaille en K'
+mais a l 'interieur de la fonction, on travaille en K
 """
 
 
