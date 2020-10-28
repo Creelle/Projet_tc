@@ -197,76 +197,30 @@ def GT(GT_input):
     eta_toten = eta_cyclen*eta_mec
 
     #massflow calcul # on neglige m  flow combustion
-    mf_in = Pe/(Wm*eta_mec)#kg/s
-    mf_out = mf_in*massflow_coefficient #kg/s
-    mf_c = mf_out-mf_in #kg/s
+
     """
     5) calcul des flux de puissances
     """
-    P_in = h1*mf_in #[kW]
-    P_c = deltah_c*mf_in #[kW]
-    P_comb = Q_comb*mf_in #[kW]
-    P_t = -deltah_t*mf_in*massflow_coefficient
-    P_out = h4*massflow_coefficient*mf_in #[kW]
-    P_fmec = P_t-P_c-Pe
-    Pm = P_t-P_c
+
     #print('power comparison', P_comb+P_in, P_out+P_fmec+Pe)
     #faire un pychart de ça : en entrée P_comb+P_in , en sortie P_out, P_fmec , Pe
 
     """
     7) calcul des pertes compresseur, comb, turbine, exhaust
     """
-    P_ech = P_comb-Pm
-    #compressor losses
-    L_c = mf_in*T0*deltas_c1/1000 #[kW]
-    # combustion losses
-    ec = comb_outputs.e_c
-    L_comb = mf_in*e2-mf_out*e3+mf_c*ec #[kW]
-    #turbine losses
-    L_t = mf_out*T0*deltas_t/1000 #[kW]
-    #exhaust losses
-    L_exhaust = mf_out*e4 #-mf_in*e1
-
     #print('exergie chequ up',ec*mf_c,Pe+P_fmec+L_t+L_c+L_exhaust+L_comb)
     #faire un pychart de ça : en entrée ec*mf_c et en sortie Pe, P_fmec, L_t, L_c , L_exhaust,L_comb
 
     """
     8) calcul des rendements exergetique
     """
-    eta_cyclex = Pm/(mf_out*e3-mf_in*e2)
-    #eta_totex = Pe/(mf_c*ec) #pas la meme chose que dans le livre
-    eta_totex = Pe/(mf_out*h3-mf_out*h2)
-    eta_rotex = Pm/(mf_out*(e3-e4)-mf_in*(e2-e1))
-    #eta_combex2 = (mf_out*e3-mf_in*e2)/(mf_out*h3-mf_out*h2)
-    eta_combex = (mf_out*e3-mf_in*e2)/(mf_c*ec)
-    #print('eta_combex2',eta_combex,'eta_combex1',comb_outputs.eta_combex)
-    #eta_combex3 = comb_outputs.eta_combex
-    # print('eta_totex',eta_totex,eta_combex*eta_cyclex*eta_rotex)
-    #print(eta_combex,eta_combex2,eta_combex3,'eta_combex')
-    eta_cex = delta_ex_c/deltah_c
-    eta_dex = deltah_t/delta_exer_t
+
     """
     9) define output arguments
     """
-    outputs = GT_arg.GT_outputs();
-    outputs.eta[0] = eta_cyclen;
-    outputs.eta[1] = eta_toten;
-    outputs.eta[2] = eta_cyclex;
-    outputs.eta[3] = eta_totex;
-    outputs.eta[4] = eta_rotex;
-    outputs.eta[5] = eta_combex;
-    outputs.daten[0] = P_ech; #[kW]
-    outputs.daten[1] = P_fmec;#[kW]
-    outputs.dat[0:]= [[T1-273.15,T2-273.15,T3-273.15,T4-273.15],[p1,p2,p3,p4],[h1,h2,h3,h4],[s1/1000,s2/1000,s3/1000,s4/1000],[e1,e2,e3,e4]]
-    outputs.massflow[0:] = [mf_in,mf_c,mf_out]
-    outputs.combustion.fum[0:]=np.array([comb_outputs.m_O2f,comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of])*mf_out
-    outputs.combustion.Lambda = lambda_comb
-    outputs.combustion.LHV = comb_inputs.LHV
-    outputs.combustion.e_c = comb_outputs.e_c
-    outputs.combustion.Cp_g = useful.cp_air(400,conc_mass2,Mm_af)/1000
 
 
-    return outputs,Wm,eta_mec;
+    return eta_cyclen,Wm,eta_mec,eta_toten;
 
 """
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
