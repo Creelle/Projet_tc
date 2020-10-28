@@ -345,17 +345,17 @@ def GT(GT_input):
     if (GT_input.Display == 1):
         plt.show(fig)
 
-    print('here',useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0-15,T0,dt))
+
     return outputs;
 
 """
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15
 """
 
-GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
-print(GT_simple_outputs.dat)
+# GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =0));
+# print(GT_simple_outputs.dat)
 # print(GT_simple_outputs.massflow)
-plt.show(GT_simple_outputs.fig)
+#plt.show(GT_simple_outputs.fig)
 #GT_simple_outputs = GT(GT_arg.GT_input(Pe = 50e3,Display = 1))
 # print(GT_simple_outputs.eta)
 #GT_simple_outputs = GT(GT_arg.GT_input(Pe = 50e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
