@@ -265,88 +265,8 @@ def GT(GT_input):
     outputs.combustion.e_c = comb_outputs.e_c
     outputs.combustion.Cp_g = useful.cp_air(400,conc_mass2,Mm_af)/1000
 
-    """
-    10) pie charts and cycle graphs
-    """
 
-    # pie chart of the energie flux in the cycle
-    fig,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
-    data = [Pe,P_fmec,P_out]
-    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la sortie {v} [MW]'.format(v=round(P_out/1000))]
-
-    ax.pie(data,labels = labels,autopct='%1.2f%%',startangle = 90)
-    ax.set_title("Flux energetique primaire "+ str(round(P_comb/10**3)) + "[MW]")
-    #plt.savefig('figures/energie_pie.png') # a enlever  a la soumission
-
-    # pie chart of the exergie flux in the cycle
-    fig2,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
-    data = [Pe,P_fmec,L_t,L_c,L_exhaust,L_comb]
-    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la turbine {v} [MW]'.format(v=round(L_t/1000)),
-                              'Pertes au compresseur {v} [MW]'.format(v=round(L_c/1000)), 'Pertes à la sortie {v} [MW]'.format(v=round(L_exhaust/1000)), 'Pertes à la combustion {v} [MW]'.format(v=round(L_comb/1000))]
-
-
-    ax.pie(data,labels = labels,autopct="%1.2f%%",startangle = 90)
-    ax.set_title("Flux exergetique primaire "+ str(round(ec*mf_c/10**3)) + "[MW]")
-    #plt.savefig('figures/exergie_pie.png')
-
-    # T S graph of the cycle
-    Ta = np.linspace(T1,T2,50)
-    #Tb = np.linspace(T2,T3,50)
-    Tc = np.linspace(T4,T3,50)
-    Td = np.linspace(T1,T4,50)
-    Sa= np.zeros(len(Ta))
-    #Sb = np.zeros(len(Tb))
-    Sc = np.zeros(len(Tc))
-    #Sd = np.zeros(len(Td))
-    for i in range(len(Ta)):
-        Sa[i] = s1+(1-eta_pic)*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
-        Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T4,Tc[i],dt)
-        #Sb[i] = s2+useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T2,Tb[i],dt)
-        #Sd[i]= s1 + useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
-
-    Sb=np.linspace(Sa[-1],Sc[-1],50)
-    a,b,c= np.polyfit([Sa[-1],s3],[Ta[-1],T3],2)#  ==> c est faux
-    Sd=np.linspace(Sa[0],Sc[0],50)
-    a2,b2,c2= np.polyfit([s1,s4],[T1,T4],2) #==> c est faux
-
-    fig3,ax1 = plt.subplots()
-    ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb**2+b*Sb+c-273.15,Sd,a2*Sd**2+b2*Sd+c2-273.15)
-    ax1.scatter([s1,Sa[-1],s3,s4],[T1-273.15,Ta[-1]-273.15,T3-273.15,T4-273.15],s=10,label='extremities')
-    ax1.set_xlabel('Entropy [J/kg/K]')
-    ax1.set_ylabel('Tempearature [°C]')
-    ax1.grid(True)
-    ax1.set_title('T S graph of the gaz turbine cycle')
-    ax1.legend()
-
-    #plt.savefig('figures/TSgraph.png')
-
-    # p v graph of the cycle
-    pa = np.linspace(p1,p2,50)
-    pb = np.linspace(p4,p3,50)
-    va = R/pa*(pa/p1)**(exposant_c)*T1
-    vb = R/pb*(pb/p4)**(exposant_t)*T4
-    m,b = np.polyfit([va[-1],vb[-1]], [pa[-1],pb[-1]], 1)
-    vc = np.linspace(va[-1],vb[-1],10)
-    pc = m*vc+b
-    vd = np.linspace(va[0],vb[0],10)
-
-    fig4,ax2=plt.subplots()
-    ax2.plot(va,pa,vb,pb,vc,pc,vd,p4*np.ones(len(vd)))
-    ax2.scatter([R*T1/p1,R*T2/p2,R*T3/p3,R*T4/p4],[p1,p2,p3,p4],s=10,label='extremities')
-    ax2.set_xlabel('specific volume $[m^3/kg]$')
-    ax2.set_ylabel('pressure [bar]')
-    ax2.grid(True)
-    ax2.set_title('v P graph of the gaz turbine cycle')
-    ax2.legend()
-    #plt.savefig('figures/PVgraph.png')
-
-    fig = [fig,fig2,fig3,fig4]
-    outputs.fig = fig
-    if (GT_input.Display == 1):
-        plt.show(fig)
-
-    print('here',useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0-15,T0,dt))
-    return outputs;
+    return outputs,Wm,eta_mec;
 
 """
 attention, la temperature de reference dans janaf n est pas 288.15 mais 298.15

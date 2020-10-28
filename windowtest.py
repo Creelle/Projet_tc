@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt;
 import GT_arguments as GT_arg;
 import GTcomb_arguments as GTcomb_arg
 import combustionGT as comb;
-import GT as gt
+import GT2 as gt
 import parametricGraphe as pg
 
 # Define the window's contents
