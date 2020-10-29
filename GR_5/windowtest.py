@@ -35,12 +35,10 @@ while True:
     if event == 'Cycle energetic efficiency on the compression ratio with different temperatures':
         try:
             val = int(values['-INPUT-'])
-            input = val*7.5
-            string = str(input)
             if not window2_active :
                 window.Hide()
                 window2_active = True
-                layout2 = [[sg.Text("The programme will run apprimately for " + string +" seconds")],
+                layout2 = [[sg.Text("The programme may runs for a long time according to the number of points you have chosen")],
                           [sg.Button('Plot'),sg.Button('Exit')]]
 
                 window2 = sg.Window('Paramatric Graphes', layout2)
@@ -63,12 +61,10 @@ while True:
     if event == 'Cycle energetic efficiency on the compression ratio with different polytropic efficiency':
         try:
             val = int(values['-INPUT-'])
-            input = val*7.5
-            string = str(input)
             if not window2_active :
                 window.Hide()
                 window2_active = True
-                layout2 = [[sg.Text("The programme will run apprimately for " + string +" seconds")],
+                layout2 = [[sg.Text("The programme may runs for a long time according to the number of points you have chosen")],
                           [sg.Button('Plot'),sg.Button('Exit')]]
 
                 window2 = sg.Window('Paramatric Graphes', layout2)
@@ -91,12 +87,10 @@ while True:
     if event == 'Mechanical work of the cycle on the compression ratio with different temperatures':
         try:
             val = int(values['-INPUT-'])
-            input = val*7.5
-            string = str(input)
             if not window2_active :
                 window.Hide()
                 window2_active = True
-                layout2 = [[sg.Text("The programme will run apprimately for " + string +" seconds")],
+                layout2 = [[sg.Text("The programme may runs for a long time according to the number of points you have chosen")],
                           [sg.Button('Plot'),sg.Button('Exit')]]
 
                 window2 = sg.Window('Paramatric Graphes', layout2)
@@ -119,12 +113,10 @@ while True:
     if event == 'Mechanical efficiency on the compression ratio with different temperatures':
         try:
             val = int(values['-INPUT-'])
-            input = val*7.5
-            string = str(input)
             if not window2_active :
                 window.Hide()
                 window2_active = True
-                layout2 = [[sg.Text("The programme will run apprimately for " + string +" seconds")],
+                layout2 = [[sg.Text("The programme may runs for a long time according to the number of points you have chosen")],
                           [sg.Button('Plot'),sg.Button('Exit')]]
 
                 window2 = sg.Window('Paramatric Graphes', layout2)
@@ -147,12 +139,10 @@ while True:
     if event == 'Total and cycle energetic efficiency on the compression ratio':
         try:
             val = int(values['-INPUT-'])
-            input = val*7.5
-            string = str(input)
             if not window2_active :
                 window.Hide()
                 window2_active = True
-                layout2 = [[sg.Text("The programme will run apprimately for " + string +" seconds")],
+                layout2 = [[sg.Text("The programme may runs for a long time according to the number of points you have chosen")],
                           [sg.Button('Plot'),sg.Button('Exit')]]
 
                 window2 = sg.Window('Paramatric Graphes', layout2)
@@ -175,12 +165,10 @@ while True:
     if event == 'Cycle energetic efficiency on the cycle work with different temperatures':
         try:
             val = int(values['-INPUT-'])
-            input = val*7.5
-            string = str(input)
             if not window2_active :
                 window.Hide()
                 window2_active = True
-                layout2 = [[sg.Text("The programme will run apprimately for " + string +" seconds")],
+                layout2 = [[sg.Text("The programme may runs for a long time according to the number of points you have chosen")],
                           [sg.Button('Plot'),sg.Button('Exit')]]
 
                 window2 = sg.Window('Paramatric Graphes', layout2)
@@ -203,12 +191,10 @@ while True:
     if event == 'All':
         try:
             val = int(values['-INPUT-'])
-            input = val*7.5
-            string = str(input)
             if not window2_active :
                 window.Hide()
                 window2_active = True
-                layout2 = [[sg.Text("The programme will run apprimately for " + string +" seconds")],
+                layout2 = [[sg.Text("The programme may runs for a long time according to the number of points you have chosen")],
                           [sg.Button('Plot'),sg.Button('Exit')]]
 
                 window2 = sg.Window('Paramatric Graphes', layout2)
