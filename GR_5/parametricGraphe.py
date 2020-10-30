@@ -303,25 +303,21 @@ def parametricGraphic(M,number):
             if j==0:
                 for i in range (0,len(x)) :
                     y1[i],x1[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0:2]
-                    #y1[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
                     count =count +1
                     progress_bar.UpdateBar(count+1, number*4)
             if j==1:
                 for i in range (0,len(x)) :
                     y2[i],x2[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0:2]
-                    #y2[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
                     count =count +1
                     progress_bar.UpdateBar(count+1, number*4)
             if j==2:
                 for i in range (0,len(x)) :
                     y3[i],x3[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0:2]
-                    #y3[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
                     count =count +1
                     progress_bar.UpdateBar(count+1, number*4)
             if j==3:
                 for i in range (0,len(x)) :
                     y4[i],x4[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0:2]
-                    #y4[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
                     count =count +1
                     progress_bar.UpdateBar(count+1, number*4)
         fig5=plt.figure()
