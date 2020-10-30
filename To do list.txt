@@ -24,11 +24,15 @@
 
 		a faire S7 :
 
-		gwen :  command box + mettre titre + mettre meilleur estimation du temps
+		gwen :  command box + mettre titre + mettre meilleur estimation du temps==> okay
 		Tous les deux : faire un readme pour les fichiers  + ameliorer les commentaires
-		Robbe : envoyer un mail au tuteur pour demander si on prends la ref a 15°C exemple h = 0 lorsque T = 15°C ==> fait en attente
 
-		 changer le type de fuel que nous utilisons
+
+		A faire pour la remise:
+		Tous les deux ameliorer les commentaires et enlever les trucs inutiles
+	  changer la ref dans GT2  et GT exchanger
+		verifier combustionGT
+		Robbe : verifier les graphes qu on sort
 
 	  A faire des que c est fini :
       (calculer la temperature d entree du CH4 : pour le moment dans hc on considere que la temperature c est 288.15 K alors que c est surement plus chaud)

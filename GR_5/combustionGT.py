@@ -64,7 +64,7 @@ def combustionGT(comb_input):
 
     h_f0 =  useful.janaf_integrate_air(useful.cp_air,mass_conc,Mm_af,T0-15,T0,dt)
     hc= useful.janaf_integrate(useful.cpCH4,T0-15,T_in_comb,0.001)/Mm_CH4
-    ha = useful.janaf_integrate_air(useful.cp_air,mass_conc0,Mm_a,T0-15,T_in,0.0001) #attention useful.cp_air [J/kg_air/K]
+    ha = useful.janaf_integrate_air(useful.cp_air,mass_conc0,Mm_a,T0-15,T_in,0.0001) #attention useful.cp_air [J/kg_air]
 
     if (inversion == False):
         T_out = 1273.15 #[K] #premiere estimation
