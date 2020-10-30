@@ -8,7 +8,8 @@ import GT_arguments as GT_arg;
 import GTcomb_arguments as GTcomb_arg
 import combustionGT as comb;
 import GT2 as gt
-plt.rcParams.update({'font.size': 10})
+
+
 """
 J'ai crée une fonction pour afficher les graphes pour le moment 3 choix possibles :
 1)Le graphique de eta cyclen sur le taux de compression au compresseur = 'Eta_cyclen_vs_r'
@@ -72,9 +73,10 @@ def parametricGraphic(M,number):
         plt.plot(x,y1,x,y2,x,y3,x,y4)
         plt.legend(('t3 = 1000 °C', 't3 = 1200 °C', 't3 = 1400 °C','t3 = 1600 °C'),
                    loc='upper left')
-        plt.title('Cycle energetic efficiency on the compression ratio \n with different temperatures t3. \n Pe = 230 MW, t1 = 15 °C, k_mec = 0.015, k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90')
+        plt.title('Cycle energetic efficiency on the compression ratio \n with different temperatures t3. \n Pe = 230 MW, t1 = 15 °C, k_mec = 0.015, k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90', fontsize = 10)
         plt.ylabel('\u03B7 cyclen')
         plt.xlabel('r')
+        plt.grid(True)
         plt.savefig('figures/Eta_cyclen_vs_r.png')
         window3.Close()
 
@@ -126,7 +128,8 @@ def parametricGraphic(M,number):
                    loc='upper left')
         plt.ylabel('\u03B7 cyclen')
         plt.xlabel('r')
-        plt.title('Cycle energetic efficiency on the compression ratio \n with different polytropic efficiency \n Pe = 230 MW, t1 = 15 °C, t3 = 1400°C, k_mec = 0.015, k_cc = 0.95')
+        plt.grid(True)
+        plt.title('Cycle energetic efficiency on the compression ratio \n with different polytropic efficiency \n Pe = 230 MW, t1 = 15 °C, t3 = 1400°C, k_mec = 0.015, k_cc = 0.95', fontsize = 10)
         plt.savefig('figures/Eta_cyclen_vs_r_eta_pic_pit.png')
         window3.Close()
 
@@ -177,7 +180,8 @@ def parametricGraphic(M,number):
                    loc='upper left')
         plt.ylabel('Wmcy [kJ/kg]')
         plt.xlabel('r')
-        plt.title('Mechanical work of the cycle on the compression ratio \n with different temperatures t3 \n Pe = 230 MW, t1 = 15 °C, k_mec = 0.015, k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90')
+        plt.grid(True)
+        plt.title('Mechanical work of the cycle on the compression ratio \n with different temperatures t3 \n Pe = 230 MW, t1 = 15 °C, k_mec = 0.015, k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90', fontsize = 10)
         plt.savefig('figures/Wcycle_vs_r.png')
         window3.Close()
     if M == 'eta_mec_vs_r' or M == 'all':
@@ -227,7 +231,8 @@ def parametricGraphic(M,number):
                    loc='upper left')
         plt.ylabel('\u03B7mec')
         plt.xlabel('r')
-        plt.title('Mechanical efficiency on the compression ratio \n with different temperatures t3 \n Pe = 230 MW, t1 = 15 °C, k_mec = 0.015, k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90')
+        plt.grid(True)
+        plt.title('Mechanical efficiency on the compression ratio \n with different temperatures t3 \n Pe = 230 MW, t1 = 15 °C, k_mec = 0.015, k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90', fontsize = 10)
         plt.savefig('figures/eta_mec_vs_r.png')
         window3.Close()
     if M == 'eta_cyclen_eta_toten_vs_r' or M == 'all':
@@ -266,7 +271,8 @@ def parametricGraphic(M,number):
                    loc='upper left')
         plt.ylabel('\u03B7')
         plt.xlabel('r')
-        plt.title('Total and cycle energetic efficiency on the compression ratio \n Pe = 230 MW, t1 = 15 °C, t3 = 1400°C, k_mec = 0.015, \n k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90')
+        plt.grid(True)
+        plt.title('Total and cycle energetic efficiency on the compression ratio \n Pe = 230 MW, t1 = 15 °C, t3 = 1400°C, k_mec = 0.015, \n k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90', fontsize = 10)
         plt.savefig('figures/eta_cyclen_eta_toten_vs_r.png')
         window3.Close()
     if M == 'eta_cyclen_vs_wcy' or M == 'all':
@@ -296,35 +302,36 @@ def parametricGraphic(M,number):
                 break
             if j==0:
                 for i in range (0,len(x)) :
-                    x1[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
-                    y1[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
+                    y1[i],x1[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0:2]
+                    #y1[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
                     count =count +1
-                    progress_bar.UpdateBar(count+1, number*8)
+                    progress_bar.UpdateBar(count+1, number*4)
             if j==1:
                 for i in range (0,len(x)) :
-                    x2[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
-                    y2[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
+                    y2[i],x2[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0:2]
+                    #y2[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
                     count =count +1
-                    progress_bar.UpdateBar(count+1, number*8)
+                    progress_bar.UpdateBar(count+1, number*4)
             if j==2:
                 for i in range (0,len(x)) :
-                    x3[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
-                    y3[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
+                    y3[i],x3[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0:2]
+                    #y3[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
                     count =count +1
-                    progress_bar.UpdateBar(count+1, number*8)
+                    progress_bar.UpdateBar(count+1, number*4)
             if j==3:
                 for i in range (0,len(x)) :
-                    x4[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[1]
-                    y4[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
+                    y4[i],x4[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0:2]
+                    #y4[i] = gt.GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=x[i],k_cc=0.95,T3 = T[j]))[0]
                     count =count +1
-                    progress_bar.UpdateBar(count+1, number*8)
+                    progress_bar.UpdateBar(count+1, number*4)
         fig5=plt.figure()
         plt.plot(x1,y1,x2,y2,x3,y3,x4,y4)
         plt.legend(('t3 = 1000 °C', 't3 = 1200 °C', 't3 = 1400 °C','t3 = 1600 °C'),
                    loc='upper left')
         plt.ylabel('\u03B7 cyclen')
         plt.xlabel('W_cycle [kJ/kg]')
-        plt.title('Cycle energetic efficiency on the cycle work \n with different temperatures t3 \n Pe = 230 MW, t1 = 15 °C, k_mec = 0.015, k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90')
+        plt.grid(True)
+        plt.title('Cycle energetic efficiency on the cycle work \n with different temperatures t3 \n Pe = 230 MW, t1 = 15 °C, k_mec = 0.015, k_cc = 0.95, \u03B7pC = \u03B7pT = 0.90', fontsize = 10)
         plt.savefig('figures/eta_cyclen_vs_wcy.png')
         window3.Close()
     plt.show()
