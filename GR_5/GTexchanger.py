@@ -80,8 +80,6 @@ def GT(GT_input):
     #coeff polytroique (compresseur :m>gamma , turbine : gamma >m) en premiere estimation
     m_t = (-eta_pit*(gamma-1)/gamma+1)**(-1)
     m_c = (1-1/eta_pic*(gamma-1)/gamma)**(-1)
-    #on va recalculer m_c et m_t en utilisant la definition du livre page 118 (3.20) (3.25 en faisant des iterations)
-
 
     """
     1) compressor
@@ -90,12 +88,8 @@ def GT(GT_input):
     dt = 0.01
     T1=T_ext # a changer lors du preaheating
     p1 = 1.0 #bar
-    #h1 = air_enthalpy(T1,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a) #car la ref est pris a 15°c et non 25°C
     h1 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T1,dt)/1000 #kJ/kg/K
-
-    #s1 = air_entropy(T1,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a) #car T0 est ma reference
     s1 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T1,dt)#J/kg/K
-
     e1 = h1-T0*s1/1000 #kJ/kg_in
 
 
@@ -114,9 +108,7 @@ def GT(GT_input):
         error = abs(T2_new-T2)
         T2=T2_new
 
-    #s2 = air_entropy(T2,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a)-Ra*np.log(r)
     s2 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T2,0.001)-Ra*np.log(r)
-    #h2 = air_enthalpy(T2,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a)
     h2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T2,dt)/1000
     e2 = h2-T0*s2/1000
 
@@ -125,8 +117,6 @@ def GT(GT_input):
     #print('enthalpy comparison',deltah_c,deltah_c2)
     deltas_c1 = s2-s1
     delta_ex_c = e2-e1
-    # delta_ex_c2 = deltah_c - T0 * (deltas_c1)/1000
-    # print('exergie comparaison 1-2', delta_ex_c,delta_ex_c2)
 
     """
     1.b) prechauffage :
