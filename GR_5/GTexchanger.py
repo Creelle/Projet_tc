@@ -91,10 +91,10 @@ def GT(GT_input):
     T1=T_ext # a changer lors du preaheating
     p1 = 1.0 #bar
     #h1 = air_enthalpy(T1,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a) #car la ref est pris a 15°c et non 25°C
-    h1 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T1,dt)/1000 #kJ/kg/K
+    h1 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T1,dt)/1000 #kJ/kg/K
 
     #s1 = air_entropy(T1,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a) #car T0 est ma reference
-    s1 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T0,T1,dt)#J/kg/K
+    s1 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T1,dt)#J/kg/K
 
     e1 = h1-T0*s1/1000 #kJ/kg_in
 
@@ -115,9 +115,9 @@ def GT(GT_input):
         T2=T2_new
 
     #s2 = air_entropy(T2,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a)-Ra*np.log(r)
-    s2 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T0,T2,0.001)-Ra*np.log(r)
+    s2 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T2,0.001)-Ra*np.log(r)
     #h2 = air_enthalpy(T2,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a)
-    h2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T2,dt)/1000
+    h2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T2,dt)/1000
     e2 = h2-T0*s2/1000
 
     deltah_c = h2-h1 #kJ/kg
@@ -133,8 +133,8 @@ def GT(GT_input):
     supposé isotherme ==> on choisit la temperature de sortie de l'air de l'echangeur et calculerons sa geometrie en consequence
     """
     T2r = T2 +100 # réchauufé de 100 kelvins
-    h2r = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T2r,dt)/1000
-    s2r = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T0,T2r,0.001)-Ra*np.log(r)#J/kg/K
+    h2r = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T2r,dt)/1000
+    s2r = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T2r,0.001)-Ra*np.log(r)#J/kg/K
     e2r =  h2-T0*s2/1000#kJ/kg_air
 
     """
@@ -151,11 +151,11 @@ def GT(GT_input):
     Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
     #h3 = air_enthalpy(T3,conc_mass2,Mm_af) - air_enthalpy(T0,conc_mass2,Mm_af)#kJ/kg_f
-    h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T3,0.001)/1000#kJ/kg/K
+    h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,273.15,T3,0.001)/1000#kJ/kg/K
 
     massflow_coefficient = 1+1/(ma1*lambda_comb) #kg_fu/kg_air
     #s3 = air_entropy(T3,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af)-Rf*np.log(kcc*r) #J/K/kg_f
-    s3 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T3,0.001)-Rf*np.log(kcc*r) #J/K/kg
+    s3 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,273.15,T3,0.001)-Rf*np.log(kcc*r) #J/K/kg
     e3 = h3-T0*s3/1000 #kJ/kg_in
     delta_exer_comb = massflow_coefficient*e3-e2r #kJ/kg_air
 
@@ -178,10 +178,10 @@ def GT(GT_input):
         T4=T4_new
 
     #h4 = air_enthalpy(T4,conc_mass2,Mm_af)- air_enthalpy(T0,conc_mass2,Mm_af)# kJ/kg_f # pour fixer la ref a 15°C
-    h4 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T4,0.001)/1000 #kJ/kg_f
+    h4 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,273.15,T4,0.001)/1000 #kJ/kg_f
     deltah_t = h4-h3 #<0# kJ/kg_f
     #s4 = air_entropy(T4,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af) # J/kg_f/K
-    s4 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T4,0.001) #J/K/kg
+    s4 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,273.15,T4,0.001) #J/K/kg
     e4 = h4-T0*s4/1000# kJ/kg_f
     delta_exer_t = e4-e3# kJ/kg_f
     deltas_t = s4-s3# kJ/kg_f
@@ -220,8 +220,8 @@ def GT(GT_input):
     exchanger_outputs = exchanger.heatexchanger(exchanger_inputs,T2r-273.15)
 
     T5 = exchanger_outputs.T_f_out+273.15
-    h5 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T5,0.001)/1000
-    s5 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T5,0.001) #J/K/kg
+    h5 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,273.15,T5,0.001)/1000
+    s5 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,273.15,T5,0.001) #J/K/kg
     e5 = h5-T0*s5/1000
     Q_pre = exchanger_outputs.Q #[kJ]
     """
@@ -377,8 +377,8 @@ def GT(GT_input):
 
     return outputs
 
-#GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
-# print(GT_simple_outputs.dat)
+GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
+print(GT_simple_outputs.dat)
 # print(GT_simple_outputs.massflow)
 # print(GT_simple_outputs.eta)
 #plt.show(GT_simple_outputs.fig)

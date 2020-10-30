@@ -8,7 +8,7 @@ import GT_arguments as GT_arg;
 import GTcomb_arguments as GTcomb_arg
 import combustionGT as comb;
 import GT2 as gt
-
+plt.rcParams.update({'font.size': 10})
 """
 J'ai crée une fonction pour afficher les graphes pour le moment 3 choix possibles :
 1)Le graphique de eta cyclen sur le taux de compression au compresseur = 'Eta_cyclen_vs_r'
