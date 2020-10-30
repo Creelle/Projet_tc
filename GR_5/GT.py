@@ -85,7 +85,6 @@ def GT(GT_input):
     m_c = (1-1/eta_pic*(gamma-1)/gamma)**(-1)
     #on va recalculer m_c et m_t en utilisant la definition du livre page 118 (3.20) (3.25 en faisant des iterations)
 
-
     """
     1) compressor
 
@@ -93,14 +92,9 @@ def GT(GT_input):
     dt = 0.01
     T1=T_ext # a changer lors du preaheating
     p1 = 1.0 #bar
-    #h1 = air_enthalpy(T1,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a) #car la ref est pris a 15°c et non 25°C
     h1 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T1,dt)/1000 #kJ/kg/K
-
-    #s1 = air_entropy(T1,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a) #car T0 est ma reference
     s1 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T1,dt)#J/kg/K
-
     e1 = h1-T0*s1/1000 #kJ/kg_in
-
 
     p2 = r*p1
 
@@ -117,7 +111,6 @@ def GT(GT_input):
         error = abs(T2_new-T2)
         T2=T2_new
 
-    #s2 = air_entropy(T2,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a)-Ra*np.log(r)
     s2 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T2,0.001)-Ra*np.log(r)
     h2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T2,dt)/1000
     e2 = h2-T0*s2/1000
@@ -127,8 +120,6 @@ def GT(GT_input):
     #print('enthalpy comparison',deltah_c,deltah_c2)
     deltas_c1 = s2-s1
     delta_ex_c = e2-e1
-    # delta_ex_c2 = deltah_c - T0 * (deltas_c1)/1000
-    # print('exergie comparaison 1-2', delta_ex_c,delta_ex_c2)
 
     """
      2 ) combustion
@@ -143,11 +134,9 @@ def GT(GT_input):
     Mm_af = comb_outputs.Mm_af
     Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
-    #h3 = air_enthalpy(T3,conc_mass2,Mm_af) - air_enthalpy(T0,conc_mass2,Mm_af)#kJ/kg_f
     h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,273.15,T3,0.001)/1000#kJ/kg
 
     massflow_coefficient = 1+1/(ma1*lambda_comb) #kg_fu/kg_air
-    #s3 = air_entropy(T3,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af)-Rf*np.log(kcc*r) #J/K/kg_f
     s3 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,273.15,T3,0.001)-Rf*np.log(kcc*r) #J/K/kg
     e3 = h3-T0*s3/1000 #kJ/kg_in
     delta_exer_comb = massflow_coefficient*e3-e2 #kJ/kg_air
@@ -170,10 +159,8 @@ def GT(GT_input):
         error = abs(T4_new-T4)
         T4=T4_new
 
-    #h4 = air_enthalpy(T4,conc_mass2,Mm_af)- air_enthalpy(T0,conc_mass2,Mm_af)# kJ/kg_f # pour fixer la ref a 15°C
     h4 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,273.15,T4,0.001)/1000 #kJ/kg_f
     deltah_t = h4-h3 #<0# kJ/kg_f
-    #s4 = air_entropy(T4,conc_mass2,Mm_af)-air_entropy(T0,conc_mass2,Mm_af) # J/kg_f/K
     s4 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,273.15,T4,0.001) #J/K/kg
     e4 = h4-T0*s4/1000# kJ/kg_f
     delta_exer_t = e4-e3# kJ/kg_f
@@ -186,20 +173,16 @@ def GT(GT_input):
     Wm = -(deltah_c+(1+1/(lambda_comb*ma1))*deltah_t) #kJ/kg_in
     #apport calorifique
     Q_comb = massflow_coefficient*h3-h2 #kJ/kg_in
-    #formula chequ of the book
-    # 3.27#Wm2 = useful.cp_mean_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*(useful.cp_mean_air(useful.cp_air,conc_mass2,Mm_af,T4,T3,0.001)/useful.cp_mean_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.001))*T3/T1*(1-(1/(kcc*r))**exposant_t)-(r**exposant_c-1))
-    #3.26 #Q_comb2 =  useful.cp_mean_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T1*(massflow_coefficient*useful.cp_mean_air(useful.cp_air,conc_mass2,Mm_af,T2,T3,0.001)/useful.cp_mean_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.001)*T3/T1-r**exposant_c)
 
     """
     5) rendements cyclen et mass flux
     """
-    ##====================
     # calcul des rendements
     eta_cyclen  =Wm/Q_comb
     eta_mec =1-k_mec* (massflow_coefficient*abs(deltah_t)+deltah_c)/(massflow_coefficient*abs(deltah_t)-deltah_c) # Pe/Pm = 1-k_mec*(Pmt+Pmc)/(Pmt-Pmc)
     eta_toten = eta_cyclen*eta_mec
 
-    #massflow calcul # on neglige m  flow combustion
+    #massflow calcul 
     mf_in = Pe/(Wm*eta_mec)#kg/s
     mf_out = mf_in*massflow_coefficient #kg/s
     mf_c = mf_out-mf_in #kg/s
@@ -214,7 +197,6 @@ def GT(GT_input):
     P_fmec = P_t-P_c-Pe
     Pm = P_t-P_c
     #print('power comparison', P_comb+P_in, P_out+P_fmec+Pe)
-    #faire un pychart de ça : en entrée P_comb+P_in , en sortie P_out, P_fmec , Pe
 
     """
     7) calcul des pertes compresseur, comb, turbine, exhaust
@@ -231,8 +213,6 @@ def GT(GT_input):
     L_exhaust = mf_out*e4 #-mf_in*e1
 
     #print('exergie chequ up',ec*mf_c,Pe+P_fmec+L_t+L_c+L_exhaust+L_comb)
-    #faire un pychart de ça : en entrée ec*mf_c et en sortie Pe, P_fmec, L_t, L_c , L_exhaust,L_comb
-
     """
     8) calcul des rendements exergetique
     """
@@ -304,9 +284,9 @@ def GT(GT_input):
         Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T4,Tc[i],dt)
 
     Sb=np.linspace(s2,s3,50)
-    a,b= np.polyfit([s2,s3],[T2,T3],1)#  ==> c est faux
+    a,b= np.polyfit([s2,s3],[T2,T3],1)
     Sd=np.linspace(s1,s4,50)
-    a2,b2= np.polyfit([s1,s4],[T1,T4],1) #==> c est faux
+    a2,b2= np.polyfit([s1,s4],[T1,T4],1)
 
     fig3,ax1 = plt.subplots()
     ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb+b-273.15,Sd,a2*Sd+b2-273.15)
@@ -316,7 +296,6 @@ def GT(GT_input):
     ax1.grid(True)
     ax1.set_title('T S graph of the gaz turbine cycle')
     ax1.legend()
-
     #plt.savefig('figures/TSgraph.png')
 
     # p v graph of the cycle
