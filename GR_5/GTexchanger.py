@@ -319,26 +319,24 @@ def GT(GT_input):
 
     # T S graph of the cycle
     Ta = np.linspace(T1,T2,50)
-    #Tb = np.linspace(T2,T3,50)
+    Tb = np.linspace(T2,T3,50)
     Tc = np.linspace(T4,T3,50)
     Td = np.linspace(T1,T4,50)
     Sa= np.zeros(len(Ta))
-    #Sb = np.zeros(len(Tb))
     Sc = np.zeros(len(Tc))
-    #Sd = np.zeros(len(Td))
     for i in range(len(Ta)):
         Sa[i] = s1+(1-eta_pic)*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
-        Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T4,Tc[i],dt)
+        Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T4,Tc[i],dt)
         #Sb[i] = s2+useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T2,Tb[i],dt)
         #Sd[i]= s1 + useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
 
-    Sb=np.linspace(s2r,Sc[-1],50)
-    Sb_pre = np.linspace(Sa[-1],s2r,40)
+    Sb=np.linspace(s2r,s3,50)
+    Sb_pre = np.linspace(s2,s2r,40)
     a,b= np.polyfit([s2r,s3],[T2r,T3],1)#  ==> c est faux
     a_pre,b_pre= np.polyfit([s2,s2r],[T2,T2r],1)#  ==> c est faux
-    Sd=np.linspace(Sa[0],s5,50)
+    Sd=np.linspace(s1,s5,50)
     a2,b2= np.polyfit([s1,s5],[T1,T5],1) #==> c est faux
-    Sd_pre=np.linspace(s5,Sc[0],40)
+    Sd_pre=np.linspace(s5,s4,40)
     a2_pre,b2_pre= np.polyfit([s5,s4],[T5,T4],1) #==> c est faux
 
     fig3,ax1 = plt.subplots()

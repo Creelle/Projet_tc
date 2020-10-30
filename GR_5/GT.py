@@ -119,7 +119,6 @@ def GT(GT_input):
 
     #s2 = air_entropy(T2,conc_mass1,Mm_a)-air_entropy(T0,conc_mass1,Mm_a)-Ra*np.log(r)
     s2 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T2,0.001)-Ra*np.log(r)
-    #h2 = air_enthalpy(T2,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a)
     h2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T2,dt)/1000
     e2 = h2-T0*s2/1000
 
@@ -295,27 +294,23 @@ def GT(GT_input):
 
     # T S graph of the cycle
     Ta = np.linspace(T1,T2,50)
-    #Tb = np.linspace(T2,T3,50)
+    Tb = np.linspace(T2,T3,50)
     Tc = np.linspace(T4,T3,50)
     Td = np.linspace(T1,T4,50)
     Sa= np.zeros(len(Ta))
-    #Sb = np.zeros(len(Tb))
     Sc = np.zeros(len(Tc))
-    #Sd = np.zeros(len(Td))
     for i in range(len(Ta)):
         Sa[i] = s1+(1-eta_pic)*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
-        Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T4,Tc[i],dt)
-        #Sb[i] = s2+useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T2,Tb[i],dt)
-        #Sd[i]= s1 + useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
+        Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T4,Tc[i],dt)
 
-    Sb=np.linspace(Sa[-1],Sc[-1],50)
-    a,b= np.polyfit([Sa[-1],Sc[-1]],[Ta[-1],T3],1)#  ==> c est faux
-    Sd=np.linspace(Sa[0],Sc[0],50)
+    Sb=np.linspace(s2,s3,50)
+    a,b= np.polyfit([s2,s3],[T2,T3],1)#  ==> c est faux
+    Sd=np.linspace(s1,s4,50)
     a2,b2= np.polyfit([s1,s4],[T1,T4],1) #==> c est faux
 
     fig3,ax1 = plt.subplots()
     ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb+b-273.15,Sd,a2*Sd+b2-273.15)
-    ax1.scatter([s1,Sa[-1],Sc[-1],s4],[T1-273.15,Ta[-1]-273.15,T3-273.15,T4-273.15],s=10,label='extremities')
+    ax1.scatter([s1,s2,s3,s4],[T1-273.15,T2-273.15,T3-273.15,T4-273.15],s=10,label='states')
     ax1.set_xlabel('Entropy [J/kg/K]')
     ax1.set_ylabel('Tempearature [°C]')
     ax1.grid(True)
