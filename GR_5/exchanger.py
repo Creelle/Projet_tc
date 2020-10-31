@@ -17,10 +17,10 @@ def heatexchanger(exchanger_input,T_air_out):
     It will also compute the exchanger area S (given a Heat transfer coefficient U in the argument of exchanger input) using Hausbrand
     equation and the exergy efficiency of the exchanger : eta_transex.
 
-    For the future, we can improve this function in two ways :
+    For the future, we can improve this function in three ways :
         1) for now, heatexchanger only takes air and flue gases as an input. We could make the function accept more than one type of compound
         2) a better estimation of U and S could be done but we have not the solution for this problem now.
-
+        3) We could use NTU for defining the temperatures in and out. 
     WARNING : the function has temperature limits : when those limits are exceeded an error message will be given the command
     consol.
     """
