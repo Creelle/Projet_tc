@@ -92,8 +92,8 @@ def GT(GT_input):
     dt = 0.01
     T1=T_ext # a changer lors du preaheating
     p1 = 1.0 #bar
-    h1 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T1,dt)/1000 #kJ/kg/K
-    s1 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T1,dt)#J/kg/K
+    h1 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T1,dt)/1000 #kJ/kg/K
+    s1 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T0,T1,dt)#J/kg/K
     e1 = h1-T0*s1/1000 #kJ/kg_in
 
     p2 = r*p1
@@ -111,9 +111,9 @@ def GT(GT_input):
         error = abs(T2_new-T2)
         T2=T2_new
 
-    s2 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,273.15,T2,0.001)-Ra*np.log(r)
+    s2 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T0,T2,0.001)-Ra*np.log(r)
     #h2 = air_enthalpy(T2,conc_mass1,Mm_a)- air_enthalpy(T0,conc_mass1,Mm_a)
-    h2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,273.15,T2,dt)/1000
+    h2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T2,dt)/1000
     e2 = h2-T0*s2/1000
 
     deltah_c = h2-h1 #kJ/kg
@@ -135,10 +135,10 @@ def GT(GT_input):
     Mm_af = comb_outputs.Mm_af
     Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
-    h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,273.15,T3,0.001)/1000#kJ/kg
+    h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T3,0.001)/1000#kJ/kg
 
     massflow_coefficient = 1+1/(ma1*lambda_comb) #kg_fu/kg_air
-    s3 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,273.15,T3,0.001)-Rf*np.log(kcc*r) #J/K/kg
+    s3 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T3,0.001)-Rf*np.log(kcc*r) #J/K/kg
     e3 = h3-T0*s3/1000 #kJ/kg_in
     delta_exer_comb = massflow_coefficient*e3-e2 #kJ/kg_air
 
@@ -160,9 +160,9 @@ def GT(GT_input):
         error = abs(T4_new-T4)
         T4=T4_new
 
-    h4 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,273.15,T4,0.001)/1000 #kJ/kg_f
+    h4 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T4,0.001)/1000 #kJ/kg_f
     deltah_t = h4-h3 #<0# kJ/kg_f
-    s4 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,273.15,T4,0.001) #J/K/kg
+    s4 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T4,0.001) #J/K/kg
     e4 = h4-T0*s4/1000# kJ/kg_f
     delta_exer_t = e4-e3# kJ/kg_f
     deltas_t = s4-s3# kJ/kg_f
@@ -183,7 +183,7 @@ def GT(GT_input):
     eta_mec =1-k_mec* (massflow_coefficient*abs(deltah_t)+deltah_c)/(massflow_coefficient*abs(deltah_t)-deltah_c) # Pe/Pm = 1-k_mec*(Pmt+Pmc)/(Pmt-Pmc)
     eta_toten = eta_cyclen*eta_mec
 
-    #massflow calcul 
+    #massflow calcul
     mf_in = Pe/(Wm*eta_mec)#kg/s
     mf_out = mf_in*massflow_coefficient #kg/s
     mf_c = mf_out-mf_in #kg/s
@@ -288,17 +288,16 @@ def GT(GT_input):
         #Sb[i] = s2+useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T2,Tb[i],dt)
         #Sd[i]= s1 + useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Td[i],dt)
 
-<<<<<<< HEAD
+
     Sb=np.linspace(s2,s3,50)
     a,b= np.polyfit([s2,s3],[T2,T3],1)
     Sd=np.linspace(s1,s4,50)
     a2,b2= np.polyfit([s1,s4],[T1,T4],1)
-=======
+
     Sb=np.linspace(Sa[-1],Sc[-1],50)
     a,b= np.polyfit([Sa[-1],Sc[-1]],[Ta[-1],T3],1)#  ==> c est faux
     Sd=np.linspace(Sa[0],Sc[0],50)
     a2,b2= np.polyfit([s1,s4],[T1,T4],1) #==> c est faux
->>>>>>> parent of 2d9a0e9... yo
 
     fig3,ax1 = plt.subplots()
     ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb+b-273.15,Sd,a2*Sd+b2-273.15)
