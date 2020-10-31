@@ -5,7 +5,7 @@ class comb_input:
      It returns the molar fraction of the different
 
      INPUTS
-     lambda_comb : excess air
+     lambda_comb : excess air coefficient 
      x_O2a : molar fraction of oxygen concentration in air
      x_N2a : molar fraction of nitrogen concentration in air
      T_in  : gas temperature at the inlet
