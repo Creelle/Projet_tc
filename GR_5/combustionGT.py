@@ -105,7 +105,7 @@ def combustionGT(comb_input):
     e_f = useful.janaf_integrate_air(useful.cp_air,mass_conc,Mm_af,T0,T_out,dt) - T0*delta_sf #ici j ai changé
     eta_combex = (e_f-e_r)*(lambda_comb*ma1+1)/(e_c*1000)
 
-    # remplissage des outputs
+    # final outputs
     outputs = GT_arg.comb_output();
     outputs.Mm_af = Mm_af
     outputs.lambda_comb = lambda_comb
@@ -116,9 +116,3 @@ def combustionGT(comb_input):
     outputs.eta_combex =eta_combex
     outputs.e_c = e_c
     return outputs;
-
-# sol = combustionGT(GT_arg.comb_input(lambda_comb = 2,T_in = 15))#1.65))
-# print(sol.T_out,sol.eta_combex)
-# sol2 = combustionGT(GT_arg.comb_input(inversion = True,T_in = 15, T_out = sol.T_out))#1.65))
-# print(sol2.lambda_comb)
-#Fais le plot de T_out en fonction de lambda_comb
