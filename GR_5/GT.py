@@ -114,7 +114,7 @@ def GT(GT_input):
     delta_ex_c = e2-e1
 
     """
-     2 ) combustion
+     2 ) Combustion
     """
     p3 = p2*kcc
 
@@ -124,18 +124,20 @@ def GT(GT_input):
     T3=comb_outputs.T_out+273.15 #[K]
     lambda_comb = comb_outputs.lambda_comb
     ma1 = comb_outputs.ma1
+
+    #new molar mass and concentration of the exhaust gasses
     Mm_af = comb_outputs.Mm_af
     Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
-    h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T3,0.001)/1000#kJ/kg
-
     massflow_coefficient = 1+1/(ma1*lambda_comb) #kg_f/kg_air
+
+    h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T3,0.001)/1000#kJ/kg
     s3 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T3,0.001)-Rf*np.log(kcc*r) #J/K/kg
     e3 = h3-T0*s3/1000 #kJ/kg_in
     delta_exer_comb = massflow_coefficient*e3-e2 #kJ/kg_air
 
     """
-    3)  detente
+    3)  Turbine
     """
     p4 = p3/(r*kcc)
 
@@ -145,7 +147,7 @@ def GT(GT_input):
     error = 1
     dt = 0.1
 
-    while iter < 50 and error >0.01 :#pg119
+    while iter < 50 and error >0.01 :
         exposant_t=eta_pit*(Rf)/useful.cp_mean_air(useful.cp_air,conc_mass2,Mm_af,T4,T3,0.01)
         T4_new = T3*(1/(kcc*r))**(exposant_t)
         iter=iter+1
@@ -160,9 +162,9 @@ def GT(GT_input):
     deltas_t = s4-s3# kJ/kg_f
 
     """
-    4) travail moteur
+    4) Mechanical work (travail moteur)
     """
-    # motor work
+    # Mechanical work
     Wm = -(deltah_c+(1+1/(lambda_comb*ma1))*deltah_t) #kJ/kg_in
     #heat in
     Q_comb = massflow_coefficient*h3-h2 #kJ/kg_in
@@ -205,7 +207,7 @@ def GT(GT_input):
     L_exhaust = mf_out*e4 #-mf_in*e1
 
     """
-    8) calcul des rendements exergetique
+    8) calculation of exergetic efficiencies
     """
     eta_cyclex = Pm/(mf_out*e3-mf_in*e2)
     eta_totex = Pe/(mf_out*h3-mf_out*h2)
@@ -240,10 +242,10 @@ def GT(GT_input):
     # pie chart of the energie flux in the cycle
     fig,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
     data = [Pe,P_fmec,P_out]
-    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la sortie {v} [MW]'.format(v=round(P_out/1000))]
+    labels = ['Useful power {v} [MW]'.format(v=round(Pe/1000)),'Mechanical losses {v} [MW]'.format(v=round(P_fmec/1000)),'Exhaust losses {v} [MW]'.format(v=round(P_out/1000))]
 
     ax.pie(data,labels = labels,autopct='%1.2f%%',startangle = 90)
-    ax.set_title("Flux energetique primaire "+ str(round(P_comb/10**3)) + "[MW]")
+    ax.set_title("Primary energetic flux "+ str(round(P_comb/10**3)) + "[MW]")
 
     # pie chart of the exergie flux in the cycle
     fig2,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
@@ -310,4 +312,6 @@ def GT(GT_input):
         plt.show()
 
     return outputs;
-T_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
+
+GT_simple_outputs = GT(GT_arg.GT_input(Pe = 50e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
+print(GT_simple_outputs.dat)

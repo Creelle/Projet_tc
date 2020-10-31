@@ -122,43 +122,46 @@ def GT(GT_input):
     1.b) prechauffage :
     supposé isotherme ==> on choisit la temperature de sortie de l'air de l'echangeur et calculerons sa geometrie en consequence
     """
-    T2r = T2 +100 # réchauufé de 100 kelvins
+    T2r = T2 +100 # we choose to heat it up 100 K
     h2r = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T2r,dt)/1000
     s2r = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T0,T2r,0.001)-Ra*np.log(r)#J/kg/K
     e2r =  h2-T0*s2/1000#kJ/kg_air
 
     """
-     2 ) combustion
+     2 ) Combustion
     """
     p3 = p2*kcc
 
     comb_inputs = GTcomb_arg.comb_input(h_in=h2r,T_in = T2r-273.15,inversion=True,T_out=T3-273.15, k_cc = kcc, r=r )
     comb_outputs = comb.combustionGT(comb_inputs)
+
     T3=comb_outputs.T_out+273.15 #[K]
     lambda_comb = comb_outputs.lambda_comb
     ma1 = comb_outputs.ma1
+
+    #new molar mass and concentration of the exhaust gasses
     Mm_af = comb_outputs.Mm_af
     Rf = comb_outputs.R_f
     conc_mass2 = np.array([comb_outputs.m_N2f,comb_outputs.m_CO2f,comb_outputs.m_H2Of,comb_outputs.m_O2f])
-    h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T3,0.001)/1000#kJ/kg/K
-
     massflow_coefficient = 1+1/(ma1*lambda_comb) #kg_fu/kg_air
+
+    h3 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T3,0.001)/1000#kJ/kg
     s3 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T3,0.001)-Rf*np.log(kcc*r) #J/K/kg
     e3 = h3-T0*s3/1000 #kJ/kg_in
     delta_exer_comb = massflow_coefficient*e3-e2r #kJ/kg_air
 
     """
-    3)  detente
+    3)  Turbine
     """
     p4 = p3/(r*kcc)
 
-    # calcul de T4 par iteration
+    # calculation of T4 via iterations
     T4 = T3*(1/(r*kcc))**((m_t-1)/m_t)
     iter = 1
     error = 1
     dt = 0.1
 
-    while iter < 50 and error >0.01 :#pg119
+    while iter < 50 and error >0.01 :
         exposant_t=eta_pit*(Rf)/useful.cp_mean_air(useful.cp_air,conc_mass2,Mm_af,T4,T3,0.01)  # na-1/na :  formule du livre (3.25)
         T4_new = T3*(1/(kcc*r))**(exposant_t)
         iter=iter+1
@@ -173,40 +176,41 @@ def GT(GT_input):
     deltas_t = s4-s3# kJ/kg_f
 
     """
-    4) travail moteur
+    4) Mechanical work (travail moteur)
     """
-    #travail moteur
+    # Mechanical work
     Wm = -(deltah_c+(1+1/(lambda_comb*ma1))*deltah_t) #kJ/kg_in
-    #apport calorifique
+    #heat in
     Q_comb = massflow_coefficient*h3-h2r #kJ/kg_in
 
     """
     5) rendements cyclen et mass flux
     """
-    ##====================
-    # calcul des rendements
+    # efficiencies
     eta_cyclen  =Wm/Q_comb
     eta_mec =1-k_mec* (massflow_coefficient*abs(deltah_t)+deltah_c)/(massflow_coefficient*abs(deltah_t)-deltah_c) # Pe/Pm = 1-k_mec*(Pmt+Pmc)/(Pmt-Pmc)
     eta_toten = eta_cyclen*eta_mec
 
-    #massflow calcul #
+    #massflow
     mf_in = Pe/(Wm*eta_mec)#kg/s
     mf_out = mf_in*massflow_coefficient #kg/s
     mf_c = mf_out-mf_in #kg/s
+
     """
-    3.b) echangeur de chaleur
+    3.b) heat exhanger
     """
     exchanger_inputs = GTcomb_arg.exchanger_input(Mflow_air_in = mf_in,Mflow_f_in = mf_out,T_air_in=T2-273.15,
-                                                        T_f_in = T4-273.15, comb_lambda=lambda_comb,U = 3)#attention au coeff de transmission
+                                                        T_f_in = T4-273.15, comb_lambda=lambda_comb,U = 3)
     exchanger_outputs = exchanger.heatexchanger(exchanger_inputs,T2r-273.15)
 
     T5 = exchanger_outputs.T_f_out+273.15
-    h5 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T5,0.001)/1000
+    h5 = useful.janaf_integrate_air(useful.cp_air,conc_mass2,Mm_af,T0,T5,0.001)/1000 #kJ/kg
     s5 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T0,T5,0.001) #J/K/kg
     e5 = h5-T0*s5/1000
-    Q_pre = exchanger_outputs.Q #[kJ]
+    Q_pre = exchanger_outputs.Q #kJ
+
     """
-    5) calcul des flux de puissances
+    5) calculation of the energetic fluxes
     """
     P_in = h1*mf_in #[kW]
     P_c = deltah_c*mf_in #[kW]
@@ -216,10 +220,9 @@ def GT(GT_input):
     P_out = h5*massflow_coefficient*mf_in #[kW]
     P_fmec = P_t-P_c-Pe
     Pm = P_t-P_c
-    print('power comparison', P_comb+P_in, P_out+P_fmec+Pe)
 
     """
-    7) calcul des pertes compresseur, comb, turbine, exhaust
+    7) calculation of the losses (compressor, comb, turbine, exhaust)
     """
     P_ech = P_comb-Pm
     #compressor losses
@@ -233,17 +236,13 @@ def GT(GT_input):
     L_exhaust = mf_out*e5 #-mf_in*e1
     #exchange losses :
     L_exchanger = e2*mf_in+e4*mf_out-e5*mf_out-e2r*mf_in
-    print('L_exhanger',L_exchanger)
-    print('exergie chequ up',ec*mf_c,Pe+P_fmec+L_t+L_c+L_exhaust+L_comb+L_exchanger)
 
     """
-    8) calcul des rendements exergetique
+    8) exergetic efficiencies
     """
     eta_cyclex = Pm/(mf_out*e3-mf_in*e2r)
-    #eta_totex = Pe/(mf_c*ec) #pas la meme chose que dans le livre
     eta_totex = Pe/(mf_out*h3-mf_out*h2r)
     eta_rotex = Pm/(mf_out*(e3-e4)-mf_in*(e2-e1))
-    #eta_combex2 = (mf_out*e3-mf_in*e2)/(mf_out*h3-mf_out*h2)
     eta_combex = (mf_out*e3-mf_in*e2r)/(mf_c*ec)
     eta_cex = delta_ex_c/deltah_c
     eta_dex = deltah_t/delta_exer_t
@@ -291,16 +290,13 @@ def GT(GT_input):
 
     # T S graph of the cycle
     Ta = np.linspace(T1,T2,50)
-    #Tb = np.linspace(T2,T3,50)
     Tc = np.linspace(T4,T3,50)
     Td = np.linspace(T1,T4,50)
     Sa= np.zeros(len(Ta))
-    #Sb = np.zeros(len(Tb))
     Sc = np.zeros(len(Tc))
-    #Sd = np.zeros(len(Td))
+
     for i in range(len(Ta)):
         Sa[i] = s1+(1-eta_pic)*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
-
         Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T4,Tc[i],dt)
 
     Sb=np.linspace(s2r,s3,50)
@@ -312,16 +308,14 @@ def GT(GT_input):
     Sd_pre=np.linspace(s5,s4,40)
     a2_pre,b2_pre= np.polyfit([s5,s4],[T5,T4],1)
 
-
-
     Sb=np.linspace(s2r,Sc[-1],50)
     Sb_pre = np.linspace(Sa[-1],s2r,40)
-    a,b= np.polyfit([s2r,s3],[T2r,T3],1)#  ==> c est faux
-    a_pre,b_pre= np.polyfit([s2,s2r],[T2,T2r],1)#  ==> c est faux
+    a,b= np.polyfit([s2r,s3],[T2r,T3],1)
+    a_pre,b_pre= np.polyfit([s2,s2r],[T2,T2r],1)
     Sd=np.linspace(Sa[0],s5,50)
-    a2,b2= np.polyfit([s1,s5],[T1,T5],1) #==> c est faux
+    a2,b2= np.polyfit([s1,s5],[T1,T5],1)
     Sd_pre=np.linspace(s5,Sc[0],40)
-    a2_pre,b2_pre= np.polyfit([s5,s4],[T5,T4],1) #==> c est faux
+    a2_pre,b2_pre= np.polyfit([s5,s4],[T5,T4],1)
 
     fig3,ax1 = plt.subplots()
     ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb+b-273.15,Sd,a2*Sd+b2-273.15,Sb_pre,a_pre*Sb_pre+b_pre-273.15,Sd_pre,a2_pre*Sd_pre+b2_pre-273.15)
@@ -359,6 +353,3 @@ def GT(GT_input):
 
 GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
 print(GT_simple_outputs.dat)
-# print(GT_simple_outputs.massflow)
-# print(GT_simple_outputs.eta)
-#plt.show(GT_simple_outputs.fig)
