@@ -7,15 +7,22 @@ Mm_CH4 = 0.016; Mm_O2 = 0.032; Mm_N2 = 0.028; Mm_H2O = 0.018; Mm_CO2 = 0.044
 
 def heatexchanger(exchanger_input,T_air_out):
     """
-    On connait le mass flow d'air in et le mass flow de fumée in ainsi que tous les cp correspondants
-    --> on les connait car on veut une certaine quantité of power à la sortie directement lié au massflow dans la GT.
-    On connait la température in de l'air et la température in des fumées (calculée par combustionGT).
-    J'indique dans la défintion de la fonction, la température out de l'air que je souhaite à la sortie de l'échangeur
-    Return la température des fumées à la sortie de l'échangeur ainsi que la surface d'échange nécessaire (donné grâce à Hausbrand)
+    When using this method, we know the mass flow of the two gas that are exchanging heat. For know we are only using this function
+    with air and the flue gases.
+    We also know the air temperature (T_air_in) and the flue gas temperature (T_f_in) coming in the exchanger.
+    The user has to indicate the temperature of the air at the exit of the exchanger : T_air_out. Once heated,
+    this air will go in the combustion chamber.
 
-    ATTENTION LE CODE A UNE LIMITE : T_f_in DOIT ÊTRE INFERIEUR À 988K si je veux T_air_out à 500K.
-    Si j'augmente T_air_out alors je peux augmenter T_f_in
-    Est-ce un problème numérique ou physique?
+    The purpose of the function is to compute the temperature of the flue gases out.
+    It will also compute the exchanger area S (given a Heat transfer coefficient U in the argument of exchanger input) using Hausbrand
+    equation and the exergy efficiency of the exchanger : eta_transex.
+
+    For the future, we can improve this function in two ways :
+        1) for now, heatexchanger only takes air and flue gases as an input. We could make the function accept more than one type of compound
+        2) a better estimation of U and S could be done but we have not the solution for this problem now.
+
+    WARNING : the function has temperature limits : when those limits are exceeded an error message will be given the command
+    consol.
     """
     U = exchanger_input.U
     Mflow_air_in = exchanger_input.Mflow_air_in
@@ -29,13 +36,13 @@ def heatexchanger(exchanger_input,T_air_out):
     coeff = x_N2a/x_O2a
     T0 =  288.15 #[K]
 
-    # a l entrée
+    # at the air input
 
     Mm_a = x_O2a * Mm_O2 + x_N2a * Mm_N2 # [kg/mol_air]
     mass_conc1=np.array([x_N2a*Mm_N2/Mm_a,0,0,x_O2a*Mm_O2/Mm_a])
     ma1 =  Mm_a/Mm_CH4 * 2/x_O2a # kg_air/kg_CH4 = proportion d air entrant vs combustible
 
-    # A la sortie :
+    # at the flue gases input
     coeff_stochio = np.array([2*lambda_comb*coeff,1,2,2*(lambda_comb-1)]) # N2- CO2 - H2O - O2
     total_n = sum(coeff_stochio) # nombre de moles total
     molar_conc = coeff_stochio/total_n # concentration des elements mol_co2/mol_t
@@ -48,18 +55,19 @@ def heatexchanger(exchanger_input,T_air_out):
     iter = 1
     error = 20
 
+    #Heat
     T_air_out = T_air_out +273.15 # K
     Q= Mflow_air_in * useful.janaf_integrate_air(useful.cp_air,mass_conc1,Mm_a,T_air_in,T_air_out,dt)
     print("Q : ",Q,'[J]')
 
-    #je fais une première estimation de T_f_out pour la formule itérative ci-dessous
-    #cette première estimation se fait à cp constant pour l'intégration
+    #first estimation of T_f_out before the iterations
+    #this esyimation is made with cp constants (without integration)
     cp_f = useful.cp_air(T_f_in,mass_conc2,Mm_af) #J/kg_fumée
     T_f_out = (-Q/(Mflow_f_in*cp_f)) + T_f_in
     T_f_out_secours = T_f_out
 
-    #Nous avons itéré en utilisant l'interpolation par un polynome du troisième degré des différents cp des composants
-    #Les autres méthodes d'intégration ne nous donnaient pas une précision assez élevée.
+    #We used a third degree polynomial to interpolate the cp values of each component and integrate those values on a temperature interval.
+    #Once the polynomial computed, we can iterate the calcul and find a more accurate T_f_out.
 
     while iter<50 and error>0.01 :
         iter = iter+1
@@ -91,7 +99,8 @@ def heatexchanger(exchanger_input,T_air_out):
     cp_f = useful.cp_air(T_f_out,mass_conc2,Mm_af)
     print('second in',cp_f) #==> probleme car pas le meme que le cp_f au dessus
 
-    if Mflow_air_in*useful.cp_air(T_air_in,mass_conc1,Mm_a)>Mflow_f_in*cp_f : #je dois prendre quelle température pour cp_f et cp_air?
+    #Hausbrand equation depending on two situations
+    if Mflow_air_in*useful.cp_air(T_air_in,mass_conc1,Mm_a)>Mflow_f_in*cp_f : #(je dois prendre quelle température pour cp_f et cp_air?)
         Deltag_T = T_f_in - T_air_out
         Deltap_T = T_f_out - T_air_in
         DeltaM_T = (Deltag_T - Deltap_T)/np.log(Deltag_T/Deltap_T)
@@ -118,7 +127,7 @@ def heatexchanger(exchanger_input,T_air_out):
     Tam = (useful.janaf_integrate_air(useful.cp_air,mass_conc1,Mm_a,273.15,T_air_out,dt)-useful.janaf_integrate_air(useful.cp_air,mass_conc1,Mm_a,273.15,T_air_in,dt))/ useful.janaf_integrate_air(useful.cp_air_T,mass_conc1,Mm_a,T_air_in,T_air_out,dt)
 
     """
-    En abscence de termes dissipatifs l'efficacité exergétique du transfert de chaleur vaut:
+    Without dissipative terms, exergetic efficiency of the heat transfer is :
     """
 
     eta_transex = ((Tam - 288.15)*Tfm)/(Tam*(Tfm-288.15))
