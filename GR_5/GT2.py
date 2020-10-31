@@ -1,7 +1,6 @@
 from thermochem import janaf
 db = janaf.Janafdb();
 import numpy as np;
-import matplotlib.pyplot as plt;
 
 import GT_arguments as GT_arg;
 import GTcomb_arguments as GTcomb_arg
@@ -10,23 +9,8 @@ import useful
 
 def GT(GT_input):
     """
-     GT Gas turbine modelisation
-     GT(P_e,options,display) compute the thermodynamics states for a Gas
-     turbine based on several inputs (given in OPTION) and based on a given
-     electricity production P_e. It returns the main results. It can as well
-     plots graphs if input argument DISPLAY = true (<=> DISPLAY=1)
-
-     INPUTS (some inputs can be dependent on others => only one of these 2 can
-             be activated) Refer to Fig 3.1 from reference book (in english)
-     P_E = electrical power output target [kW]
-     OPTIONS is a structure containing :
-       -options.T_ext [°C] : External temperature
-       -options.r     [-] : Comperssion ratio
-                            chamber
-       -options.T_3   [°C] : Temperature after combustion (before turbine)
-       -option.eta_PiC[-] : Intern polytropic efficiency (Rendement
-                            polytropique interne) for compression
-       -option.eta_PiT[-] : Intern polytropic efficiency (Rendement
+     light version of GT used in parametricGraphe but can take the same inputs
+     of the normal GT
 
     """
     arg_in = GT_input;
@@ -87,7 +71,7 @@ def GT(GT_input):
 
     p2 = r*p1
 
-    # calculation of T2 via iterations
+    # calcul de T2 par iteration
     T2 = T1*(r)**((m_c-1)/m_c) #first estimation
     iter = 1
     error = 1

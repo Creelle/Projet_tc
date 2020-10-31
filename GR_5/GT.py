@@ -248,12 +248,12 @@ def GT(GT_input):
     # pie chart of the exergie flux in the cycle
     fig2,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
     data = [Pe,P_fmec,L_t+L_c,L_exhaust,L_comb]
-    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),' \n Pertes à la turbine et \n au compresseur {v} [MW]'.format(v=round((L_t+L_c)/1000)),
-              'Pertes à la sortie {v} [MW]'.format(v=round(L_exhaust/1000)), 'Pertes à la combustion {v} [MW]'.format(v=round(L_comb/1000))]
+    labels = ['Useful power {v} [MW]'.format(v=round(Pe/1000)),'Mechanical losses {v} [MW]'.format(v=round(P_fmec/1000)),' \n \n Turbine and \n compressor losses {v} [MW]'.format(v=round((L_t+L_c)/1000)),
+              'Exhaust losses {v} [MW]'.format(v=round(L_exhaust/1000)), 'Combustion losses {v} [MW]'.format(v=round(L_comb/1000))]
 
 
     ax.pie(data,labels = labels,autopct="%1.2f%%",startangle = 90)
-    ax.set_title("Flux exergetique primaire "+ str(round(ec*mf_c/10**3)) + "[MW]")
+    ax.set_title("Primary exergetic flux "+ str(round(ec*mf_c/10**3)) + "[MW]")
     #plt.savefig('figures/exergie_pie.png')
 
     # T S graph of the cycle
@@ -265,8 +265,6 @@ def GT(GT_input):
     for i in range(len(Ta)):
         Sa[i] = s1+(1-eta_pic)*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
         Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T4,Tc[i],dt)
-
-
 
     Sb=np.linspace(s2,s3,50)
     a,b= np.polyfit([s2,s3],[T2,T3],1)
@@ -280,7 +278,7 @@ def GT(GT_input):
 
     fig3,ax1 = plt.subplots()
     ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb+b-273.15,Sd,a2*Sd+b2-273.15)
-    ax1.scatter([s1,Sa[-1],Sc[-1],s4],[T1-273.15,Ta[-1]-273.15,T3-273.15,T4-273.15],s=10,label='extremities')
+    ax1.scatter([s1,Sa[-1],Sc[-1],s4],[T1-273.15,Ta[-1]-273.15,T3-273.15,T4-273.15],s=10,label='States')
     ax1.set_xlabel('Entropy [J/kg/K]')
     ax1.set_ylabel('Tempearature [°C]')
     ax1.grid(True)
@@ -299,9 +297,9 @@ def GT(GT_input):
 
     fig4,ax2=plt.subplots()
     ax2.plot(va,pa,vb,pb,vc,pc,vd,p4*np.ones(len(vd)))
-    ax2.scatter([R*T1/p1,R*T2/p2,R*T3/p3,R*T4/p4],[p1,p2,p3,p4],s=10,label='extremities')
-    ax2.set_xlabel('specific volume $[m^3/kg]$')
-    ax2.set_ylabel('pressure [bar]')
+    ax2.scatter([R*T1/p1,R*T2/p2,R*T3/p3,R*T4/p4],[p1,p2,p3,p4],s=10,label='States')
+    ax2.set_xlabel('Specific volume $[m^3/kg]$')
+    ax2.set_ylabel('Pressure [bar]')
     ax2.grid(True)
     ax2.set_title('v P graph of the gaz turbine cycle')
     ax2.legend()
@@ -312,3 +310,4 @@ def GT(GT_input):
         plt.show()
 
     return outputs;
+T_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));

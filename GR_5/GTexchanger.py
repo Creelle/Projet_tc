@@ -282,7 +282,7 @@ def GT(GT_input):
     # pie chart of the exergie flux in the cycle
     fig2,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
     data = [Pe,P_fmec,L_t+L_c,L_exhaust,L_exchanger,L_comb]
-    labels = ['Useful power {v} [MW]'.format(v=round(Pe/1000)),'Mechanical losses {v} [MW]'.format(v=round(P_fmec/1000)),'Compressor and turbine losses {v} [MW]'.format(v=round((L_t+L_c)/1000)),
+    labels = ['Useful power {v} [MW]'.format(v=round(Pe/1000)),'Mechanical losses {v} [MW]'.format(v=round(P_fmec/1000)),'\n Compressor and turbine losses {v} [MW]'.format(v=round((L_t+L_c)/1000)),
              'Exhaust losses {v} [MW]'.format(v=round(L_exhaust/1000)),'Heat exchanger losses {v} [MW]'.format(v=round(L_exchanger/1000)), 'Combustion losses {v} [MW]'.format(v=round(L_comb/1000))]
 
 
@@ -325,7 +325,7 @@ def GT(GT_input):
 
     fig3,ax1 = plt.subplots()
     ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb+b-273.15,Sd,a2*Sd+b2-273.15,Sb_pre,a_pre*Sb_pre+b_pre-273.15,Sd_pre,a2_pre*Sd_pre+b2_pre-273.15)
-    ax1.scatter([s1,s2,s2r,s3,s4,s5],[T1-273.15,T2-273.15,T2r-273.15,T3-273.15,T4-273.15,T5-273.15],s=10,label='extremities')
+    ax1.scatter([s1,s2,s2r,s3,s4,s5],[T1-273.15,T2-273.15,T2r-273.15,T3-273.15,T4-273.15,T5-273.15],s=10,label='States')
     ax1.set_xlabel('Entropy [J/kg/K]')
     ax1.set_ylabel('Tempearature [°C]')
     ax1.grid(True)
@@ -344,7 +344,7 @@ def GT(GT_input):
 
     fig4,ax2=plt.subplots()
     ax2.plot(va,pa,vb,pb,vc,pc,vd,p4*np.ones(len(vd)))
-    ax2.scatter([R*T1/p1,R*T2/p2,R*T2r/p2,R*T3/p3,R*T4/p4,R*T5/p4],[p1,p2,p2,p3,p4,p4],s=10,label='extremities')
+    ax2.scatter([R*T1/p1,R*T2/p2,R*T2r/p2,R*T3/p3,R*T4/p4,R*T5/p4],[p1,p2,p2,p3,p4,p4],s=10,label='States')
     ax2.set_xlabel('Specific volume $[m^3/kg]$')
     ax2.set_ylabel('Pressure [bar]')
     ax2.grid(True)
