@@ -11,7 +11,8 @@ import GT2 as gt
 
 
 """
-The use of this function requires the installation of PySimpleGUI
+The use of this function requires the installation of PySimpleGUI.
+For interactive plotting, please use FunPlot.py
 
 We have created a function for plotting a lot of graphes that are useful to analyse the performance of the gas turbine.
 Six graphics are now available :

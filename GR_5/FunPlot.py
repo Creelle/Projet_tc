@@ -10,6 +10,14 @@ import combustionGT as comb;
 import GT2 as gt
 import parametricGraphe as pg
 
+"""
+The use of this code requires the installation of PySimpleGUI.
+
+This code is used to display windows to allow the user to display the graphs interactively.
+
+WARNING : A LOT OF POINTS MEAN A LOT OF TIME : BE AWARE BEFORE PLOTTING.
+"""
+
 # Define the window's contents
 layout = [[sg.Text("How many points do you want in the curves?"),sg.Input(key='-INPUT-'),sg.Text(size=(40,1), key='-OUTPUT-')],
           [sg.Text("What graphe do you want to plot?")],
@@ -25,7 +33,7 @@ layout = [[sg.Text("How many points do you want in the curves?"),sg.Input(key='-
 # Create the window
 window = sg.Window('Paramatric Graphes', layout)
 window2_active = False
-#pg.parametricGraphic('Eta_cyclen_vs_r',2)
+
 # Display and interact with the Window using an Event Loop
 while True:
     event, values = window.read()
@@ -33,8 +41,10 @@ while True:
     if event == sg.WINDOW_CLOSED or event == 'Quit':
         break
     if event == 'Cycle energetic efficiency on the compression ratio with different temperatures':
+        #Check if the user has put an integer as the number of points in the curves
         try:
             val = int(values['-INPUT-'])
+            #open a new window to make sure the user wants to plot the graphs even if the code runs for a long time
             if not window2_active :
                 window.Hide()
                 window2_active = True
@@ -42,6 +52,7 @@ while True:
                           [sg.Button('Plot'),sg.Button('Exit')]]
 
                 window2 = sg.Window('Paramatric Graphes', layout2)
+                #close the previous window and calls parametricGraphes for plotting the graphics and displaying the progress bar
                 while True:
                     event2, values2 = window2.read()
                     if event2 == sg.WINDOW_CLOSED or event2 == 'Exit':

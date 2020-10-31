@@ -20,7 +20,7 @@ def heatexchanger(exchanger_input,T_air_out):
     For the future, we can improve this function in three ways :
         1) for now, heatexchanger only takes air and flue gases as an input. We could make the function accept more than one type of compound
         2) a better estimation of U and S could be done but we have not the solution for this problem now.
-        3) We could use NTU for defining the temperatures in and out. 
+        3) We could use NTU for defining the temperatures in and out.
     WARNING : the function has temperature limits : when those limits are exceeded an error message will be given the command
     consol.
     """
@@ -80,13 +80,13 @@ def heatexchanger(exchanger_input,T_air_out):
         int_H2O = (1/2)*heat_const_H2O[2][2]*(T_f_in**2-T_f_out**2) + (1/3)*heat_const_H2O[2][1]*(T_f_in**3-T_f_out**3) + (1/4)*heat_const_H2O[2][0]*(T_f_in**4-T_f_out**4)
         int_O2 = (1/2)*heat_const_O2[2][2]*(T_f_in**2-T_f_out**2) + (1/3)*heat_const_O2[2][1]*(T_f_in**3-T_f_out**3) + (1/4)*heat_const_O2[2][0]*(T_f_in**4-T_f_out**4)
 
-        cps_out = np.array([int_N2,int_CO2,int_H2O,int_O2])
-        cp_f = np.dot(cps_out,mass_conc2)/Mm_af #J/kg_fumée
+        hfout = np.array([int_N2,int_CO2,int_H2O,int_O2])
+        hf = np.dot(hfout,mass_conc2)/Mm_af #J/kg_fumée
 
         A_variables = np.array([heat_const_N2[2][3],heat_const_CO2[2][3],heat_const_H2O[2][3],heat_const_O2[2][3]])
         A_var = np.dot(A_variables,mass_conc2)/Mm_af
 
-        T_f_out_final = ((cp_f*Mflow_f_in - Q)/(A_var*Mflow_f_in))+T_f_in
+        T_f_out_final = ((hf*Mflow_f_in - Q)/(A_var*Mflow_f_in))+T_f_in
         error = abs(T_f_out_final-T_f_out)
         T_f_out = T_f_out_final
 
@@ -97,10 +97,10 @@ def heatexchanger(exchanger_input,T_air_out):
     print("T_f_out : ",T_f_out-273.15,'C')
 
     cp_f = useful.cp_air(T_f_out,mass_conc2,Mm_af)
-    print('second in',cp_f) #==> probleme car pas le meme que le cp_f au dessus
+    print('second in',cp_f)
 
     #Hausbrand equation depending on two situations
-    if Mflow_air_in*useful.cp_air(T_air_in,mass_conc1,Mm_a)>Mflow_f_in*cp_f : #(je dois prendre quelle température pour cp_f et cp_air?)
+    if Mflow_air_in*useful.cp_air(T_air_in,mass_conc1,Mm_a)>Mflow_f_in*cp_f :
         Deltag_T = T_f_in - T_air_out
         Deltap_T = T_f_out - T_air_in
         DeltaM_T = (Deltag_T - Deltap_T)/np.log(Deltag_T/Deltap_T)
@@ -140,4 +140,3 @@ def heatexchanger(exchanger_input,T_air_out):
     outputs.eta_transex = eta_transex
     outputs.Surf = S
     return outputs
-#sol = heatexchanger(GT_comb_arg.exchanger_input(U =3),480)

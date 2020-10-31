@@ -3,9 +3,10 @@ db = janaf.Janafdb();
 import numpy as np;
 
 """
-fichier contenant les fonctions utiles pour combustionGT et GT
+This file contains all the useful function for GT,GT2, exchanger and combustionGT.
+It is using the data contained in Janafdb from thermochem.
 """
-
+# import all the phase data from each elements thar are used in the gas turbine.
 O2 = db.getphasedata('O2','g');
 N2 = db.getphasedata('N2','g');
 CO2 = db.getphasedata('CO2',phase ='g');
@@ -16,6 +17,10 @@ Mm_N2 = 0.028;#kg/mol
 conc_O2 = 0.21;# 21% in molar
 conc_N2 = 0.79;# 79% in molar
 
+"""
+air_mixture(T) takes temperature T in Kelvin f.
+It returns the global Cp, gamma and R for atmospheric air at different temperatures.
+"""
 def air_mixture(T):#kJ/kg/K
     Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     m_O2 = (conc_O2*Mm_O2)/Mm_a;# mass proportion of O2
@@ -26,11 +31,21 @@ def air_mixture(T):#kJ/kg/K
     gamma = Cp/(Cp-R)
     return Cp,gamma,R;
 
+"""
+cp_air takes as input temperatures in kelvin, the vector conc_mass wich contains
+the different mass concentrations of each compound of the gas and Mm_a wich is the molar mass
+of the gas.
+It returns the the cp of the gas divided by the molar mass at a given temperature.
+"""
 def cp_air(T,conc_mass,Mm_a):
     cps = np.array([N2.cp(T),CO2.cp(T),H2O.cp(T),O2.cp(T)])
     cp_air = np.dot(conc_mass,cps);#J/mol/K
     return cp_air/Mm_a #J/kg/K
 
+"""
+The functions bellow return the cp and the cp/T of each compounds involved in the Gas
+turbine.
+"""
 def cpCH4(T):
     return CH4.cp(T)
 def cpCH4_T(T):
@@ -43,41 +58,51 @@ def cpN2(T):
     return N2.cp(T)
 def cpH2O(T):
     return H2O.cp(T)
+
+"""
+cp_mean computes the mean cp for a given compound f and an interval of temperatures T1,T2.
+dt caracterises the precision of the function.
+"""
 def cp_mean(f,T1,T2,dt):
     values = np.arange(T1,T2,dt)
     return sum(f(values)/len(values)) #  cp_mean [J/mol/K]
 
-
-#fonction qui donne l enthalpie (kJ/kg), T temperature concentration massique mass : array (N2 , CO2, H20,O2)
-#molar mass
-# def air_enthalpy(T,conc_mass,Mm_a): #==> a chequer si c est pas diviser par Mm_a ou divisé par molar_mass
-#     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
-#     molar_mass = np.array([0.028,0.044,0.018,0.032])
-#     h_air = sum(conc_mass*enthalpies);#kJ/mol
-#     return h_air/Mm_a #kJ/kg
-# def air_enthalpy(T,conc_mass,Mm_a): #==> a chequer si c est pas diviser par Mm_a ou divisé par molar_mass
-#     enthalpies = np.array([N2.hef(T),CO2.hef(T),H2O.hef(T),O2.hef(T)])
-#     h_air = sum(conc_mass*enthalpies);#kJ/mol
-#     return h_air/Mm_a #kJ/kg
-# def air_entropy(T,conc_mass,Mm_a):
-#     entropies = np.array([N2.S(T),CO2.S(T),H2O.S(T),O2.S(T)])
-#     S_air = sum(conc_mass*entropies);#J/mol/K
-#     return S_air/Mm_a #kJ/kg
-
+"""
+cp_air_T makes the same thing as cp_air but it divides the value by the temperature
+"""
 def cp_air_T(T,conc_mass,Mm_a):#J/kg/K
     return cp_air(T,conc_mass,Mm_a)/T;
 
+"""
+janaf_integrate_air makes the integration of the cp of a gas for a given temperature interval
+[T1,T2].
+"""
 def janaf_integrate_air(f,conc_mass,Mm_a,T1,T2,dt):
     values = np.arange(T1,T2,dt)
     return sum(f(values,conc_mass,Mm_a)*dt)
+
+"""
+cp_mean_air makes the same thing as cp_mean but it is not for a single compound.
+It has to be used for a gas.
+"""
 def cp_mean_air(f,conc_mass,Mm_a,T1,T2,dt):
     values = np.arange(T1,T2,dt)
     return sum(f(values,conc_mass,Mm_a)/len(values)) #  cp_mean [J/kg/K]
-def janaf_integrate(f,T1,T2,dt): #==> pour calculer enthalpie
+
+"""
+janaf_integrate_air makes the integration of the cp of a compound for a given temperature interval
+[T1,T2].
+"""
+def janaf_integrate(f,T1,T2,dt):
     values = np.arange(T1,T2,dt)
     return sum(f(values)*dt) # int(cp)dt [J/mol/K]]
 
-
+"""
+cp_Iconstants takes a compound and a temperature interval.
+It interpolates a lot of cp of the compound into this interval by a third degree polynomial.
+Once all the coefficients of the polynomial have been found, the integration is calculated.
+It returns I the integration ,cp_mean (not used) and the coefficient of integration. 
+"""
 def cp_Iconstants(M,T_0,T_1):
     # donne la valeur de cp en J/mol.
     #cp = A + BT + CT^2 + DT^3 (cp évolue en T^3 (sauf au début => à débattre dans le rapport : faire un calcul d'erreur))
