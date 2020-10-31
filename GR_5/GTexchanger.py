@@ -274,22 +274,20 @@ def GT(GT_input):
     # pie chart of the energie flux in the cycle
     fig,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
     data = [Pe,P_fmec,P_out]
-    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la sortie {v} [MW]'.format(v=round(P_out/1000))]
+    labels = ['Useful power {v} [MW]'.format(v=round(Pe/1000)),'Mechanical losses {v} [MW]'.format(v=round(P_fmec/1000)),'Exhaust losses {v} [MW]'.format(v=round(P_out/1000))]
 
     ax.pie(data,labels = labels,autopct='%1.2f%%',startangle = 90)
-    ax.set_title("Flux energetique primaire "+ str(round(P_comb/10**3)) + "[MW]")
-    #plt.savefig('figures/energie_pie.png') # a enlever  a la soumission
+    ax.set_title("Primary energetic flux "+ str(round(P_comb/10**3)) + "[MW]")
 
     # pie chart of the exergie flux in the cycle
     fig2,ax =  plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
     data = [Pe,P_fmec,L_t+L_c,L_exhaust,L_exchanger,L_comb]
-    labels = ['Puissance effective {v} [MW]'.format(v=round(Pe/1000)),'Pertes mecaniques {v} [MW]'.format(v=round(P_fmec/1000)),'Pertes à la turbine et au compresseur {v} [MW]'.format(v=round((L_t+L_c)/1000)),
-             'Pertes à la sortie {v} [MW]'.format(v=round(L_exhaust/1000)),'Pertes à l\'echangeur {v} [MW]'.format(v=round(L_exchanger/1000)), 'Pertes à la combustion {v} [MW]'.format(v=round(L_comb/1000))]
+    labels = ['Useful power {v} [MW]'.format(v=round(Pe/1000)),'Mechanical losses {v} [MW]'.format(v=round(P_fmec/1000)),'Compressor and turbine losses {v} [MW]'.format(v=round((L_t+L_c)/1000)),
+             'Exhaust losses {v} [MW]'.format(v=round(L_exhaust/1000)),'Heat exchanger losses {v} [MW]'.format(v=round(L_exchanger/1000)), 'Combustion losses {v} [MW]'.format(v=round(L_comb/1000))]
 
 
     ax.pie(data,labels = labels,autopct="%1.2f%%",startangle = 90)
-    ax.set_title("Flux exergetique primaire "+ str(round(ec*mf_c/10**3)) + "[MW]")
-    #plt.savefig('figures/exergie_pie.png')
+    ax.set_title("Primary exergetic flux "+ str(round(ec*mf_c/10**3)) + "[MW]")
 
     # T S graph of the cycle
     Ta = np.linspace(T1,T2,50)
@@ -333,7 +331,6 @@ def GT(GT_input):
     ax1.grid(True)
     ax1.legend()
     ax1.set_title('T S graph of the gaz turbine cycle')
-    #plt.savefig('figures/TSgraph.png')
 
     # p v graph of the cycle
     pa = np.linspace(p1,p2,50)
@@ -348,11 +345,10 @@ def GT(GT_input):
     fig4,ax2=plt.subplots()
     ax2.plot(va,pa,vb,pb,vc,pc,vd,p4*np.ones(len(vd)))
     ax2.scatter([R*T1/p1,R*T2/p2,R*T2r/p2,R*T3/p3,R*T4/p4,R*T5/p4],[p1,p2,p2,p3,p4,p4],s=10,label='extremities')
-    ax2.set_xlabel('specific volume $[m^3/kg]$')
-    ax2.set_ylabel('pressure [bar]')
+    ax2.set_xlabel('Specific volume $[m^3/kg]$')
+    ax2.set_ylabel('Pressure [bar]')
     ax2.grid(True)
     ax2.legend()
-    #plt.savefig('figures/PVgraph.png')
 
     fig = [fig,fig2,fig3,fig4]
     outputs.fig = fig
