@@ -9,7 +9,8 @@ import combustionGT as comb;
 import useful
 
 """
-convention :  la temperature de reference T0 est 288.15 K. l'enthalpie sensible h =  H-H(T0) et l 'entropie  s = S-S(T0) à pression constante
+Convention :  All temperatures in input are given in °C but are immediatly changed into K
+inside of the function. output temperatures are also in °C
 """
 
 def GT(GT_input):
@@ -32,6 +33,7 @@ def GT(GT_input):
                             polytropique interne) for compression
        -option.eta_PiT[-] : Intern polytropic efficiency (Rendement
 
+    OUTPUTS : outputs are specified in the class GT_outputs in GT_arguments.py
     """
     arg_in = GT_input;
 
@@ -65,7 +67,7 @@ def GT(GT_input):
     T_ext = T_ext +273.15 #[K]
     T0 = T0+273.15 #[K]
     """
-    0) air data
+    0) Air data
     """
     Mm_O2 = 0.032;#kg/mol
     Mm_N2 = 0.028;#kg/mol
@@ -76,12 +78,12 @@ def GT(GT_input):
     Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     conc_mass1=np.array([conc_N2*Mm_N2/Mm_a,0,0,conc_O2*Mm_O2/Mm_a])
     Ra = 8.31/Mm_a
-    #polytropic coefficient (compresseur :m>gamma , turbine : gamma >m) first estimation
+    #polytropic coefficient (compressor :m>gamma , turbine : gamma >m) first estimation
     m_t = (-eta_pit*(gamma-1)/gamma+1)**(-1)
     m_c = (1-1/eta_pic*(gamma-1)/gamma)**(-1)
 
     """
-    1) compressor
+    1) Compressor
     """
     dt = 0.01
     T1=T_ext
@@ -170,7 +172,7 @@ def GT(GT_input):
     Q_comb = massflow_coefficient*h3-h2 #kJ/kg_in
 
     """
-    5) cycle efficiency and massflows
+    5) Cycle efficiency and massflows
     """
     # energetic efficiencies
     eta_cyclen  =Wm/Q_comb
@@ -182,7 +184,7 @@ def GT(GT_input):
     mf_out = mf_in*massflow_coefficient #kg/s
     mf_c = mf_out-mf_in #kg/s
     """
-    6) power flux calulations
+    6) Power flux calulations
     """
     P_in = h1*mf_in #[kW]
     P_c = deltah_c*mf_in #[kW]
@@ -193,7 +195,7 @@ def GT(GT_input):
     Pm = P_t-P_c
 
     """
-    7)calculations of exergetic losses (compressor, comb, turbine, exhaust)
+    7) Calculations of exergetic losses (compressor, comb, turbine, exhaust)
     """
     P_ech = P_comb-Pm
     #compressor losses
@@ -207,7 +209,7 @@ def GT(GT_input):
     L_exhaust = mf_out*e4 #-mf_in*e1
 
     """
-    8) calculation of exergetic efficiencies
+    8) Calculation of exergetic efficiencies
     """
     eta_cyclex = Pm/(mf_out*e3-mf_in*e2)
     eta_totex = Pe/(mf_out*h3-mf_out*h2)
@@ -216,7 +218,7 @@ def GT(GT_input):
     eta_cex = delta_ex_c/deltah_c
     eta_dex = deltah_t/delta_exer_t
     """
-    9) define output arguments
+    9) Define output arguments
     """
     outputs = GT_arg.GT_outputs();
     outputs.eta[0] = eta_cyclen;
@@ -236,7 +238,7 @@ def GT(GT_input):
     outputs.combustion.Cp_g = useful.cp_air(400,conc_mass2,Mm_af)/1000
 
     """
-    10) pie charts and cycle graphs
+    10) Pie charts and cycle graphs
     """
 
     # pie chart of the energie flux in the cycle

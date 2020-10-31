@@ -15,7 +15,7 @@ Files:
   The inputs and outputs are defined in the file GTcomb_arguments
 
   Also in GTcomb_arguments, inputs and outputs for a heat exchanger are defined.
-  This heat exchanger file: exchanger.py is only functional for two flows of
+  The heat exchanger file: exchanger.py is only functional for two flows of
   air but a more general version can be considered in latter versions.
 
   Anyway, the file exchanger.py takes care of those input and output arguments.
@@ -28,10 +28,14 @@ Files:
   - GT2.py : a lighter version of GT which only returns the outputs needed
   - parametricGraphe.py:  the beast file where the loops are made to compute
                           with the different parameters
-  - windowtest.py : this file permits to do a fancy interface with user when he
-                    wants to plot a parametric graph from parametricGraphe.py
-  Warning : This part of the code requires the installation of PySimpleGUI in the command
-  consol.
+  - FunPlot.py : this file permits to do a fancy interface with the user when he
+                  wants to plot a parametric graph from parametricGraphe.py
+
+  Warning : This part of the code requires the installation of PySimpleGUI
+   in the command consol.
+
+  The results from FunPlot.py and parametricGraphe.py have already been plotted
+  and saved in the file figures.No need to re-run these functions.
 
   Last but not least, useful.py is the backspine of our files as it contains
   all the useful functions used in GT, combustionGT, exchanger,Gtexchanger

@@ -9,6 +9,10 @@ import combustionGT as comb;
 import exchanger
 import useful
 
+"""
+Convention :  All temperatures in input are given in °C but are immediatly changed into K
+inside of the function. output temperatures are also in °C
+"""
 
 def GT(GT_input):
     """
@@ -17,6 +21,11 @@ def GT(GT_input):
      turbine based on several inputs (given in OPTION) and based on a given
      electricity production P_e. It returns the main results. It can as well
      plots graphs if input argument DISPLAY = true (<=> DISPLAY=1)
+
+     In this GT, there is a heat exchanger between the compressor and the
+     combustion chamber. The incoming air is heated up using the hot gasses
+     of the exhaust. In this model we choosed to heat up the air after the
+     compressor 100 K (T2r = T2+100)
 
      INPUTS (some inputs can be dependent on others => only one of these 2 can
              be activated) Refer to Fig 3.1 from reference book (in english)
@@ -29,7 +38,7 @@ def GT(GT_input):
        -option.eta_PiC[-] : Intern polytropic efficiency (Rendement
                             polytropique interne) for compression
        -option.eta_PiT[-] : Intern polytropic efficiency (Rendement
-
+     OUTPUTS : outputs are specified in the class GT_outputs in GT_arguments.py
     """
     arg_in = GT_input;
 
@@ -65,9 +74,7 @@ def GT(GT_input):
     T_ext = T_ext +273.15 #[K]
     T0 = T0+273.15 #[K]
     """
-    ## preliminary data (air) ==> find gamma
-    # ======================
-    # cp air at 15°C (298K): [kJ/mol/K]
+    0) Air data
     """
     Mm_O2 = 0.032;#kg/mol
     Mm_N2 = 0.028;#kg/mol
@@ -77,7 +84,7 @@ def GT(GT_input):
     Mm_a = conc_O2 * Mm_O2 + conc_N2 * Mm_N2;
     conc_mass1=np.array([conc_N2*Mm_N2/Mm_a,0,0,conc_O2*Mm_O2/Mm_a])
     Ra = 8.31/Mm_a
-    #coeff polytroique (compresseur :m>gamma , turbine : gamma >m) en premiere estimation
+    #polytropic coefficient (compressor :m>gamma , turbine : gamma >m) first estimation
     m_t = (-eta_pit*(gamma-1)/gamma+1)**(-1)
     m_c = (1-1/eta_pic*(gamma-1)/gamma)**(-1)
 
@@ -86,17 +93,16 @@ def GT(GT_input):
 
     """
     dt = 0.01
-    T1=T_ext # a changer lors du preaheating
+    T1=T_ext
     p1 = 1.0 #bar
-    h1 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T1,dt)/1000 #kJ/kg/K
+    h1 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T1,dt)/1000 #kJ/kg
     s1 = useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T0,T1,dt)#J/kg/K
     e1 = h1-T0*s1/1000 #kJ/kg_in
 
-
     p2 = r*p1
 
-    # calcul de T2 par iteration
-    T2 = T1*(r)**((m_c-1)/m_c) #premiere estimation
+    # calculation of T2 via iterations
+    T2 = T1*(r)**((m_c-1)/m_c) #first estimation
     iter = 1
     error = 1
     dt = 0.1
@@ -113,14 +119,11 @@ def GT(GT_input):
     e2 = h2-T0*s2/1000
 
     deltah_c = h2-h1 #kJ/kg
-    deltah_c2 = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T1,T2,0.01)/1000 #kJ/kg
-    #print('enthalpy comparison',deltah_c,deltah_c2)
     deltas_c1 = s2-s1
     delta_ex_c = e2-e1
 
     """
-    1.b) prechauffage :
-    supposé isotherme ==> on choisit la temperature de sortie de l'air de l'echangeur et calculerons sa geometrie en consequence
+    1.b) Preheating
     """
     T2r = T2 +100 # we choose to heat it up 100 K
     h2r = useful.janaf_integrate_air(useful.cp_air,conc_mass1,Mm_a,T0,T2r,dt)/1000
@@ -184,7 +187,7 @@ def GT(GT_input):
     Q_comb = massflow_coefficient*h3-h2r #kJ/kg_in
 
     """
-    5) rendements cyclen et mass flux
+    5) Energetic efficiencies and mass flux
     """
     # efficiencies
     eta_cyclen  =Wm/Q_comb
@@ -197,7 +200,7 @@ def GT(GT_input):
     mf_c = mf_out-mf_in #kg/s
 
     """
-    3.b) heat exhanger
+    3.b) Heat exhanger
     """
     exchanger_inputs = GTcomb_arg.exchanger_input(Mflow_air_in = mf_in,Mflow_f_in = mf_out,T_air_in=T2-273.15,
                                                         T_f_in = T4-273.15, comb_lambda=lambda_comb,U = 3)
@@ -210,7 +213,7 @@ def GT(GT_input):
     Q_pre = exchanger_outputs.Q #kJ
 
     """
-    5) calculation of the energetic fluxes
+    5) Calculation of the energetic fluxes
     """
     P_in = h1*mf_in #[kW]
     P_c = deltah_c*mf_in #[kW]
@@ -222,7 +225,7 @@ def GT(GT_input):
     Pm = P_t-P_c
 
     """
-    7) calculation of the losses (compressor, comb, turbine, exhaust)
+    7) Calculation of the losses (compressor, comb, turbine, exhaust)
     """
     P_ech = P_comb-Pm
     #compressor losses
@@ -238,7 +241,7 @@ def GT(GT_input):
     L_exchanger = e2*mf_in+e4*mf_out-e5*mf_out-e2r*mf_in
 
     """
-    8) exergetic efficiencies
+    8) Exergetic efficiencies
     """
     eta_cyclex = Pm/(mf_out*e3-mf_in*e2r)
     eta_totex = Pe/(mf_out*h3-mf_out*h2r)
@@ -247,7 +250,7 @@ def GT(GT_input):
     eta_cex = delta_ex_c/deltah_c
     eta_dex = deltah_t/delta_exer_t
     """
-    9) define output arguments
+    9) Define output arguments
     """
     outputs = GT_arg.GT_outputs();
     outputs.eta[0] = eta_cyclen;
@@ -267,7 +270,7 @@ def GT(GT_input):
     outputs.combustion.Cp_g = useful.cp_air(400,conc_mass2,Mm_af)/1000
 
     """
-    10) pie charts and cycle graphs
+    10) Pie charts and cycle graphs
     """
 
     # pie chart of the energie flux in the cycle
