@@ -87,7 +87,7 @@ def GT(GT_input):
 
     p2 = r*p1
 
-    # calcul de T2 par iteration
+    # calculation of T2 via iterations
     T2 = T1*(r)**((m_c-1)/m_c) #first estimation
     iter = 1
     error = 1
