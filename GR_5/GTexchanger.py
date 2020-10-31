@@ -294,7 +294,6 @@ def GT(GT_input):
     # T S graph of the cycle
     Ta = np.linspace(T1,T2,50)
     Tc = np.linspace(T4,T3,50)
-    Td = np.linspace(T1,T4,50)
     Sa= np.zeros(len(Ta))
     Sc = np.zeros(len(Tc))
 
@@ -303,26 +302,17 @@ def GT(GT_input):
         Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass2,Mm_af,T4,Tc[i],dt)
 
     Sb=np.linspace(s2r,s3,50)
-    Sb_pre = np.linspace(s2,s2r,40)
+    Sb_pre = np.linspace(Sa[-1],s2r,40)
     a,b= np.polyfit([s2r,s3],[T2r,T3],1)
-    a_pre,b_pre= np.polyfit([s2,s2r],[T2,T2r],1)
+    a_pre,b_pre= np.polyfit([Sa[-1],s2r],[T2,T2r],1)
     Sd=np.linspace(s1,s5,50)
     a2,b2= np.polyfit([s1,s5],[T1,T5],1)
     Sd_pre=np.linspace(s5,s4,40)
     a2_pre,b2_pre= np.polyfit([s5,s4],[T5,T4],1)
 
-    Sb=np.linspace(s2r,Sc[-1],50)
-    Sb_pre = np.linspace(Sa[-1],s2r,40)
-    a,b= np.polyfit([s2r,s3],[T2r,T3],1)
-    a_pre,b_pre= np.polyfit([s2,s2r],[T2,T2r],1)
-    Sd=np.linspace(Sa[0],s5,50)
-    a2,b2= np.polyfit([s1,s5],[T1,T5],1)
-    Sd_pre=np.linspace(s5,Sc[0],40)
-    a2_pre,b2_pre= np.polyfit([s5,s4],[T5,T4],1)
-
     fig3,ax1 = plt.subplots()
     ax1.plot(Sa,Ta-273.15,Sc,Tc-273.15,Sb,a*Sb+b-273.15,Sd,a2*Sd+b2-273.15,Sb_pre,a_pre*Sb_pre+b_pre-273.15,Sd_pre,a2_pre*Sd_pre+b2_pre-273.15)
-    ax1.scatter([s1,s2,s2r,s3,s4,s5],[T1-273.15,T2-273.15,T2r-273.15,T3-273.15,T4-273.15,T5-273.15],s=10,label='States')
+    ax1.scatter([s1,Sa[-1],s2r,s3,s4,s5],[T1-273.15,T2-273.15,T2r-273.15,T3-273.15,T4-273.15,T5-273.15],s=10,label='States')
     ax1.set_xlabel('Entropy [J/kg/K]')
     ax1.set_ylabel('Tempearature [°C]')
     ax1.grid(True)
@@ -353,6 +343,5 @@ def GT(GT_input):
         plt.show()
 
     return outputs
-
-GT_simple_outputs = GT(GT_arg.GT_input(Pe = 230e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
-print(GT_simple_outputs.dat)
+# GT_simple_outputs = GT(GT_arg.GT_input(Pe = 50e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
+# print(GT_simple_outputs.dat)

@@ -270,11 +270,6 @@ def GT(GT_input):
         Sa[i] = s1+(1-eta_pic)*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T1,Ta[i],dt)
         Sc[i] = s4-(1-eta_pit)/eta_pit*useful.janaf_integrate_air(useful.cp_air_T,conc_mass1,Mm_a,T4,Tc[i],dt)
 
-    Sb=np.linspace(s2,s3,50)
-    a,b= np.polyfit([s2,s3],[T2,T3],1)
-    Sd=np.linspace(s1,s4,50)
-    a2,b2= np.polyfit([s1,s4],[T1,T4],1)
-
     Sb=np.linspace(Sa[-1],Sc[-1],50)
     a,b= np.polyfit([Sa[-1],Sc[-1]],[Ta[-1],T3],1)
     Sd=np.linspace(Sa[0],Sc[0],50)
@@ -314,6 +309,3 @@ def GT(GT_input):
         plt.show()
 
     return outputs;
-
-GT_simple_outputs = GT(GT_arg.GT_input(Pe = 50e3,k_mec =0.015, T_ext=15,T_0 = 15,r=18.,k_cc=0.95,T3 = 1400,Display =1));
-print(GT_simple_outputs.dat)
