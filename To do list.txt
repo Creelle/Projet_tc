@@ -30,11 +30,13 @@
 
 		A faire pour la remise:
 		Tous les deux : ameliorer les commentaires et enlever les trucs inutiles
-		verifier combustionGT
+		verifier combustionGT==> okay
 		Robbe : verifier les graphes qu on sort
 		Gwenael : ploter les graphes de parametricGraphe
 		Tous, chequer si le code test marche
 
+		Commentaires : Gwenael : parametricGraphe, windowtest, GT_exchager, exchanger, useful
+				Robbe :  combustionGT , GT, GT2, GTcomb_arguments
 	  A faire des que c est fini :
       (calculer la temperature d entree du CH4 : pour le moment dans hc on considere que la temperature c est 288.15 K alors que c est surement plus chaud)
 
