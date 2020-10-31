@@ -11,14 +11,24 @@ import GT2 as gt
 
 
 """
-J'ai crée une fonction pour afficher les graphes pour le moment 3 choix possibles :
-1)Le graphique de eta cyclen sur le taux de compression au compresseur = 'Eta_cyclen_vs_r'
-2)Le graphique du travail moteur sur le taux de compression au compresseur = 'Wcycle_vs_r'
-3)Tous les graphiques = 'all'
+The use of this function requires the installation of PySimpleGUI
 
-Les arguments de la fonction parametricGraphic sont donc M = {'Eta_cyclen_vs_r','Eta_cyclen_vs_r_eta_pic_pit','Wcycle_vs_r','eta_mec_vs_r','eta_cyclen_eta_toten_vs_r','eta_cyclen_vs_wcy','all'} et number = le nombre de points par courbe (il y a 4 courbes à chaque fois)
+We have created a function for plotting a lot of graphes that are useful to analyse the performance of the gas turbine.
+Six graphics are now available :
+1) Cycle energetic efficiency on the compression ratio with different temperatures t3. = 'Eta_cyclen_vs_r'
+2) Cycle energetic efficiency on the compression ratio with different polytropic efficiency : 'Eta_cyclen_vs_r_eta_pic_pit'
+3) Mechanical work of the cycle on the compression ratio with different temperatures t3 : 'Wcycle_vs_r'
+4) Mechanical efficiency on the compression ratio with different temperatures t3 : 'eta_mec_vs_r'
+5) Total and cycle energetic efficiency on the compression ratio : 'eta_cyclen_eta_toten_vs_r'
+6) Cycle energetic efficiency on the cycle work with different temperatures t3 : 'eta_cyclen_vs_wcy'
+7) All the graphics = 'all'
 
-ATTENTION : estimation de temps de run de la fonction =~ 1sec par point!!!!!
+The arguments of parametricGraphic are M = {'Eta_cyclen_vs_r','Eta_cyclen_vs_r_eta_pic_pit','Wcycle_vs_r','eta_mec_vs_r','eta_cyclen_eta_toten_vs_r','eta_cyclen_vs_wcy','all'}
+and number = the number of points in each curves (there are 4 curves per graphics).
+
+For each graphics, a window with a progress will shows up.
+
+WARNING : A LOT OF POINTS MEAN A LOT OF TIME : BE AWARE BEFORE PLOTTING.
 
 
 """
@@ -331,4 +341,3 @@ def parametricGraphic(M,number):
         plt.savefig('figures/eta_cyclen_vs_wcy.png')
         window3.Close()
     plt.show()
-#parametricGraphic('Eta_cyclen_vs_r_eta_pic_pit',2)
