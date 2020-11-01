@@ -58,7 +58,7 @@ def GT(GT_input):
         T0 = 15 #[°C]
     k_mec = arg_in.k_mec
     if k_mec==-1.:
-        k_mec = 0
+        k_mec = 0.015
     kcc = arg_in.k_cc
     if kcc == -1.:
         kcc = 1
