@@ -7,7 +7,7 @@ import sys
 # insert at 1, 0 is the script path (or '' in REPL)
 # adress = path'/GT.py'
 
-GROUPS = np.arange(2) + 5
+GROUPS = np.arange(1) + 5
 
 for gr in GROUPS:
     path = "Gr_%d" % gr;
