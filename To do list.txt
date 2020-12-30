@@ -54,3 +54,4 @@
 attention en utilisant hef , on fixe la reference a 25°c
 pour la variation dentropie , il faut utiliser la variation de pression ==> -R*np.log(p2/p1)
 ==> il y a un probleme avec e_c ==> plus maintenant car m_c different de mf_c
+fetch and push
